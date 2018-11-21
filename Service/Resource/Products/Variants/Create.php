@@ -12,19 +12,10 @@ class Create extends \Divante\Walkthechat\Service\Resource\AbstractResource
     /**
      * @var string
      */
-    protected $_type;
+    protected $type = 'POST';
 
     /**
      * @var string
      */
-    protected $_path;
-
-    /**
-     * Resource constructor.
-     */
-    public function __construct()
-    {
-        $this->_type = 'post';
-        $this->_path = 'products/:id/variants';
-    }
+    protected $path = 'products/:id/variants';
 }

@@ -12,19 +12,10 @@ class Delete extends \Divante\Walkthechat\Service\Resource\AbstractResource
     /**
      * @var string
      */
-    protected $_type;
+    protected $type = 'DELETE';
 
     /**
      * @var string
      */
-    protected $_path;
-
-    /**
-     * Resource constructor.
-     */
-    public function __construct()
-    {
-        $this->_type = 'delete';
-        $this->_path = 'products/:id/variants/:fk';
-    }
+    protected $path = 'products/:id/variants/:fk';
 }

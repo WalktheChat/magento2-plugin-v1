@@ -7,82 +7,71 @@ namespace Divante\Walkthechat\Service;
  * @package  Divante\Walkthechat\Service
  * @author   Divante Tech Team <tech@divante.pl>
  */
-class AbstractService
+abstract class AbstractService
 {
     /**
      * @var \Divante\Walkthechat\Service\Client
      */
-    protected $_serviceClient;
+    protected $serviceClient;
 
     /**
-     * @var \Magento\Framework\ObjectManagerInterface
+     * @var \Magento\Framework\Json\Helper\Data
      */
-    protected $_objectManager;
+    protected $jsonHelper;
 
     /**
-     * @var boolean
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    protected $_requiresToken = false;
+    protected $scopeConfig;
 
     /**
      * Client constructor
      *
      * @param \Divante\Walkthechat\Service\Client $serviceClient
+     * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager
+        Client $serviceClient,
+        \Magento\Framework\Json\Helper\Data $jsonHelper,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     )
     {
-        $this->_objectManager = $objectManager;
+        $this->serviceClient = $serviceClient;
+        $this->jsonHelper = $jsonHelper;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
-     * Set Service Client
+     * @param string $path
      *
-     * @param \Divante\Walkthechat\Service\Client
+     * @return string
      */
-    public function setClient($serviceClient)
+    protected function getConfig(string $path)
     {
-        $this->_serviceClient = $serviceClient;
+        return $this->scopeConfig->getValue('walkthechat_settings/general/' . $path);
     }
 
     /**
-     * Get Service Client
-     *
-     * @return \Divante\Walkthechat\Service\Client
-     */
-    public function getClient()
-    {
-        return $this->_serviceClient;
-    }
-
-    /**
-     * Get Requires Token Flag
-     *
-     * @return boolean
-     */
-    public function requiresToken()
-    {
-        return $this->_requiresToken;
-    }
-
-    /**
-     * Do the request to the Service Client
-     *
-     * @param \Divante\Walkthechat\Service\Resource\AbstractResource $resourceModel
+     * @param $resource
      * @param array $params
+     * @return mixed
      */
-    public function request($resourceModel, $params)
+    public function request($resource, $params = [])
     {
-        switch($resourceModel->getType()) {
-            case 'post' :
-                return $this->_serviceClient->post($resourceModel->getPath(), $params);
-            case 'put' :
-                return $this->_serviceClient->put($resourceModel->getPath(), $params);
-            case 'delete' :
-                return $this->_serviceClient->delete($resourceModel->getPath());
-            default :
-                return $this->_serviceClient->get($resourceModel->getPath(), $params);
+        $headers = $resource->getHeaders();
+
+        if (isset($headers['x-access-token'])) {
+            $headers['x-access-token'] = $this->getConfig('token');
         }
+
+        $path = $resource->getPath();
+
+        if (isset($params['id'])) {
+            $path = str_replace(':id', $params['id'], $path);
+        }
+
+        $response = $this->serviceClient->request($resource->getType(), $path, $params, $headers);
+
+        return $this->jsonHelper->jsonDecode($response->getBody());
     }
 }

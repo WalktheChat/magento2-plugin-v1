@@ -12,19 +12,10 @@ class Find extends \Divante\Walkthechat\Service\Resource\AbstractResource
     /**
      * @var string
      */
-    protected $_type;
+    protected $type = 'GET';
 
     /**
      * @var string
      */
-    protected $_path;
-
-    /**
-     * Resource constructor.
-     */
-    public function __construct()
-    {
-        $this->_type = 'get';
-        $this->_path = 'products/:id/images/:fk';
-    }
+    protected $path = 'products/:id/images/:fk';
 }

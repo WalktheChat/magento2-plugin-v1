@@ -12,24 +12,36 @@ class AbstractResource
     /**
      * @var string
      */
-    protected $_type;
+    protected $type = '';
 
     /**
      * @var string
      */
-    protected $_path;
+    protected $path = '';
+
+    /**
+     * @var array
+     */
+    protected $headers = [];
 
     /**
      * @return string
      */
     public function getType() {
-        return $this->_type;
+        return $this->type;
     }
 
     /**
      * @return string
      */
     public function getPath() {
-        return $this->_path;
+        return $this->path;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaders() {
+        return $this->headers;
     }
 }

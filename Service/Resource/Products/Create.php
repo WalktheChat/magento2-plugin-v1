@@ -12,19 +12,19 @@ class Create extends \Divante\Walkthechat\Service\Resource\AbstractResource
     /**
      * @var string
      */
-    protected $_type;
+    protected $type = 'POST';
 
     /**
      * @var string
      */
-    protected $_path;
+    protected $path = 'products';
 
     /**
-     * Resource constructor.
+     * @var array
      */
-    public function __construct()
-    {
-        $this->_type = 'post';
-        $this->_path = 'products';
-    }
+    protected $headers = [
+        'x-access-token' => '',
+        'Accept' => "application/json, appl-header 'Content-Type: application/json",
+        'Content-Type' => "application/json"
+    ];
 }
