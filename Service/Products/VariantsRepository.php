@@ -2,12 +2,12 @@
 namespace Divante\Walkthechat\Service\Products;
 
 /**
- * Walkthechat Products Variants Service
- *
- * @package  Divante\Walkthechat\Service
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
-class Variants extends \Divante\Walkthechat\Service\AbstractService
+class VariantsRepository extends \Divante\Walkthechat\Service\AbstractService
 {
     public function create($data)
     {

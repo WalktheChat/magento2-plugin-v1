@@ -2,29 +2,20 @@
 namespace Divante\Walkthechat\Service\Resource\ShippingZones\Rates;
 
 /**
- * Walkthechat Service Shipping Zones Rates Find Resource
- *
- * @package  Divante\Walkthechat\Service
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 class Find extends \Divante\Walkthechat\Service\Resource\AbstractResource
 {
     /**
      * @var string
      */
-    protected $_type;
+    protected $type = 'GET';
 
     /**
      * @var string
      */
-    protected $_path;
-
-    /**
-     * Resource constructor.
-     */
-    public function __construct()
-    {
-        $this->_type = 'get';
-        $this->_path = 'shipping-zones/:id/rates/:fk';
-    }
+    protected $path = 'shipping-zones/:id/rates/:fk';
 }

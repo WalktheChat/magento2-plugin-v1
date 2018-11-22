@@ -2,10 +2,10 @@
 namespace Divante\Walkthechat\Model\Config\Source;
 
 /**
- * Walkthechat Round methods
- *
- * @package  Divante\Walkthechat
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 class Roundmethod implements \Magento\Framework\Option\ArrayInterface
 {

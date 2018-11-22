@@ -1,5 +1,5 @@
 <?php
-namespace Divante\Walkthechat\Api\Data;
+namespace Divante\Walkthechat\Service\Resource\Orders;
 
 /**
  * @package   Divante\Walkthechat
@@ -7,16 +7,9 @@ namespace Divante\Walkthechat\Api\Data;
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
  */
-interface QueueInterface
+class Subscribe extends \Divante\Walkthechat\Service\Resource\AbstractResource
 {
     /**
-     * @return int
+     * TO-DO Map webhook subscribe API method once it's delivered
      */
-    public function getId();
-
-    /**
-     * @param int $id
-     * @return void
-     */
-    public function setId($id);
 }

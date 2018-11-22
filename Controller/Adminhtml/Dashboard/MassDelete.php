@@ -2,10 +2,10 @@
 namespace Divante\Walkthechat\Controller\Adminhtml\Dashboard;
 
 /**
- * Walkthechat Mass Queue Delete
- *
- * @package  Divante\Walkthechat
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 class MassDelete extends \Magento\Backend\App\Action
 {
@@ -43,13 +43,18 @@ class MassDelete extends \Magento\Backend\App\Action
         $this->queueRepository = $queueRepository;
     }
 
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     * @throws \Magento\Framework\Exception\CouldNotDeleteException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function execute()
     {
         /** @var Collection $collection */
         $collection = $this->filter->getCollection($this->collectionFactory->create());
 
-        foreach ($collection as $row) {
-            $this->queueRepository->delete($row);
+        foreach ($collection as $item) {
+            $this->queueRepository->delete($item);
         }
 
         $this->messageManager->addSuccessMessage(__('Deleted items.'));

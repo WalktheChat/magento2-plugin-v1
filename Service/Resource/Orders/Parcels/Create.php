@@ -1,5 +1,5 @@
 <?php
-namespace Divante\Walkthechat\Service\Resource\Products\Images;
+namespace Divante\Walkthechat\Service\Resource\Orders\Parcels;
 
 /**
  * @package   Divante\Walkthechat
@@ -7,15 +7,15 @@ namespace Divante\Walkthechat\Service\Resource\Products\Images;
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
  */
-class Update extends \Divante\Walkthechat\Service\Resource\AbstractResource
+class Create extends \Divante\Walkthechat\Service\Resource\AbstractResource
 {
     /**
      * @var string
      */
-    protected $type = 'PUT';
+    protected $type = 'POST';
 
     /**
      * @var string
      */
-    protected $path = 'products/:id/images/:fk';
+    protected $path = 'orders/:id/parcels';
 }

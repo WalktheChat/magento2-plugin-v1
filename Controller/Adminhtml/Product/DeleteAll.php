@@ -2,60 +2,63 @@
 namespace Divante\Walkthechat\Controller\Adminhtml\Product;
 
 /**
- * Walkthechat Delete All Controller
- *
- * @package  Divante\Walkthechat
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 class DeleteAll extends \Magento\Backend\App\Action
 {
     /**
-     * @var \Divante\Walkthechat\Service\Products
+     * @var \Divante\Walkthechat\Service\ProductsRepository
      */
-    protected $productsService;
+    protected $productsRepository;
 
     /**
-     * @var \Divante\Walkthechat\Model\QueueFactory
+     * @var \Divante\Walkthechat\Model\QueueService
      */
-    protected $queueFactory;
-
-    /**
-     * @var \Divante\Walkthechat\Model\QueueRepository
-     */
-    protected $queueRepository;
+    protected $queueService;
 
     /**
      * DeleteAll constructor.
      * @param \Magento\Backend\App\Action\Context $context
-     * @param \Divante\Walkthechat\Service\Products $productsService
-     * @param \Divante\Walkthechat\Model\QueueFactory $queueFactory
-     * @param \Divante\Walkthechat\Model\QueueRepository $queueRepository
+     * @param \Divante\Walkthechat\Service\ProductsRepository $productsRepository
+     * @param \Divante\Walkthechat\Model\QueueService $queueService
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Divante\Walkthechat\Service\Products $productsService,
-        \Divante\Walkthechat\Model\QueueFactory $queueFactory,
-        \Divante\Walkthechat\Model\QueueRepository $queueRepository
+        \Divante\Walkthechat\Service\ProductsRepository $productsRepository,
+        \Divante\Walkthechat\Model\QueueService $queueService
     )
     {
         parent::__construct($context);
-        $this->productsService = $productsService;
-        $this->queueFactory = $queueFactory;
-        $this->queueRepository = $queueRepository;
+        $this->productsRepository = $productsRepository;
+        $this->queueService = $queueService;
     }
 
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     */
     public function execute()
     {
-        $result = $this->productsService->find();
+        try {
+            $result = $this->productsRepository->find();
 
-        foreach ($result as $row) {
-            $model = $this->queueFactory->create();
-            $model->setWalkthechatId($row['id']);
-            $model->setDelete('add');
-            $this->queueRepository->save($model);
+            foreach ($result as $row) {
+                if (isset($row['id'])) {
+                    $data = [
+                        'walkthechat_id' => $row['id'],
+                        'action' => 'delete'
+                    ];
+
+                    $this->queueService->create($data);
+                }
+            }
+
+            $this->messageManager->addSuccessMessage(__('Added to queue.'));
+        } catch (\Exception $e) {
+            $this->messageManager->addErrorMessage($e->getMessage());
         }
-
-        $this->messageManager->addSuccessMessage(__('Added to queue.'));
 
         $this->_redirect('*/dashboard/index');
     }

@@ -1,6 +1,12 @@
 <?php
 namespace Divante\Walkthechat\Controller\Adminhtml\Dashboard;
 
+/**
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
+ */
 class Index extends \Magento\Backend\App\Action
 {
     /**
@@ -21,9 +27,7 @@ class Index extends \Magento\Backend\App\Action
     }
 
     /**
-     * Save action
-     *
-     * @return \Magento\Framework\Controller\ResultInterface
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|\Magento\Framework\View\Result\Page
      */
     public function execute()
     {

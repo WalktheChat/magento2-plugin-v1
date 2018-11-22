@@ -2,10 +2,10 @@
 namespace Divante\Walkthechat\Service\Resource;
 
 /**
- * Walkthechat Service Abstract Resource Class
- *
- * @package  Divante\Walkthechat\Service
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 class AbstractResource
 {
@@ -32,6 +32,13 @@ class AbstractResource
     }
 
     /**
+     * @param string $type
+     */
+    public function setType($type) {
+        $this->type = $type;
+    }
+
+    /**
      * @return string
      */
     public function getPath() {
@@ -39,9 +46,23 @@ class AbstractResource
     }
 
     /**
+     * @param string $path
+     */
+    public function setPath($path) {
+        $this->path = $path;
+    }
+
+    /**
      * @return array
      */
     public function getHeaders() {
         return $this->headers;
+    }
+
+    /**
+     * @param array $headers
+     */
+    public function setHeaders($headers) {
+        $this->headers = $headers;
     }
 }

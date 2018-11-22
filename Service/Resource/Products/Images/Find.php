@@ -2,10 +2,10 @@
 namespace Divante\Walkthechat\Service\Resource\Products\Images;
 
 /**
- * Walkthechat Service Products Images Find Resource
- *
- * @package  Divante\Walkthechat\Service
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 class Find extends \Divante\Walkthechat\Service\Resource\AbstractResource
 {

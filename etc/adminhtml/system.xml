@@ -15,13 +15,19 @@
                     <label>Status</label>
                     <frontend_model>Divante\Walkthechat\Block\Adminhtml\System\Config\Status</frontend_model>
                 </field>
-                <field id="app_id" translate="label" type="text" sortOrder="10" showInDefault="1">
+                <field id="api_url" translate="label" type="text" sortOrder="10" showInDefault="1">
+                    <label>API Url</label>
+                </field>
+                <field id="auth_url" translate="label" type="text" sortOrder="20" showInDefault="1">
+                    <label>Authorization Url</label>
+                </field>
+                <field id="app_id" translate="label" type="text" sortOrder="30" showInDefault="1">
                     <label>App Id</label>
                 </field>
-                <field id="app_key" translate="label" type="text" sortOrder="20" showInDefault="1">
+                <field id="app_key" translate="label" type="text" sortOrder="40" showInDefault="1">
                     <label>App Secret Key</label>
                 </field>
-                <field id="action" sortOrder="30" showInDefault="1">
+                <field id="action" sortOrder="50" showInDefault="1">
                     <frontend_model>Divante\Walkthechat\Block\Adminhtml\System\Config\Action</frontend_model>
                 </field>
             </group>

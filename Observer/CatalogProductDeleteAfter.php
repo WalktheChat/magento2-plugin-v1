@@ -2,10 +2,10 @@
 namespace Divante\Walkthechat\Observer;
 
 /**
- * Walkthechat Observer
- *
- * @package  Divante\Walkthechat
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 class CatalogProductDeleteAfter implements \Magento\Framework\Event\ObserverInterface
 {
@@ -48,7 +48,7 @@ class CatalogProductDeleteAfter implements \Magento\Framework\Event\ObserverInte
     {
         if ($this->helper->isEnabledProductSync()) {
             $product = $observer->getProduct();
-            if ($product->getWalkthechatId()) {
+            if ($product instanceof \Magento\Catalog\Model\Product) {
                 $model = $this->queueFactory->create();
                 $model->setWalkthechatId($product->getWalkthechatId());
                 $model->setAction('delete');

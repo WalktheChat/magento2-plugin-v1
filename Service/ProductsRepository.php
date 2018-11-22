@@ -2,12 +2,12 @@
 namespace Divante\Walkthechat\Service;
 
 /**
- * Walkthechat Products Service
- *
- * @package  Divante\Walkthechat\Service
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
-class Products extends AbstractService
+class ProductsRepository extends AbstractService
 {
     /**
      * @var Resource\Products\Create
@@ -28,7 +28,7 @@ class Products extends AbstractService
      * Products constructor.
      * @param Client $serviceClient
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Divante\Walkthechat\Helper\Data $helper
      * @param Resource\Products\Create $productCreateResource
      * @param Resource\Products\Delete $productDeleteResource
      * @param Resource\Products\Find $productFindResource
@@ -36,24 +36,35 @@ class Products extends AbstractService
     public function __construct(
         Client $serviceClient,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Divante\Walkthechat\Helper\Data $helper,
         Resource\Products\Create $productCreateResource,
         Resource\Products\Delete $productDeleteResource,
         Resource\Products\Find $productFindResource
     )
     {
-        parent::__construct($serviceClient, $jsonHelper, $scopeConfig);
+        parent::__construct($serviceClient, $jsonHelper, $helper);
         $this->productCreateResource = $productCreateResource;
         $this->productDeleteResource = $productDeleteResource;
         $this->productFindResource = $productFindResource;
     }
 
+    /**
+     * @param $data
+     * @return null
+     * @throws \Zend_Http_Client_Exception
+     */
     public function create($data)
     {
         $response = $this->request($this->productCreateResource, $data);
-        return $response['id'];
+
+        return isset($response['id']) ? $response['id'] : null;
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \Zend_Http_Client_Exception
+     */
     public function delete($id)
     {
         return $this->request($this->productDeleteResource, $id);
@@ -61,6 +72,7 @@ class Products extends AbstractService
 
     /**
      * @return mixed
+     * @throws \Zend_Http_Client_Exception
      */
     public function find()
     {

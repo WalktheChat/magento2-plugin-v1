@@ -2,10 +2,10 @@
 namespace Divante\Walkthechat\Observer;
 
 /**
- * Walkthechat Observer
- *
- * @package  Divante\Walkthechat\Service
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 class SalesOrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 {
@@ -48,14 +48,16 @@ class SalesOrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         if ($this->helper->isEnabledOrderSync()) {
             $order = $observer->getEvent()->getOrder();
 
-            foreach ($order->getAllItems() as $item) {
-                $product = $item->getProduct();
+            if ($order instanceof \Magento\Sales\Model\Order) {
+                foreach ($order->getAllItems() as $item) {
+                    $product = $item->getProduct();
 
-                if ($product->getWalkthechatId()) {
-                    $model = $this->queueFactory->create();
-                    $model->setProductId($product->getId());
-                    $model->setAction('update');
-                    $this->queueRepository->save($model);
+                    if ($product->getWalkthechatId()) {
+                        $model = $this->queueFactory->create();
+                        $model->setProductId($product->getId());
+                        $model->setAction('update');
+                        $this->queueRepository->save($model);
+                    }
                 }
             }
         }

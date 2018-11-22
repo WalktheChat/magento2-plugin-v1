@@ -2,10 +2,10 @@
 namespace Divante\Walkthechat\Service;
 
 /**
- * Walkthechat Abstract Service
- *
- * @package  Divante\Walkthechat\Service
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 abstract class AbstractService
 {
@@ -20,48 +20,39 @@ abstract class AbstractService
     protected $jsonHelper;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var \Divante\Walkthechat\Helper\Data
      */
-    protected $scopeConfig;
+    protected $helper;
 
     /**
-     * Client constructor
-     *
-     * @param \Divante\Walkthechat\Service\Client $serviceClient
+     * AbstractService constructor.
+     * @param Client $serviceClient
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
+     * @param \Divante\Walkthechat\Helper\Data $helper
      */
     public function __construct(
         Client $serviceClient,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Divante\Walkthechat\Helper\Data $helper
     )
     {
         $this->serviceClient = $serviceClient;
         $this->jsonHelper = $jsonHelper;
-        $this->scopeConfig = $scopeConfig;
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return string
-     */
-    protected function getConfig(string $path)
-    {
-        return $this->scopeConfig->getValue('walkthechat_settings/general/' . $path);
+        $this->helper = $helper;
     }
 
     /**
      * @param $resource
      * @param array $params
      * @return mixed
+     * @throws \Zend_Http_Client_Exception
      */
     public function request($resource, $params = [])
     {
         $headers = $resource->getHeaders();
 
         if (isset($headers['x-access-token'])) {
-            $headers['x-access-token'] = $this->getConfig('token');
+            $headers['x-access-token'] = $this->helper->getToken();
         }
 
         $path = $resource->getPath();
@@ -72,6 +63,12 @@ abstract class AbstractService
 
         $response = $this->serviceClient->request($resource->getType(), $path, $params, $headers);
 
-        return $this->jsonHelper->jsonDecode($response->getBody());
+        if ($response->getStatus() == 200) {
+            return $this->jsonHelper->jsonDecode($response->getBody());
+        } else {
+            throw new \Exception(
+                __('API error. Check logs for more details.')
+            );
+        }
     }
 }

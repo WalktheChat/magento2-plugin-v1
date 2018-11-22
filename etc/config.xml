@@ -2,6 +2,10 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <walkthechat_settings>
+            <general>
+                <api_url>https://cms-api-staging-v3.walkthechat.com/api/v1/</api_url>
+                <auth_url>https://cms-nuxt-api-v3.walkthechat.com/third-party-apps/auth</auth_url>
+            </general>
             <sync>
                 <order_sync_active>1</order_sync_active>
             </sync>

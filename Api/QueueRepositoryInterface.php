@@ -2,10 +2,10 @@
 namespace Divante\Walkthechat\Api;
 
 /**
- * Walkthechat Queue Repository Interface
- *
- * @package  Divante\Walkthechat
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 interface QueueRepositoryInterface
 {
@@ -27,4 +27,10 @@ interface QueueRepositoryInterface
      * @return void
      */
     public function delete(\Divante\Walkthechat\Api\Data\QueueInterface $queue);
+
+    /**
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     * @return \Divante\Walkthechat\Api\Data\QueueSearchResultInterface
+     */
+    public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria);
 }

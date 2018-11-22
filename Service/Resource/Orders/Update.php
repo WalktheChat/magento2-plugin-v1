@@ -1,5 +1,5 @@
 <?php
-namespace Divante\Walkthechat\Service\Resource\Products\Images;
+namespace Divante\Walkthechat\Service\Resource\Orders;
 
 /**
  * @package   Divante\Walkthechat
@@ -17,5 +17,5 @@ class Update extends \Divante\Walkthechat\Service\Resource\AbstractResource
     /**
      * @var string
      */
-    protected $path = 'products/:id/images/:fk';
+    protected $path = 'orders/:id';
 }

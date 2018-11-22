@@ -8,10 +8,10 @@ use Magento\Catalog\Api\Data\ProductAttributeInterface;
 use Magento\Store\Model\Store;
 
 /**
- * Walkthechat Process Queue Cronjob
- *
- * @package  Divante\Walkthechat
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 class ProcessQueue
 {
@@ -21,96 +21,31 @@ class ProcessQueue
     protected $state;
 
     /**
-     * @var \Divante\Walkthechat\Model\ResourceModel\Queue\CollectionFactory
+     * @var \Divante\Walkthechat\Model\QueueService
      */
-    protected $queueCollectionFactory;
-
-    /**
-     * @var \Magento\Framework\Stdlib\DateTime\DateTime
-     */
-    protected $date;
-
-    /**
-     * @var \Divante\Walkthechat\Service\Products
-     */
-    protected $productsService;
-
-    /**
-     * @var \Magento\Catalog\Model\ProductRepository
-     */
-    protected $productRepository;
-
-    /**
-     * @var \Divante\Walkthechat\Model\QueueRepository
-     */
-    protected $queueRepository;
-
-    /**
-     * @var \Divante\Walkthechat\Helper\Data
-     */
-    protected $helper;
+    protected $queueService;
 
     /**
      * ProcessQueue constructor.
      * @param \Magento\Framework\App\State $state
-     * @param \Divante\Walkthechat\Model\ResourceModel\Queue\CollectionFactory $queueCollectionFactory
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
-     * @param \Divante\Walkthechat\Service\Products $productsService
-     * @param \Magento\Catalog\Model\ProductRepository $productRepository
-     * @param \Divante\Walkthechat\Model\QueueRepository $queueRepository
-     * @param \Divante\Walkthechat\Helper\Data $helper
+     * @param \Divante\Walkthechat\Model\QueueService $queueService
      */
     public function __construct(
         \Magento\Framework\App\State $state,
-        \Divante\Walkthechat\Model\ResourceModel\Queue\CollectionFactory $queueCollectionFactory,
-        \Magento\Framework\Stdlib\DateTime\DateTime $date,
-        \Divante\Walkthechat\Service\Products $productsService,
-        \Magento\Catalog\Model\ProductRepository $productRepository,
-        \Divante\Walkthechat\Model\QueueRepository $queueRepository,
-        \Divante\Walkthechat\Helper\Data $helper
+        \Divante\Walkthechat\Model\QueueService $queueService
     ) {
         $this->state = $state;
-        $this->queueCollectionFactory = $queueCollectionFactory;
-        $this->date = $date;
-        $this->productsService = $productsService;
-        $this->productRepository = $productRepository;
-        $this->queueRepository = $queueRepository;
-        $this->helper = $helper;
+        $this->queueService = $queueService;
     }
 
     public function execute()
     {
         $this->state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
 
-        /** @var \Divante\Walkthechat\Model\ResourceModel\Queue\Collection $collection */
-        $collection = $this->queueCollectionFactory->create();
-        $collection->setPageSize(10)->setCurPage(1)->addOnlyForSyncFilter()->load();
+        $items = $this->queueService->getAllNotProcessed();
 
-        foreach ($collection as $row) {
-            switch ($row->getAction()) {
-                case 'delete':
-                    $this->productsService->delete(['id' => $row->getWalkthechatId()]);
-                    break;
-                case 'add':
-                    $product = $this->productRepository->getById($row->getProductId());
-                    $data = $this->helper->prepareProductData($product);
-                    $walkthechatId = $this->productsService->create($data);
-
-                    $product->setWalkthechatId($walkthechatId);
-                    $this->productRepository->save($product);
-                    break;
-                case 'update':
-                    if ($row->getProductId()) {
-                        $product = $this->productRepository->getById($row->getProductId());
-                        $data = $this->helper->prepareProductData($product);
-                        $this->productsService->update($data, $this->getWalkthechatId());
-                    } elseif ($row->getOrderId()) {
-                        /** TO-DO update order data **/
-                    }
-            }
-
-            $row->setProcessedAt($this->date->gmtDate());
-            $this->queueRepository->save($row);
+        foreach ($items as $item) {
+            $this->queueService->sync($item);
         }
     }
 }

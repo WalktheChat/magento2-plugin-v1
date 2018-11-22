@@ -2,12 +2,12 @@
 namespace Divante\Walkthechat\Service;
 
 /**
- * Walkthechat Authorize Service
- *
- * @package  Divante\Walkthechat\Service
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
-class Authorize extends AbstractService
+class AuthorizeRepository extends AbstractService
 {
     /**
      * @var \Divante\Walkthechat\Service\Resource\Authorize
@@ -18,31 +18,31 @@ class Authorize extends AbstractService
      * Authorize constructor.
      * @param Client $serviceClient
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Divante\Walkthechat\Helper\Data $helper
      * @param Resource\Authorize $authorizeResource
      */
     public function __construct(
         Client $serviceClient,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Divante\Walkthechat\Helper\Data $helper,
         Resource\Authorize $authorizeResource
     )
     {
-        parent::__construct($serviceClient, $jsonHelper, $scopeConfig);
+        parent::__construct($serviceClient, $jsonHelper, $helper);
         $this->authorizeResource = $authorizeResource;
     }
 
     /**
      * @param string $code
-     *
-     * @return string
+     * @return mixed
+     * @throws \Zend_Http_Client_Exception
      */
     public function authorize(string $code)
     {
         $data = [
             'code' => $code,
-            'appId' => $this->getConfig('app_id'),
-            'appSecret' => $this->getConfig('app_key'),
+            'appId' => $this->helper->getAppId(),
+            'appSecret' => $this->helper->getAppKey(),
         ];
 
         $response = $this->request($this->authorizeResource, $data);

@@ -2,65 +2,58 @@
 namespace Divante\Walkthechat\Controller\Adminhtml\Product;
 
 /**
- * Walkthechat Export All Controller
- *
- * @package  Divante\Walkthechat
- * @author   Divante Tech Team <tech@divante.pl>
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
  */
 class ExportAll extends \Magento\Backend\App\Action
 {
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
+     * @var \Divante\Walkthechat\Model\ProductService
      */
-    protected $collectionFactory;
+    protected $productService;
 
     /**
-     * @var \Divante\Walkthechat\Model\QueueFactory
+     * @var \Divante\Walkthechat\Model\QueueService
      */
-    protected $queueFactory;
-
-    /**
-     * @var \Divante\Walkthechat\Model\QueueRepository
-     */
-    protected $queueRepository;
+    protected $queueService;
 
     /**
      * ExportAll constructor.
      * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $collectionFactory
-     * @param \Divante\Walkthechat\Model\QueueFactory $queueFactory
-     * @param \Divante\Walkthechat\Model\QueueRepository $queueRepository
+     * @param \Divante\Walkthechat\Model\ProductService $productService
+     * @param \Divante\Walkthechat\Model\QueueService $queueService
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $collectionFactory,
-        \Divante\Walkthechat\Model\QueueFactory $queueFactory,
-        \Divante\Walkthechat\Model\QueueRepository $queueRepository
+        \Divante\Walkthechat\Model\ProductService $productService,
+        \Divante\Walkthechat\Model\QueueService $queueService
     )
     {
         parent::__construct($context);
-        $this->collectionFactory = $collectionFactory;
-        $this->queueFactory = $queueFactory;
-        $this->queueRepository = $queueRepository;
+        $this->productService = $productService;
+        $this->queueService = $queueService;
     }
 
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     */
     public function execute()
     {
-        $collection = $this->collectionFactory->create();
-        $collection->addAttributeToFilter(
-            'type_id', [
-                'in' => [
-                    \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE,
-                    \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE
-                ]
-            ]
-        );
+        /**
+         * @var \Magento\Catalog\Api\Data\ProductInterface[]
+         */
+        $products = $this->productService->getAllForExport();
 
-        foreach ($collection as $product) {
-            $model = $this->queueFactory->create();
-            $model->setProductId($product->getId());
-            $model->setAction('add');
-            $this->queueRepository->save($model);
+        foreach ($products as $product) {
+            $data = [
+                'product_id' => $product->getId(),
+                'action' => 'add'
+            ];
+
+            $this->queueService->create($data);
         }
 
         $this->messageManager->addSuccessMessage(__('Added to queue.'));
