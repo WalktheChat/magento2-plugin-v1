@@ -49,8 +49,9 @@ class ProductsRepository extends AbstractService
     }
 
     /**
-     * @param $data
-     * @return null
+     * Create product
+     * @param array $data
+     * @return string|null
      * @throws \Zend_Http_Client_Exception
      */
     public function create($data)
@@ -61,6 +62,7 @@ class ProductsRepository extends AbstractService
     }
 
     /**
+     * Delete product
      * @param $id
      * @return mixed
      * @throws \Zend_Http_Client_Exception
@@ -71,6 +73,7 @@ class ProductsRepository extends AbstractService
     }
 
     /**
+     * Find product
      * @return mixed
      * @throws \Zend_Http_Client_Exception
      */

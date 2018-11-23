@@ -50,6 +50,8 @@ class ProductService
     }
 
     /**
+     * Get all products available for export
+     *
      * @return \Magento\Catalog\Api\Data\ProductInterface[]
      */
     public function getAllForExport()
@@ -62,6 +64,10 @@ class ProductService
                     \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE,
                     \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE
                 ])
+                ->create(),
+            $this->filterBuilder
+                ->setField('walkthechat_id')
+                ->setConditionType('null')
                 ->create()
         ]);
 

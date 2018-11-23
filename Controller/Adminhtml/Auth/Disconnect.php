@@ -37,6 +37,8 @@ class Disconnect extends \Magento\Backend\App\Action
     }
 
     /**
+     * Disconnect
+     *
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
      */
     public function execute()

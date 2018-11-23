@@ -33,8 +33,6 @@ class InstallData implements InstallDataInterface
     }
 
     /**
-     * Install new Swatch entity
-     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @param ModuleDataSetupInterface $setup
      * @param ModuleContextInterface $context
@@ -53,7 +51,7 @@ class InstallData implements InstallDataInterface
         foreach ($entities as $entity) {
             $eavSetup->addAttribute(
                 $entity,
-                'walkthechat_id',
+                \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE,
                 [
                     'type' => 'varchar',
                     'label' => 'Walkthechat ID',

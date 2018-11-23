@@ -51,6 +51,13 @@ class Export extends \Magento\Backend\App\Action
         $this->queueRepository = $queueRepository;
     }
 
+    /**
+     * Export selected products to Walkthechat
+     *
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function execute()
     {
         /** @var Collection $collection */

@@ -37,6 +37,8 @@ class ExportAll extends \Magento\Backend\App\Action
     }
 
     /**
+     * Export all possible products to Walkthechat
+     *
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
      * @throws \Magento\Framework\Exception\CouldNotSaveException
      */

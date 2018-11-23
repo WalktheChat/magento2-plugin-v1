@@ -9,6 +9,20 @@ namespace Divante\Walkthechat\Api\Data;
  */
 interface QueueInterface
 {
+    const ID = 'entity_id';
+
+    const PRODUCT_ID = 'product_id';
+
+    const ORDER_ID = 'order_id';
+
+    const WALKTHECHAT_ID = 'walkthechat_id';
+
+    const ACTION = 'action';
+
+    const CREATED_AT = 'created_at';
+
+    const PROCESSED_AT = 'processed_at';
+
     /**
      * @return int
      */

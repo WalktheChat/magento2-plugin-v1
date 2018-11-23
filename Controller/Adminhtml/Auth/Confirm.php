@@ -60,6 +60,8 @@ class Confirm extends \Magento\Backend\App\Action
     }
 
     /**
+     * Get token from Walkthechat
+     *
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
      */
     public function execute()

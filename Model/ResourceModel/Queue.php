@@ -10,12 +10,17 @@ namespace Divante\Walkthechat\Model\ResourceModel;
 class Queue extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
+     * Table name
+     */
+    const TABLE_NAME = 'walkthechat_queue';
+
+    /**
      * Initialize resource model
      *
      * @return void
      */
     protected function _construct()
     {
-        $this->_init('walkthechat_queue', 'entity_id');
+        $this->_init(self::TABLE_NAME, \Divante\Walkthechat\Api\Data\QueueInterface::ID);
     }
 }

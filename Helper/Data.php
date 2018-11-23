@@ -12,6 +12,11 @@ use Magento\TestFramework\Event\Magento;
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
+     * Code of attribute used in orders and products
+     */
+    const ATTRIBUTE_CODE = 'walkthechat_id';
+
+    /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $scopeConfig;
@@ -104,6 +109,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @return boolean
+     */
+    public function isTableRateActive()
+    {
+        return $this->scopeConfig->getValue('carriers/tablerate/active') ? true : false;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTableRateConditionName()
+    {
+        return $this->scopeConfig->getValue('carriers/tablerate/condition_name');
+    }
+
+    /**
      * @return string
      */
     public function getCurrencyConversionRate()
@@ -120,6 +141,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get URL for authorization
+     *
      * @return string
      */
     public function getAuthUrl()
@@ -139,6 +162,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Convert price depending on method set in configuration
+     *
      * @param float $price
      * @param boolean $export
      *
@@ -182,8 +207,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $price;
     }
 
-
     /**
+     * Prepare product data for API
+     *
      * @param Magento/Catalog/Model/Product $product
      * @return array
      */

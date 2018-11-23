@@ -37,6 +37,8 @@ class DeleteAll extends \Magento\Backend\App\Action
     }
 
     /**
+     * Delete all existing products from Walkthechat
+     *
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
      */
     public function execute()

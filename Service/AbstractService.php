@@ -42,7 +42,8 @@ abstract class AbstractService
     }
 
     /**
-     * @param $resource
+     * Send request to API
+     * @param \Divante\Walkthechat\Service\Resource\AbstractResource $resource
      * @param array $params
      * @return mixed
      * @throws \Zend_Http_Client_Exception

@@ -19,6 +19,9 @@ class Delete extends \Divante\Walkthechat\Service\Resource\AbstractResource
      */
     protected $path = 'products/:id';
 
+    /**
+     * @var array
+     */
     protected $headers = [
         'x-access-token' => ''
     ];

@@ -44,6 +44,8 @@ class MassDelete extends \Magento\Backend\App\Action
     }
 
     /**
+     * Delete selected items from queue
+     *
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
      * @throws \Magento\Framework\Exception\CouldNotDeleteException
      * @throws \Magento\Framework\Exception\LocalizedException

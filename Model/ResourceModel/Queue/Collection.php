@@ -23,18 +23,4 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     {
         $this->_init(\Divante\Walkthechat\Model\Queue::class, \Divante\Walkthechat\Model\ResourceModel\Queue::class);
     }
-
-    /**
-     * Add filter by only ready for sync
-     *
-     * @return $this
-     */
-    public function addOnlyForSyncFilter()
-    {
-        $this->getSelect()->where(
-            'main_table.processed_at IS NULL'
-        );
-
-        return $this;
-    }
 }

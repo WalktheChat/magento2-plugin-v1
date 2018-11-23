@@ -131,6 +131,12 @@ class QueueService
         return $results->getItems();
     }
 
+    /**
+     * Sync item with Walkthechat
+     *
+     * @param \Divante\Walkthechat\Api\Data\QueueInterface $item
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     */
     public function sync($item)
     {
         $error = false;

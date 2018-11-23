@@ -42,6 +42,7 @@ class Client
     }
 
     /**
+     * Send request to API
      * @param string $type
      * @param string $path
      * @param array $data

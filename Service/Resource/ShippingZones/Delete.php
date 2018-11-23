@@ -18,4 +18,11 @@ class Delete extends \Divante\Walkthechat\Service\Resource\AbstractResource
      * @var string
      */
     protected $path = 'shipping-zones/:id';
+
+    /**
+     * @var array
+     */
+    protected $headers = [
+        'x-access-token' => ''
+    ];
 }

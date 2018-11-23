@@ -41,9 +41,11 @@ class CatalogProductDeleteAfter implements \Magento\Framework\Event\ObserverInte
     }
 
     /**
+     * Add item to queue once product is deleted
+     *
      * @param \Magento\Framework\Event\Observer $observer
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
      */
-
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         if ($this->helper->isEnabledProductSync()) {

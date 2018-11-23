@@ -39,6 +39,8 @@ class Redirect extends \Magento\Backend\App\Action
     }
 
     /**
+     * Redirect to Walkthechat in order to connect with app
+     *
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
      */
     public function execute()

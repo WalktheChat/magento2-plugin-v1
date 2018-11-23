@@ -38,6 +38,12 @@ class ProcessQueue
         $this->queueService = $queueService;
     }
 
+    /**
+     * Process items from queue
+     *
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function execute()
     {
         $this->state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);

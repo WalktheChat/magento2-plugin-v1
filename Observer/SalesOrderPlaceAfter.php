@@ -41,7 +41,10 @@ class SalesOrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
+     * Add item to queue once order is placed
+     *
      * @param \Magento\Framework\Event\Observer $observer
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {

@@ -41,7 +41,10 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
     }
 
     /**
+     * Add item to queue once product is updated
+     *
      * @param \Magento\Framework\Event\Observer $observer
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {

@@ -53,6 +53,8 @@ class Index extends \Magento\Framework\App\Action\Action
     }
 
     /**
+     * Import data from order's webhook
+     *
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Json|\Magento\Framework\Controller\ResultInterface
      */
     public function execute()

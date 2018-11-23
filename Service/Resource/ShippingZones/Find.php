@@ -17,5 +17,14 @@ class Find extends \Divante\Walkthechat\Service\Resource\AbstractResource
     /**
      * @var string
      */
-    protected $path = 'shipping-zones/:id';
+    protected $path = 'shipping-zones';
+
+    /**
+     * @var array
+     */
+    protected $headers = [
+        'x-access-token' => '',
+        'Accept' => "application/json, appl-header 'Content-Type: application/json",
+        'Content-Type' => "application/json"
+    ];
 }
