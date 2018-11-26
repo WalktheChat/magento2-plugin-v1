@@ -1,0 +1,59 @@
+<?php
+namespace Divante\Walkthechat\HTTP\Adapter;
+
+/**
+ * @package   Divante\Walkthechat
+ * @author    Divante Tech Team <tech@divante.pl>
+ * @copyright 2018 Divante Sp. z o.o.
+ * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+class Curl extends \Magento\Framework\HTTP\Adapter\Curl
+{
+    /**
+     * Send request to the remote server
+     *
+     * @param string $method
+     * @param \Zend_Uri_Http|string $url
+     * @param string $http_ver
+     * @param array $headers
+     * @param string $body
+     * @return string Request as text
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function write($method, $url, $http_ver = '1.1', $headers = [], $body = '')
+    {
+        if ($url instanceof \Zend_Uri_Http) {
+            $url = $url->getUri();
+        }
+        $this->_applyConfig();
+
+        // set url to post to
+        curl_setopt($this->_getResource(), CURLOPT_URL, $url);
+        curl_setopt($this->_getResource(), CURLOPT_RETURNTRANSFER, true);
+        if ($method == \Zend_Http_Client::POST) {
+            curl_setopt($this->_getResource(), CURLOPT_POST, true);
+            curl_setopt($this->_getResource(), CURLOPT_CUSTOMREQUEST, 'POST');
+            curl_setopt($this->_getResource(), CURLOPT_POSTFIELDS, $body);
+        } elseif ($method == \Zend_Http_Client::PUT) {
+            curl_setopt($this->_getResource(), CURLOPT_CUSTOMREQUEST, 'PUT');
+            curl_setopt($this->_getResource(), CURLOPT_POSTFIELDS, $body);
+        } elseif ($method == \Zend_Http_Client::GET) {
+            curl_setopt($this->_getResource(), CURLOPT_HTTPGET, true);
+            curl_setopt($this->_getResource(), CURLOPT_CUSTOMREQUEST, 'GET');
+        } elseif ($method == \Zend_Http_Client::DELETE) {
+            curl_setopt($this->_getResource(), CURLOPT_CUSTOMREQUEST, 'DELETE');
+        }
+
+        if (is_array($headers)) {
+            curl_setopt($this->_getResource(), CURLOPT_HTTPHEADER, $headers);
+        }
+
+        /**
+         * @internal Curl options setter have to be re-factored
+         */
+        $header = isset($this->_config['header']) ? $this->_config['header'] : true;
+        curl_setopt($this->_getResource(), CURLOPT_HEADER, $header);
+
+        return $body;
+    }
+}
