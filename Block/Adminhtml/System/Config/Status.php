@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Block\Adminhtml\System\Config;
 
 use Magento\Backend\Block\Template\Context;
@@ -24,8 +25,8 @@ class Status extends Field
      * Constructor
      *
      * @param \Divante\Walkthechat\Helper\Data $helper
-     * @param Context $context
-     * @param array $data
+     * @param Context                          $context
+     * @param array                            $data
      */
     public function __construct(
         \Divante\Walkthechat\Helper\Data $helper,

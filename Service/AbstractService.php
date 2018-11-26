@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Service;
 
 /**
@@ -26,27 +27,30 @@ abstract class AbstractService
 
     /**
      * AbstractService constructor.
-     * @param Client $serviceClient
+     *
+     * @param Client                              $serviceClient
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
-     * @param \Divante\Walkthechat\Helper\Data $helper
+     * @param \Divante\Walkthechat\Helper\Data    $helper
      */
     public function __construct(
         Client $serviceClient,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Divante\Walkthechat\Helper\Data $helper
-    )
-    {
+    ) {
         $this->serviceClient = $serviceClient;
-        $this->jsonHelper = $jsonHelper;
-        $this->helper = $helper;
+        $this->jsonHelper    = $jsonHelper;
+        $this->helper        = $helper;
     }
 
     /**
      * Send request to API
+     *
      * @param \Divante\Walkthechat\Service\Resource\AbstractResource $resource
-     * @param array $params
+     * @param array                                                  $params
+     *
      * @return mixed
      * @throws \Zend_Http_Client_Exception
+     * @throws \Exception
      */
     public function request($resource, $params = [])
     {

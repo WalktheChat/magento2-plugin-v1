@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Service;
 
 /**
@@ -26,12 +27,13 @@ class ShippingZonesRepository extends AbstractService
 
     /**
      * ShippingZonesRepository constructor.
-     * @param Client $serviceClient
+     *
+     * @param Client                              $serviceClient
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
-     * @param \Divante\Walkthechat\Helper\Data $helper
-     * @param Resource\ShippingZones\Create $shippingZonesCreateResource
-     * @param Resource\ShippingZones\Find $shippingZonesFindResource
-     * @param Resource\ShippingZones\Delete $shippingZonesDeleteResource
+     * @param \Divante\Walkthechat\Helper\Data    $helper
+     * @param Resource\ShippingZones\Create       $shippingZonesCreateResource
+     * @param Resource\ShippingZones\Find         $shippingZonesFindResource
+     * @param Resource\ShippingZones\Delete       $shippingZonesDeleteResource
      */
     public function __construct(
         Client $serviceClient,
@@ -40,11 +42,10 @@ class ShippingZonesRepository extends AbstractService
         Resource\ShippingZones\Create $shippingZonesCreateResource,
         Resource\ShippingZones\Find $shippingZonesFindResource,
         Resource\ShippingZones\Delete $shippingZonesDeleteResource
-    )
-    {
+    ) {
         parent::__construct($serviceClient, $jsonHelper, $helper);
         $this->shippingZonesCreateResource = $shippingZonesCreateResource;
-        $this->shippingZonesFindResource = $shippingZonesFindResource;
+        $this->shippingZonesFindResource   = $shippingZonesFindResource;
         $this->shippingZonesDeleteResource = $shippingZonesDeleteResource;
     }
 
@@ -52,6 +53,7 @@ class ShippingZonesRepository extends AbstractService
      * create shipping zone
      *
      * @param $data
+     *
      * @return mixed
      * @throws \Zend_Http_Client_Exception
      */
@@ -64,6 +66,7 @@ class ShippingZonesRepository extends AbstractService
      * delete shipping zone
      *
      * @param $id
+     *
      * @return mixed
      * @throws \Zend_Http_Client_Exception
      */

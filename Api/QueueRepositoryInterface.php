@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Api;
 
 /**
@@ -11,6 +12,7 @@ interface QueueRepositoryInterface
 {
     /**
      * @param int $id
+     *
      * @return \Divante\Walkthechat\Api\Data\QueueInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -18,18 +20,21 @@ interface QueueRepositoryInterface
 
     /**
      * @param \Divante\Walkthechat\Api\Data\QueueInterface $queue
+     *
      * @return \Divante\Walkthechat\Api\Data\QueueInterface
      */
     public function save(\Divante\Walkthechat\Api\Data\QueueInterface $queue);
 
     /**
      * @param \Divante\Walkthechat\Api\Data\QueueInterface $queue
+     *
      * @return void
      */
     public function delete(\Divante\Walkthechat\Api\Data\QueueInterface $queue);
 
     /**
      * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     *
      * @return \Divante\Walkthechat\Api\Data\QueueSearchResultInterface
      */
     public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria);

@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\HTTP\Adapter;
 
 /**
@@ -12,11 +13,12 @@ class Curl extends \Magento\Framework\HTTP\Adapter\Curl
     /**
      * Send request to the remote server
      *
-     * @param string $method
+     * @param string                $method
      * @param \Zend_Uri_Http|string $url
-     * @param string $http_ver
-     * @param array $headers
-     * @param string $body
+     * @param string                $http_ver
+     * @param array                 $headers
+     * @param string                $body
+     *
      * @return string Request as text
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

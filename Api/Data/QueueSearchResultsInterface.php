@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Api\Data;
 
 /**
@@ -16,6 +17,7 @@ interface QueueSearchResultsInterface extends \Magento\Framework\Api\SearchResul
 
     /**
      * @param \Divante\Walkthechat\Api\Data\QueueInterface[] $items
+     *
      * @return void
      */
     public function setItems(array $items);

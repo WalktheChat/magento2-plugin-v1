@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Controller\Adminhtml\Auth;
 
 /**
@@ -36,12 +37,13 @@ class Confirm extends \Magento\Backend\App\Action
 
     /**
      * Confirm constructor.
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\App\RequestInterface $request
-     * @param \Divante\Walkthechat\Service\AuthorizeRepository $authorizeRepository
+     *
+     * @param \Magento\Backend\App\Action\Context                   $context
+     * @param \Magento\Framework\App\RequestInterface               $request
+     * @param \Divante\Walkthechat\Service\AuthorizeRepository      $authorizeRepository
      * @param \Magento\Framework\App\Config\Storage\WriterInterface $configWriter
-     * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
-     * @param \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
+     * @param \Magento\Framework\App\Cache\TypeListInterface        $cacheTypeList
+     * @param \Magento\Framework\App\Cache\Frontend\Pool            $cacheFrontendPool
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -50,13 +52,12 @@ class Confirm extends \Magento\Backend\App\Action
         \Magento\Framework\App\Config\Storage\WriterInterface $configWriter,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
         \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
-    )
-    {
+    ) {
         parent::__construct($context);
-        $this->request = $request;
+        $this->request             = $request;
         $this->authorizeRepository = $authorizeRepository;
-        $this->configWriter = $configWriter;
-        $this->cacheTypeList = $cacheTypeList;
+        $this->configWriter        = $configWriter;
+        $this->cacheTypeList       = $cacheTypeList;
     }
 
     /**

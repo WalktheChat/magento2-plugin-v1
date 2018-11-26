@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Controller\Import;
 
 /**
@@ -31,11 +32,12 @@ class Index extends \Magento\Framework\App\Action\Action
 
     /**
      * Index constructor.
-     * @param \Magento\Framework\App\Action\Context $context
+     *
+     * @param \Magento\Framework\App\Action\Context            $context
      * @param \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory
-     * @param \Divante\Walkthechat\Helper\Data $helper
-     * @param \Magento\Framework\App\RequestInterface $request
-     * @param \Divante\Walkthechat\Model\OrderService $orderService
+     * @param \Divante\Walkthechat\Helper\Data                 $helper
+     * @param \Magento\Framework\App\RequestInterface          $request
+     * @param \Divante\Walkthechat\Model\OrderService          $orderService
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -43,13 +45,12 @@ class Index extends \Magento\Framework\App\Action\Action
         \Divante\Walkthechat\Helper\Data $helper,
         \Magento\Framework\App\RequestInterface $request,
         \Divante\Walkthechat\Model\OrderService $orderService
-    )
-    {
+    ) {
         parent::__construct($context);
         $this->jsonResultFactory = $jsonResultFactory;
-        $this->helper = $helper;
-        $this->request = $request;
-        $this->orderService = $orderService;
+        $this->helper            = $helper;
+        $this->request           = $request;
+        $this->orderService      = $orderService;
     }
 
     /**

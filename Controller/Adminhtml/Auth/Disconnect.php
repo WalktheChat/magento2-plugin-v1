@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Controller\Adminhtml\Auth;
 
 /**
@@ -21,18 +22,18 @@ class Disconnect extends \Magento\Backend\App\Action
 
     /**
      * Disconnect constructor.
-     * @param \Magento\Backend\App\Action\Context $context
+     *
+     * @param \Magento\Backend\App\Action\Context                   $context
      * @param \Magento\Framework\App\Config\Storage\WriterInterface $configWriter
-     * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
+     * @param \Magento\Framework\App\Cache\TypeListInterface        $cacheTypeList
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\App\Config\Storage\WriterInterface $configWriter,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
-    )
-    {
+    ) {
         parent::__construct($context);
-        $this->configWriter = $configWriter;
+        $this->configWriter  = $configWriter;
         $this->cacheTypeList = $cacheTypeList;
     }
 

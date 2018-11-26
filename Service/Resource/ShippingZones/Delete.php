@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Service\Resource\ShippingZones;
 
 /**
@@ -23,6 +24,6 @@ class Delete extends \Divante\Walkthechat\Service\Resource\AbstractResource
      * @var array
      */
     protected $headers = [
-        'x-access-token' => ''
+        'x-access-token' => '',
     ];
 }

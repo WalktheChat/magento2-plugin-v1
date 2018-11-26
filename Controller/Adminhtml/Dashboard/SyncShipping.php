@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Controller\Adminhtml\Dashboard;
 
 /**
@@ -21,8 +22,9 @@ class SyncShipping extends \Magento\Backend\App\Action
 
     /**
      * SyncShipping constructor.
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Divante\Walkthechat\Helper\Data $helper
+     *
+     * @param \Magento\Backend\App\Action\Context        $context
+     * @param \Divante\Walkthechat\Helper\Data           $helper
      * @param \Divante\Walkthechat\Model\ShippingService $shippingService
      */
     public function __construct(
@@ -31,7 +33,7 @@ class SyncShipping extends \Magento\Backend\App\Action
         \Divante\Walkthechat\Model\ShippingService $shippingService
     ) {
         parent::__construct($context);
-        $this->helper = $helper;
+        $this->helper          = $helper;
         $this->shippingService = $shippingService;
     }
 

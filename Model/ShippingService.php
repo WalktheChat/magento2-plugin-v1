@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Model;
 
 /**
@@ -22,15 +23,15 @@ class ShippingService
         \Divante\Walkthechat\Helper\Data $helper,
         \Magento\OfflineShipping\Model\ResourceModel\Carrier\Tablerate\CollectionFactory $collectionFactory,
         \Divante\Walkthechat\Service\ShippingZonesRepository $shippingZonesRepository
-    )
-    {
-        $this->helper = $helper;
-        $this->collectionFactory = $collectionFactory;
+    ) {
+        $this->helper                  = $helper;
+        $this->collectionFactory       = $collectionFactory;
         $this->shippingZonesRepository = $shippingZonesRepository;
     }
 
     /**
      * Sync Table Rates with Walkthechat
+     *
      * @return bool
      * @throws \Zend_Http_Client_Exception
      */
@@ -66,29 +67,29 @@ class ShippingService
 
             foreach ($rates as $code => $rates) {
                 $data = [
-                    'name' => [
+                    'name'      => [
                         'en' => $code,
-                        'cn' => $code
+                        'cn' => $code,
                     ],
-                    'enabled' => true,
+                    'enabled'   => true,
                     'countries' => [$code],
-                    'rates' => []
+                    'rates'     => [],
                 ];
 
                 $max = 999999999;
                 foreach ($rates as $min => $value) {
-                    $name =  $code . ' ' . $min . '-' . $max;
+                    $name = $code.' '.$min.'-'.$max;
 
                     $data['rates'][] = [
-                        'name' => [
+                        'name'   => [
                             'en' => $name,
-                            'cn' => $name
+                            'cn' => $name,
                         ],
-                        'min' => $min,
-                        'max' => $max,
-                        'rate' => $value,
-                        'type' => $type,
-                        'isFree' => $value ? false : true
+                        'min'    => $min,
+                        'max'    => $max,
+                        'rate'   => $value,
+                        'type'   => $type,
+                        'isFree' => $value ? false : true,
                     ];
                 }
 

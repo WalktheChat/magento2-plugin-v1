@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Cron;
 
 use Magento\Framework\App\ResourceConnection;
@@ -27,14 +28,15 @@ class ProcessQueue
 
     /**
      * ProcessQueue constructor.
-     * @param \Magento\Framework\App\State $state
+     *
+     * @param \Magento\Framework\App\State            $state
      * @param \Divante\Walkthechat\Model\QueueService $queueService
      */
     public function __construct(
         \Magento\Framework\App\State $state,
         \Divante\Walkthechat\Model\QueueService $queueService
     ) {
-        $this->state = $state;
+        $this->state        = $state;
         $this->queueService = $queueService;
     }
 

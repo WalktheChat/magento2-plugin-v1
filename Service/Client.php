@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Service;
 
 /**
@@ -21,16 +22,16 @@ class Client
 
     /**
      * Client constructor.
+     *
      * @param \Divante\Walkthechat\HTTP\ZendClientFactory $httpClientFactory
-     * @param \Divante\Walkthechat\Helper\Data $helper
+     * @param \Divante\Walkthechat\Helper\Data            $helper
      */
     public function __construct(
         \Divante\Walkthechat\HTTP\ZendClientFactory $httpClientFactory,
         \Divante\Walkthechat\Helper\Data $helper
-    )
-    {
+    ) {
         $this->httpClientFactory = $httpClientFactory;
-        $this->helper = $helper;
+        $this->helper            = $helper;
     }
 
     /**
@@ -43,17 +44,19 @@ class Client
 
     /**
      * Send request to API
+     *
      * @param string $type
      * @param string $path
-     * @param array $data
-     * @param array $headers
+     * @param array  $data
+     * @param array  $headers
+     *
      * @return \Zend_Http_Response
      * @throws \Zend_Http_Client_Exception
      */
     public function request($type, $path, $data, $headers)
     {
         $httpClient = $this->httpClientFactory->create();
-        $httpClient->setUri($this->getEndpoint() . $path);
+        $httpClient->setUri($this->getEndpoint().$path);
         $httpClient->setHeaders($headers);
 
         if ($type == 'POST' || $type == 'PUT') {

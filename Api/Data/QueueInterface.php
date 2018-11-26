@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Api\Data;
 
 /**
@@ -30,6 +31,7 @@ interface QueueInterface
 
     /**
      * @param int $id
+     *
      * @return void
      */
     public function setId($id);

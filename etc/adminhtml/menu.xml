@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
-        <add id="Divante_Walkthechat::walkthechat" title="Walkthechat" module="Divante_Walkthechat" sortOrder="51" resource="Divante_Walkthechat::walkthechat"/>
-        <add id="Divante_Walkthechat::index" title="Dashboard" module="Divante_Walkthechat" sortOrder="10" action="walkthechat/dashboard" resource="Divante_Walkthechat::index" parent="Divante_Walkthechat::walkthechat"/>
-        <add id="Divante_Walkthechat::configuration" title="Configuration" module="Divante_Walkthechat" sortOrder="99" action="adminhtml/system_config/edit/section/walkthechat_settings" resource="Divante_Walkthechat::configuration" parent="Divante_Walkthechat::walkthechat"/>
+        <add id="Divante_Walkthechat::walkthechat" title="Walkthechat" module="Divante_Walkthechat" sortOrder="51" resource="Divante_Walkthechat::walkthechat" />
+        <add id="Divante_Walkthechat::index" title="Dashboard" module="Divante_Walkthechat" sortOrder="10" action="walkthechat/dashboard" resource="Divante_Walkthechat::index" parent="Divante_Walkthechat::walkthechat" />
+        <add id="Divante_Walkthechat::configuration" title="Configuration" module="Divante_Walkthechat" sortOrder="99" action="adminhtml/system_config/edit/section/walkthechat_settings" resource="Divante_Walkthechat::configuration" parent="Divante_Walkthechat::walkthechat" />
     </menu>
 </config>

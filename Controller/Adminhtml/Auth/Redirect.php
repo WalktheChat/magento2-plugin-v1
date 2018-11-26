@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Controller\Adminhtml\Auth;
 
 /**
@@ -21,21 +22,21 @@ class Redirect extends \Magento\Backend\App\Action
 
     /**
      * Redirect constructor.
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\Controller\ResultFactory $resultFactory
-     * @param \Magento\Backend\Model\UrlInterface $urlBuilder
+     *
+     * @param \Magento\Backend\App\Action\Context                $context
+     * @param \Magento\Framework\Controller\ResultFactory        $resultFactory
+     * @param \Magento\Backend\Model\UrlInterface                $urlBuilder
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Divante\Walkthechat\Helper\Data $helper
+     * @param \Divante\Walkthechat\Helper\Data                   $helper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\Controller\ResultFactory $resultFactory,
         \Divante\Walkthechat\Helper\Data $helper
-    )
-    {
+    ) {
         parent::__construct($context);
         $this->resultFactory = $resultFactory;
-        $this->helper = $helper;
+        $this->helper        = $helper;
     }
 
     /**

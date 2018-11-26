@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Model;
 
 /**
@@ -7,7 +8,8 @@ namespace Divante\Walkthechat\Model;
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
  */
-class QueueSearchResults extends \Magento\Framework\Api\SearchResults implements \Divante\Walkthechat\Api\Data\QueueSearchResultsInterface
+class QueueSearchResults extends \Magento\Framework\Api\SearchResults
+    implements \Divante\Walkthechat\Api\Data\QueueSearchResultsInterface
 {
 
 }

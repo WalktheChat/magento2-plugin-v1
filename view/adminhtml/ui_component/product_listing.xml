@@ -4,7 +4,7 @@
         <massaction name="listing_massaction">
             <action name="walkthechat_export">
                 <settings>
-                    <url path="walkthechat/product/export"/>
+                    <url path="walkthechat/product/export" />
                     <type>walkthechat_export</type>
                     <label translate="true">Export To Walkthechat</label>
                 </settings>

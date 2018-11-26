@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Model;
 
 use Magento\Framework\Model\AbstractModel;
@@ -45,6 +46,6 @@ class Queue extends AbstractModel implements QueueInterface, IdentityInterface
      */
     public function getIdentities()
     {
-        return [self::CACHE_TAG . '_' . $this->getId()];
+        return [self::CACHE_TAG.'_'.$this->getId()];
     }
 }

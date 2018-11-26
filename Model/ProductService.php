@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Model;
 
 /**
@@ -31,22 +32,22 @@ class ProductService
 
     /**
      * ProductService constructor.
-     * @param \Magento\Catalog\Model\ProductRepository $productRepository
+     *
+     * @param \Magento\Catalog\Model\ProductRepository       $productRepository
      * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-     * @param \Magento\Framework\Api\Search\FilterGroup $filterGroup
-     * @param \Magento\Framework\Api\FilterBuilder $filterBuilder
+     * @param \Magento\Framework\Api\Search\FilterGroup      $filterGroup
+     * @param \Magento\Framework\Api\FilterBuilder           $filterBuilder
      */
     public function __construct(
         \Magento\Catalog\Model\ProductRepository $productRepository,
         \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria,
         \Magento\Framework\Api\Search\FilterGroup $filterGroup,
         \Magento\Framework\Api\FilterBuilder $filterBuilder
-    )
-    {
+    ) {
         $this->productRepository = $productRepository;
-        $this->searchCriteria = $searchCriteria;
-        $this->filterGroup = $filterGroup;
-        $this->filterBuilder = $filterBuilder;
+        $this->searchCriteria    = $searchCriteria;
+        $this->filterGroup       = $filterGroup;
+        $this->filterBuilder     = $filterBuilder;
     }
 
     /**
@@ -62,17 +63,18 @@ class ProductService
                 ->setConditionType('in')
                 ->setValue([
                     \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE,
-                    \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE
+                    \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE,
                 ])
                 ->create(),
             $this->filterBuilder
                 ->setField('walkthechat_id')
                 ->setConditionType('null')
-                ->create()
+                ->create(),
         ]);
 
         $this->searchCriteria->setFilterGroups([$this->filterGroup]);
         $products = $this->productRepository->getList($this->searchCriteria);
+
         return $products->getItems();
     }
 }

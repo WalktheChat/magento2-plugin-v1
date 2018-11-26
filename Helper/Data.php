@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Helper;
 
 use Magento\TestFramework\Event\Magento;
@@ -29,18 +30,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\Framework\App\Helper\Context              $context
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Backend\Model\UrlInterface $urlBackendBuilder $urlBackendBuilder
+     * @param \Magento\Backend\Model\UrlInterface                $urlBackendBuilder $urlBackendBuilder
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Backend\Model\UrlInterface $urlBackendBuilder
-    )
-    {
+    ) {
         parent::__construct($context);
-        $this->scopeConfig = $scopeConfig;
+        $this->scopeConfig       = $scopeConfig;
         $this->urlBackendBuilder = $urlBackendBuilder;
     }
 
@@ -148,9 +148,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getAuthUrl()
     {
         $redirectUrl = $this->urlBackendBuilder->getUrl('walkthechat/auth/confirm');
-        $appKey = $this->scopeConfig->getValue('walkthechat_settings/general/app_id');
+        $appKey      = $this->scopeConfig->getValue('walkthechat_settings/general/app_id');
 
-        return $this->scopeConfig->getValue('walkthechat_settings/general/auth_url') . '?redirectUri=' . $redirectUrl . '&appId=' . $appKey;
+        return $this->scopeConfig->getValue('walkthechat_settings/general/auth_url').'?redirectUri='.$redirectUrl.'&appId='.$appKey;
     }
 
     /**
@@ -164,7 +164,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Convert price depending on method set in configuration
      *
-     * @param float $price
+     * @param float   $price
      * @param boolean $export
      *
      * @return float
@@ -211,29 +211,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Prepare product data for API
      *
      * @param Magento/Catalog/Model/Product $product
+     *
      * @return array
      */
     public function prepareProductData($product)
     {
         $data = [
-            'title' => [
+            'title'    => [
                 'en' => $product->getName(),
-                'ch' => $product->getName()
+                'ch' => $product->getName(),
             ],
             'bodyHtml' => [
                 'en' => $product->getDescription(),
-                'ch' => $product->getDescription()
+                'ch' => $product->getDescription(),
             ],
             'variants' => [
                 [
                     'title' => [
                         'en' => $product->getName(),
-                        'ch' => $product->getName()
+                        'ch' => $product->getName(),
                     ],
-                    'sku' => $product->getSku(),
-                    'price' => $this->convertPrice($product->getPrice())
-                ]
-            ]
+                    'sku'   => $product->getSku(),
+                    'price' => $this->convertPrice($product->getPrice()),
+                ],
+            ],
         ];
 
         return $data;
