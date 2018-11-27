@@ -26,20 +26,28 @@ abstract class AbstractService
     protected $helper;
 
     /**
+     * @var \Divante\Walkthechat\Log\ApiLogger
+     */
+    protected $logger;
+
+    /**
      * AbstractService constructor.
      *
-     * @param Client                              $serviceClient
+     * @param \Divante\Walkthechat\Service\Client $serviceClient
      * @param \Magento\Framework\Json\Helper\Data $jsonHelper
      * @param \Divante\Walkthechat\Helper\Data    $helper
+     * @param \Divante\Walkthechat\Log\ApiLogger  $logger
      */
     public function __construct(
-        Client $serviceClient,
+        \Divante\Walkthechat\Service\Client $serviceClient,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Divante\Walkthechat\Helper\Data $helper
+        \Divante\Walkthechat\Helper\Data $helper,
+        \Divante\Walkthechat\Log\ApiLogger $logger
     ) {
         $this->serviceClient = $serviceClient;
         $this->jsonHelper    = $jsonHelper;
         $this->helper        = $helper;
+        $this->logger        = $logger;
     }
 
     /**
@@ -67,6 +75,8 @@ abstract class AbstractService
         }
 
         $response = $this->serviceClient->request($resource->getType(), $path, $params, $headers);
+
+        $this->logger->log($resource, $params, $response);
 
         if ($response->getStatus() == 200) {
             return $this->jsonHelper->jsonDecode($response->getBody());

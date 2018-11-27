@@ -6,15 +6,16 @@
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
-                <item name="walkthechat_queue_grid_data_source" xsi:type="string">Divante\Walkthechat\Model\ResourceModel\Queue\Grid\Collection</item>
+                <item name="divante_walkthechat_queue_grid_data_source" xsi:type="string">Divante\Walkthechat\Model\ResourceModel\Queue\Grid\Collection</item>
+                <item name="divante_walkthechat_api_log_grid_data_source" xsi:type="string">Divante\Walkthechat\Model\ResourceModel\ApiLog\Grid\Collection</item>
             </argument>
         </arguments>
     </type>
     <type name="Divante\Walkthechat\Model\ResourceModel\Queue\Grid\Collection">
         <arguments>
-            <argument name="mainTable" xsi:type="string">walkthechat_queue</argument>
-            <argument name="eventPrefix" xsi:type="string">walkthechat_queue_grid_collection</argument>
-            <argument name="eventObject" xsi:type="string">walkthechat_queue_grid_collection</argument>
+            <argument name="mainTable" xsi:type="string">divante_walkthechat_queue</argument>
+            <argument name="eventPrefix" xsi:type="string">divante_walkthechat_queue_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">divante_walkthechat_queue_grid_collection</argument>
             <argument name="resourceModel" xsi:type="string">Divante\Walkthechat\Model\ResourceModel\Queue</argument>
         </arguments>
     </type>
@@ -30,6 +31,12 @@
                 <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
                 <item name="fulltext" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\FulltextFilter</item>
             </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Divante\Walkthechat\Model\ResourceModel\ApiLog\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">divante_walkthechat_api_log</argument>
+            <argument name="resourceModel" xsi:type="string">Divante\Walkthechat\Model\ResourceModel\ApiLog</argument>
         </arguments>
     </virtualType>
 </config>

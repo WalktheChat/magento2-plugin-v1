@@ -4,11 +4,11 @@
     <body>
         <referenceBlock name="page.title">
             <action method="setPageTitle">
-                <argument translate="true" name="title" xsi:type="string">Walkthechat</argument>
+                <argument translate="true" name="title" xsi:type="string">Walkthechat - Log Details</argument>
             </action>
         </referenceBlock>
         <referenceContainer name="content">
-            <uiComponent name="divante_walkthechat_queue_listing" />
+            <uiComponent name="divante_walkthechat_api_log_details" />
         </referenceContainer>
     </body>
 </page>

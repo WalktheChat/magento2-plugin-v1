@@ -24,4 +24,14 @@ interface ApiLogRepositoryInterface
      * @throws \Magento\Framework\Exception\CouldNotSaveException(
      */
     public function save(\Divante\Walkthechat\Api\Data\ApiLogInterface $log);
+
+    /**
+     * Return entity instance by ID
+     *
+     * @param int $id
+     *
+     * @return \Divante\Walkthechat\Api\Data\ApiLogInterface
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getById($id);
 }

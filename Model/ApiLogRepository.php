@@ -21,14 +21,22 @@ class ApiLogRepository implements \Divante\Walkthechat\Api\ApiLogRepositoryInter
     protected $logResource;
 
     /**
+     * @var \Divante\Walkthechat\Api\Data\ApiLogInterfaceFactory
+     */
+    protected $logFactory;
+
+    /**
      * ApiLogRepository constructor.
      *
-     * @param \Divante\Walkthechat\Model\ResourceModel\ApiLog $logResource
+     * @param \Divante\Walkthechat\Model\ResourceModel\ApiLog      $logResource
+     * @param \Divante\Walkthechat\Api\Data\ApiLogInterfaceFactory $logFactory
      */
     public function __construct(
-        \Divante\Walkthechat\Model\ResourceModel\ApiLog $logResource
+        \Divante\Walkthechat\Model\ResourceModel\ApiLog $logResource,
+        \Divante\Walkthechat\Api\Data\ApiLogInterfaceFactory $logFactory
     ) {
         $this->logResource = $logResource;
+        $this->logFactory  = $logFactory;
     }
 
     /**
@@ -40,6 +48,25 @@ class ApiLogRepository implements \Divante\Walkthechat\Api\ApiLogRepositoryInter
             $this->logResource->save($log);
         } catch (\Exception $exception) {
             throw new \Magento\Framework\Exception\CouldNotSaveException(__($exception->getMessage()));
+        }
+
+        return $log;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getById($id)
+    {
+        /** @var \Divante\Walkthechat\Api\Data\ApiLogInterface $log */
+        $log = $this->logFactory->create();
+
+        $this->logResource->load($log, $id);
+
+        if (!$log->getId()) {
+            throw new \Magento\Framework\Exception\NoSuchEntityException(
+                __('API log with id "%1" does not exist.', $log->getId())
+            );
         }
 
         return $log;

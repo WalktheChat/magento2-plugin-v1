@@ -16,21 +16,25 @@ class AuthorizeRepository extends AbstractService
     protected $authorizeResource;
 
     /**
-     * Authorize constructor.
+     * {@inheritdoc}
      *
-     * @param Client                              $serviceClient
-     * @param \Magento\Framework\Json\Helper\Data $jsonHelper
-     * @param \Divante\Walkthechat\Helper\Data    $helper
-     * @param Resource\Authorize                  $authorizeResource
+     * @param \Divante\Walkthechat\Service\Resource\Authorize $authorizeResource
      */
     public function __construct(
         Client $serviceClient,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Divante\Walkthechat\Helper\Data $helper,
-        Resource\Authorize $authorizeResource
+        \Divante\Walkthechat\Log\ApiLogger $logger,
+        \Divante\Walkthechat\Service\Resource\Authorize $authorizeResource
     ) {
-        parent::__construct($serviceClient, $jsonHelper, $helper);
         $this->authorizeResource = $authorizeResource;
+
+        parent::__construct(
+            $serviceClient,
+            $jsonHelper,
+            $helper,
+            $logger
+        );
     }
 
     /**

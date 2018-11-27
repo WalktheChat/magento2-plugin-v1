@@ -11,42 +11,50 @@ namespace Divante\Walkthechat\Service;
 class ShippingZonesRepository extends AbstractService
 {
     /**
-     * @var Resource\ShippingZones\Create
+     * @var \Divante\Walkthechat\Service\Resource\ShippingZones\Create
      */
     protected $shippingZonesCreateResource;
 
     /**
-     * @var Resource\ShippingZones\Find
+     * @var \Divante\Walkthechat\Service\Resource\ShippingZones\Find
      */
     protected $shippingZonesFindResource;
 
     /**
-     * @var Resource\ShippingZones\Delete
+     * @var \Divante\Walkthechat\Service\Resource\ShippingZones\Delete
      */
     protected $shippingZonesDeleteResource;
 
     /**
      * ShippingZonesRepository constructor.
      *
-     * @param Client                              $serviceClient
-     * @param \Magento\Framework\Json\Helper\Data $jsonHelper
-     * @param \Divante\Walkthechat\Helper\Data    $helper
-     * @param Resource\ShippingZones\Create       $shippingZonesCreateResource
-     * @param Resource\ShippingZones\Find         $shippingZonesFindResource
-     * @param Resource\ShippingZones\Delete       $shippingZonesDeleteResource
+     * @param Client                                                     $serviceClient
+     * @param \Magento\Framework\Json\Helper\Data                        $jsonHelper
+     * @param \Divante\Walkthechat\Helper\Data                           $helper
+     * @param \Divante\Walkthechat\Log\ApiLogger                         $logger
+     * @param \Divante\Walkthechat\Service\Resource\ShippingZones\Create $shippingZonesCreateResource
+     * @param \Divante\Walkthechat\Service\Resource\ShippingZones\Find   $shippingZonesFindResource
+     * @param \Divante\Walkthechat\Service\Resource\ShippingZones\Delete $shippingZonesDeleteResource
      */
     public function __construct(
         Client $serviceClient,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Divante\Walkthechat\Helper\Data $helper,
-        Resource\ShippingZones\Create $shippingZonesCreateResource,
-        Resource\ShippingZones\Find $shippingZonesFindResource,
-        Resource\ShippingZones\Delete $shippingZonesDeleteResource
+        \Divante\Walkthechat\Log\ApiLogger $logger,
+        \Divante\Walkthechat\Service\Resource\ShippingZones\Create $shippingZonesCreateResource,
+        \Divante\Walkthechat\Service\Resource\ShippingZones\Find $shippingZonesFindResource,
+        \Divante\Walkthechat\Service\Resource\ShippingZones\Delete $shippingZonesDeleteResource
     ) {
-        parent::__construct($serviceClient, $jsonHelper, $helper);
         $this->shippingZonesCreateResource = $shippingZonesCreateResource;
         $this->shippingZonesFindResource   = $shippingZonesFindResource;
         $this->shippingZonesDeleteResource = $shippingZonesDeleteResource;
+
+        parent::__construct(
+            $serviceClient,
+            $jsonHelper,
+            $helper,
+            $logger
+        );
     }
 
     /**

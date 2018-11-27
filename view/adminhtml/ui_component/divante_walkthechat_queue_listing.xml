@@ -2,14 +2,14 @@
 <listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
     <argument name="context" xsi:type="configurableObject">
         <argument name="class" xsi:type="string">Magento\Framework\View\Element\UiComponent\Context</argument>
-        <argument name="namespace" xsi:type="string">walkthechat_queue_listing</argument>
+        <argument name="namespace" xsi:type="string">divante_walkthechat_queue_listing</argument>
     </argument>
     <argument name="data" xsi:type="array">
         <item name="js_config" xsi:type="array">
-            <item name="provider" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_grid_data_source</item>
-            <item name="deps" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_grid_data_source</item>
+            <item name="provider" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_grid_data_source</item>
+            <item name="deps" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_grid_data_source</item>
         </item>
-        <item name="spinner" xsi:type="string">walkthechat_queue_grid_columns</item>
+        <item name="spinner" xsi:type="string">divante_walkthechat_queue_grid_columns</item>
         <item name="buttons" xsi:type="array">
             <item name="delete_all" xsi:type="array">
                 <item name="name" xsi:type="string">delete_all</item>
@@ -37,10 +37,10 @@
             </item>
         </item>
     </argument>
-    <dataSource name="walkthechat_queue_grid_data_source">
+    <dataSource name="divante_walkthechat_queue_grid_data_source">
         <argument name="dataProvider" xsi:type="configurableObject">
             <argument name="class" xsi:type="string">WalkthechatQueueGridDataProvider</argument>
-            <argument name="name" xsi:type="string">walkthechat_queue_grid_data_source</argument>
+            <argument name="name" xsi:type="string">divante_walkthechat_queue_grid_data_source</argument>
             <argument name="primaryFieldName" xsi:type="string">entity_id</argument>
             <argument name="requestFieldName" xsi:type="string">id</argument>
             <argument name="data" xsi:type="array">
@@ -65,7 +65,7 @@
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="storageConfig" xsi:type="array">
-                        <item name="namespace" xsi:type="string">walkthechat_queue_listing</item>
+                        <item name="namespace" xsi:type="string">divante_walkthechat_queue_listing</item>
                     </item>
                 </item>
             </argument>
@@ -74,7 +74,7 @@
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="columnsData" xsi:type="array">
-                        <item name="provider" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_listing.walkthechat_queue_grid_columns</item>
+                        <item name="provider" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_listing.divante_walkthechat_queue_grid_columns</item>
                     </item>
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/controls/columns</item>
                     <item name="displayArea" xsi:type="string">dataGridActions</item>
@@ -84,10 +84,10 @@
         <filterSearch name="fulltext">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
-                    <item name="provider" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_grid_data_source</item>
-                    <item name="chipsProvider" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_listing.listing_top.listing_filters_chips</item>
+                    <item name="provider" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_grid_data_source</item>
+                    <item name="chipsProvider" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_listing.listing_top.listing_filters_chips</item>
                     <item name="storageConfig" xsi:type="array">
-                        <item name="provider" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_listing.listing_top.bookmarks</item>
+                        <item name="provider" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_listing.listing_top.bookmarks</item>
                         <item name="namespace" xsi:type="string">current.search</item>
                     </item>
                 </item>
@@ -96,15 +96,15 @@
         <filters name="listing_filters">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
-                    <item name="columnsProvider" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_listing.walkthechat_queue_grid_columns</item>
+                    <item name="columnsProvider" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_listing.divante_walkthechat_queue_grid_columns</item>
                     <item name="storageConfig" xsi:type="array">
-                        <item name="provider" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_listing.listing_top.bookmarks</item>
+                        <item name="provider" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_listing.listing_top.bookmarks</item>
                         <item name="namespace" xsi:type="string">current.filters</item>
                     </item>
                     <item name="childDefaults" xsi:type="array">
-                        <item name="provider" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_listing.listing_top.listing_filters</item>
+                        <item name="provider" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_listing.listing_top.listing_filters</item>
                         <item name="imports" xsi:type="array">
-                            <item name="visible" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_listing.walkthechat_queue_grid_columns.${ $.index }:visible</item>
+                            <item name="visible" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_listing.divante_walkthechat_queue_grid_columns.${ $.index }:visible</item>
                         </item>
                     </item>
                 </item>
@@ -113,7 +113,7 @@
         <massaction name="listing_massaction">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
-                    <item name="selectProvider" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_listing.walkthechat_queue_grid_columns.ids</item>
+                    <item name="selectProvider" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_listing.divante_walkthechat_queue_grid_columns.ids</item>
                     <item name="indexField" xsi:type="string">entity_id</item>
                 </item>
             </argument>
@@ -135,15 +135,15 @@
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="storageConfig" xsi:type="array">
-                        <item name="provider" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_listing.listing_top.bookmarks</item>
+                        <item name="provider" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_listing.listing_top.bookmarks</item>
                         <item name="namespace" xsi:type="string">current.paging</item>
                     </item>
-                    <item name="selectProvider" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_listing.contacts_grid_columns.ids</item>
+                    <item name="selectProvider" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_listing.contacts_grid_columns.ids</item>
                 </item>
             </argument>
         </paging>
     </container>
-    <columns name="walkthechat_queue_grid_columns">
+    <columns name="divante_walkthechat_queue_grid_columns">
         <selectionsColumn name="ids">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -169,7 +169,7 @@
                 </item>
             </argument>
         </column>
-        <column name="walkthechat_id">
+        <column name="divante_walkthechat_id">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
@@ -212,8 +212,8 @@
         <argument name="data" xsi:type="array">
             <item name="config" xsi:type="array">
                 <item name="component" xsi:type="string">Magento_Ui/js/grid/sticky/sticky</item>
-                <item name="toolbarProvider" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_listing.listing_top</item>
-                <item name="listingProvider" xsi:type="string">walkthechat_queue_listing.walkthechat_queue_listing.walkthechat_queue_grid_columns</item>
+                <item name="toolbarProvider" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_listing.listing_top</item>
+                <item name="listingProvider" xsi:type="string">divante_walkthechat_queue_listing.divante_walkthechat_queue_listing.divante_walkthechat_queue_grid_columns</item>
             </item>
         </argument>
     </container>
