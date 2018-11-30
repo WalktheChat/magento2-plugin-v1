@@ -70,7 +70,7 @@ class ApiLog extends \Magento\Framework\Model\AbstractModel implements \Divante\
     {
         $params = json_encode($params, JSON_FORCE_OBJECT);
 
-        return $this->setData(self::REQUEST_METHOD_FIELD, $params);
+        return $this->setData(self::REQUEST_PARAMS_FIELD, $params);
     }
 
     /**

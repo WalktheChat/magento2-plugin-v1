@@ -26,6 +26,11 @@ class QueueService
     protected $productRepository;
 
     /**
+     * @var \Magento\Sales\Model\OrderRepository
+     */
+    protected $orderRepository;
+
+    /**
      * @var QueueFactory
      */
     protected $queueFactory;
@@ -53,12 +58,12 @@ class QueueService
     /**
      * @var \Divante\Walkthechat\Service\ProductsRepository
      */
-    protected $productsRepository;
+    protected $queueProductRepository;
 
     /**
      * @var \Divante\Walkthechat\Service\OrdersRepository
      */
-    protected $ordersRepository;
+    protected $queueOrderRepository;
 
     /**
      * QueueService constructor.
@@ -66,36 +71,39 @@ class QueueService
      * @param \Magento\Framework\Stdlib\DateTime\DateTime     $date
      * @param \Divante\Walkthechat\Helper\Data                $helper
      * @param \Magento\Catalog\Model\ProductRepository        $productRepository
+     * @param \Magento\Sales\Model\OrderRepository            $orderRepository
      * @param QueueFactory                                    $queueFactory
      * @param QueueRepository                                 $queueRepository
      * @param \Magento\Framework\Api\SearchCriteriaInterface  $searchCriteria
      * @param \Magento\Framework\Api\Search\FilterGroup       $filterGroup
      * @param \Magento\Framework\Api\FilterBuilder            $filterBuilder
-     * @param \Divante\Walkthechat\Service\ProductsRepository $productsRepository
-     * @param \Divante\Walkthechat\Service\OrdersRepository   $ordersRepository
+     * @param \Divante\Walkthechat\Service\ProductsRepository $queueProductRepository
+     * @param \Divante\Walkthechat\Service\OrdersRepository   $queueOrderRepository
      */
     public function __construct(
         \Magento\Framework\Stdlib\DateTime\DateTime $date,
         \Divante\Walkthechat\Helper\Data $helper,
         \Magento\Catalog\Model\ProductRepository $productRepository,
+        \Magento\Sales\Model\OrderRepository $orderRepository,
         QueueFactory $queueFactory,
         QueueRepository $queueRepository,
         \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria,
         \Magento\Framework\Api\Search\FilterGroup $filterGroup,
         \Magento\Framework\Api\FilterBuilder $filterBuilder,
-        \Divante\Walkthechat\Service\ProductsRepository $productsRepository,
-        \Divante\Walkthechat\Service\OrdersRepository $ordersRepository
+        \Divante\Walkthechat\Service\ProductsRepository $queueProductRepository,
+        \Divante\Walkthechat\Service\OrdersRepository $queueOrderRepository
     ) {
-        $this->date               = $date;
-        $this->helper             = $helper;
-        $this->productRepository  = $productRepository;
-        $this->queueFactory       = $queueFactory;
-        $this->queueRepository    = $queueRepository;
-        $this->searchCriteria     = $searchCriteria;
-        $this->filterGroup        = $filterGroup;
-        $this->filterBuilder      = $filterBuilder;
-        $this->productsRepository = $productsRepository;
-        $this->ordersRepository   = $ordersRepository;
+        $this->date                   = $date;
+        $this->helper                 = $helper;
+        $this->productRepository      = $productRepository;
+        $this->orderRepository        = $orderRepository;
+        $this->queueFactory           = $queueFactory;
+        $this->queueRepository        = $queueRepository;
+        $this->searchCriteria         = $searchCriteria;
+        $this->filterGroup            = $filterGroup;
+        $this->filterBuilder          = $filterBuilder;
+        $this->queueProductRepository = $queueProductRepository;
+        $this->queueOrderRepository   = $queueOrderRepository;
     }
 
     /**
@@ -148,12 +156,12 @@ class QueueService
         try {
             switch ($item->getAction()) {
                 case 'delete':
-                    $this->productsRepository->delete(['id' => $item->getWalkthechatId()]);
+                    $this->queueProductRepository->delete(['id' => $item->getWalkthechatId()]);
                     break;
                 case 'add':
                     $product = $this->productRepository->getById($item->getProductId());
                     $data    = $this->helper->prepareProductData($product);
-                    $id      = $this->productsRepository->create($data);
+                    $id      = $this->queueProductRepository->create($data);
 
                     if ($id) {
                         $product->setWalkthechatId($id);
@@ -166,11 +174,11 @@ class QueueService
                     if ($item->getProductId()) {
                         $product = $this->productRepository->getById($item->getProductId());
                         $data    = $this->helper->prepareProductData($product);
-                        $this->productsRepository->update($data, $this->getWalkthechatId());
+                        $this->queueProductRepository->update($data);
                     } elseif ($item->getOrderId()) {
-                        $product = $this->orderRepository->getById($item->getOrderId());
-                        $data    = $this->helper->prepareOrderData($product);
-                        $this->ordersRepository->update($data, $this->getWalkthechatId());
+                        $order = $this->orderRepository->get($item->getOrderId());
+                        $data  = $this->helper->prepareOrderData($order);
+                        $this->queueOrderRepository->update($data);
                     }
             }
         } catch (\Exception $e) {

@@ -51,12 +51,15 @@ class ExportAll extends \Magento\Backend\App\Action
         $products = $this->productService->getAllForExport();
 
         foreach ($products as $product) {
-            $data = [
-                'product_id' => $product->getId(),
-                'action'     => 'add',
-            ];
+            // temporary solution (null filter doesn't work)
+            if (!$product->getWalkthechatId()) {
+                $data = [
+                    'product_id' => $product->getId(),
+                    'action'     => 'add',
+                ];
 
-            $this->queueService->create($data);
+                $this->queueService->create($data);
+            }
         }
 
         $this->messageManager->addSuccessMessage(__('Added to queue.'));

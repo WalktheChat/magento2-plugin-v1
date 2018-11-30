@@ -64,7 +64,7 @@ abstract class AbstractService
     {
         $headers = $resource->getHeaders();
 
-        if (isset($headers['x-access-token'])) {
+        if (isset($headers['x-access-token']) && !$headers['x-access-token']) {
             $headers['x-access-token'] = $this->helper->getToken();
         }
 

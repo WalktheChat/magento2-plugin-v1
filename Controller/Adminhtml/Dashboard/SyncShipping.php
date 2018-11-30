@@ -39,6 +39,7 @@ class SyncShipping extends \Magento\Backend\App\Action
 
     /**
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
+     * @throws \Zend_Http_Client_Exception
      */
     public function execute()
     {

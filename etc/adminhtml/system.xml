@@ -14,6 +14,10 @@
                     <label>Status</label>
                     <frontend_model>Divante\Walkthechat\Block\Adminhtml\System\Config\Status</frontend_model>
                 </field>
+                <field id="project_id" type="hidden" />
+                <field id="shop_name" translate="label" type="text" sortOrder="5" showInDefault="1">
+                    <label>Shop Name</label>
+                </field>
                 <field id="api_url" translate="label" type="text" sortOrder="10" showInDefault="1">
                     <label>API Url</label>
                 </field>

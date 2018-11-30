@@ -13,7 +13,7 @@ class DeleteAll extends \Magento\Backend\App\Action
     /**
      * @var \Divante\Walkthechat\Service\ProductsRepository
      */
-    protected $productsRepository;
+    protected $queueProductRepository;
 
     /**
      * @var \Divante\Walkthechat\Model\QueueService
@@ -33,8 +33,8 @@ class DeleteAll extends \Magento\Backend\App\Action
         \Divante\Walkthechat\Model\QueueService $queueService
     ) {
         parent::__construct($context);
-        $this->productsRepository = $productsRepository;
-        $this->queueService       = $queueService;
+        $this->queueProductRepository = $productsRepository;
+        $this->queueService           = $queueService;
     }
 
     /**
@@ -45,7 +45,7 @@ class DeleteAll extends \Magento\Backend\App\Action
     public function execute()
     {
         try {
-            $result = $this->productsRepository->find();
+            $result = $this->queueProductRepository->find();
 
             foreach ($result as $row) {
                 if (isset($row['id'])) {

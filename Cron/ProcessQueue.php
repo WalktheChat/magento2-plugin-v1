@@ -27,17 +27,25 @@ class ProcessQueue
     protected $queueService;
 
     /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $registry;
+
+    /**
      * ProcessQueue constructor.
      *
      * @param \Magento\Framework\App\State            $state
      * @param \Divante\Walkthechat\Model\QueueService $queueService
+     * @param \Magento\Framework\Registry             $registry
      */
     public function __construct(
         \Magento\Framework\App\State $state,
-        \Divante\Walkthechat\Model\QueueService $queueService
+        \Divante\Walkthechat\Model\QueueService $queueService,
+        \Magento\Framework\Registry $registry
     ) {
         $this->state        = $state;
         $this->queueService = $queueService;
+        $this->registry     = $registry;
     }
 
     /**
@@ -49,6 +57,8 @@ class ProcessQueue
     public function execute()
     {
         $this->state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
+
+        $this->registry->register('omit_product_update_action', true);
 
         $items = $this->queueService->getAllNotProcessed();
 

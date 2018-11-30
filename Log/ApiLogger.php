@@ -16,12 +16,12 @@ namespace Divante\Walkthechat\Log;
 class ApiLogger
 {
     /**
-     * @var \Divante\Walkthechat\Api\Data\ApiLogInterfaceFactory
+     * @var \Divante\Walkthechat\Model\ApiLogFactory
      */
     protected $apiLogFactory;
 
     /**
-     * @var \Divante\Walkthechat\Api\ApiLogRepositoryInterface
+     * @var \Divante\Walkthechat\Model\ApiLogRepository
      */
     protected $apiLogRepository;
 
@@ -33,13 +33,13 @@ class ApiLogger
     /**
      * ApiLogger constructor.
      *
-     * @param \Divante\Walkthechat\Api\Data\ApiLogInterfaceFactory $apiLogFactory
-     * @param \Divante\Walkthechat\Api\ApiLogRepositoryInterface   $apiLogRepository
+     * @param \Divante\Walkthechat\Model\ApiLogFactory $apiLogFactory
+     * @param \Divante\Walkthechat\Model\ApiLogRepository   $apiLogRepository
      * @param \Psr\Log\LoggerInterface                             $logger
      */
     public function __construct(
-        \Divante\Walkthechat\Api\Data\ApiLogInterfaceFactory $apiLogFactory,
-        \Divante\Walkthechat\Api\ApiLogRepositoryInterface $apiLogRepository,
+        \Divante\Walkthechat\Model\ApiLogFactory $apiLogFactory,
+        \Divante\Walkthechat\Model\ApiLogRepository $apiLogRepository,
         \Psr\Log\LoggerInterface $logger
     ) {
         $this->apiLogFactory    = $apiLogFactory;

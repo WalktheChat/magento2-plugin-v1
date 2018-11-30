@@ -52,6 +52,6 @@ class Status extends Field
      */
     public function isConnected()
     {
-        return $this->helper->isConnected();
+        return $this->helper->isConnected() && $this->helper->getProjectId();
     }
 }

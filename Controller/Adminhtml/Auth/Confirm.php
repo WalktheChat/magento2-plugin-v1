@@ -21,43 +21,21 @@ class Confirm extends \Magento\Backend\App\Action
     protected $request;
 
     /**
-     * @var \Magento\Framework\App\Config\Storage\WriterInterface
-     */
-    protected $configWriter;
-
-    /**
-     * @var \Magento\Framework\App\Cache\TypeListInterface
-     */
-    protected $cacheTypeList;
-
-    /**
-     * @var
-     */
-    protected $cacheFrontendPool;
-
-    /**
      * Confirm constructor.
      *
      * @param \Magento\Backend\App\Action\Context                   $context
      * @param \Magento\Framework\App\RequestInterface               $request
      * @param \Divante\Walkthechat\Service\AuthorizeRepository      $authorizeRepository
-     * @param \Magento\Framework\App\Config\Storage\WriterInterface $configWriter
-     * @param \Magento\Framework\App\Cache\TypeListInterface        $cacheTypeList
-     * @param \Magento\Framework\App\Cache\Frontend\Pool            $cacheFrontendPool
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\App\RequestInterface $request,
-        \Divante\Walkthechat\Service\AuthorizeRepository $authorizeRepository,
-        \Magento\Framework\App\Config\Storage\WriterInterface $configWriter,
-        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
-        \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
+        \Divante\Walkthechat\Service\AuthorizeRepository $authorizeRepository
     ) {
-        parent::__construct($context);
         $this->request             = $request;
         $this->authorizeRepository = $authorizeRepository;
-        $this->configWriter        = $configWriter;
-        $this->cacheTypeList       = $cacheTypeList;
+
+        parent::__construct($context);
     }
 
     /**
@@ -70,9 +48,8 @@ class Confirm extends \Magento\Backend\App\Action
         $code = $this->request->getParam('code');
 
         try {
-            $token = $this->authorizeRepository->authorize($code);
-            $this->configWriter->save('walkthechat_settings/general/token', $token);
-            $this->cacheTypeList->cleanType('config');
+            $this->authorizeRepository->authorize($code);
+
             $this->messageManager->addSuccessMessage(__('App connected.'));
         } catch (\Exception $e) {
             $this->messageManager->addErrorMessage($e->getMessage());

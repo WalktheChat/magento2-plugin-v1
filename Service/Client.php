@@ -55,7 +55,9 @@ class Client
      */
     public function request($type, $path, $data, $headers)
     {
+        /** @var \Divante\Walkthechat\HTTP\ZendClient $httpClient */
         $httpClient = $this->httpClientFactory->create();
+
         $httpClient->setUri($this->getEndpoint().$path);
         $httpClient->setHeaders($headers);
 
