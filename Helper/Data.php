@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Helper;
 
 use Magento\TestFramework\Event\Magento;
@@ -27,21 +28,29 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $urlBackendBuilder;
 
     /**
+     * @var \Magento\CatalogInventory\Model\Stock\StockItemRepository
+     */
+    protected $stockItemRepository;
+
+    /**
      * Constructor
      *
-     * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Backend\Model\UrlInterface $urlBackendBuilder $urlBackendBuilder
+     * @param \Magento\Framework\App\Helper\Context                     $context
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface        $scopeConfig
+     * @param \Magento\Backend\Model\UrlInterface                       $urlBackendBuilder $urlBackendBuilder
+     * @param \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Backend\Model\UrlInterface $urlBackendBuilder
-    )
-    {
+        \Magento\Backend\Model\UrlInterface $urlBackendBuilder,
+        \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository
+    ) {
+        $this->scopeConfig         = $scopeConfig;
+        $this->urlBackendBuilder   = $urlBackendBuilder;
+        $this->stockItemRepository = $stockItemRepository;
+
         parent::__construct($context);
-        $this->scopeConfig = $scopeConfig;
-        $this->urlBackendBuilder = $urlBackendBuilder;
     }
 
     /**
@@ -50,6 +59,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getToken()
     {
         return $this->scopeConfig->getValue('walkthechat_settings/general/token');
+    }
+
+    /**
+     * @return string
+     */
+    public function getProjectId()
+    {
+        return $this->scopeConfig->getValue('walkthechat_settings/general/project_id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getShopName()
+    {
+        return $this->scopeConfig->getValue('walkthechat_settings/general/shop_name');
     }
 
     /**
@@ -148,9 +173,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getAuthUrl()
     {
         $redirectUrl = $this->urlBackendBuilder->getUrl('walkthechat/auth/confirm');
-        $appKey = $this->scopeConfig->getValue('walkthechat_settings/general/app_id');
+        $appKey      = $this->scopeConfig->getValue('walkthechat_settings/general/app_id');
 
-        return $this->scopeConfig->getValue('walkthechat_settings/general/auth_url') . '?redirectUri=' . $redirectUrl . '&appId=' . $appKey;
+        return $this->scopeConfig->getValue('walkthechat_settings/general/auth_url').'?redirectUri='.$redirectUrl.'&appId='.$appKey;
     }
 
     /**
@@ -164,7 +189,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Convert price depending on method set in configuration
      *
-     * @param float $price
+     * @param float   $price
      * @param boolean $export
      *
      * @return float
@@ -210,31 +235,147 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Prepare product data for API
      *
-     * @param Magento/Catalog/Model/Product $product
+     * @param \Magento\Catalog\Model\Product $product
+     *
      * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function prepareProductData($product)
     {
+        $mainPrice        = $this->convertPrice($product->getPrice());
+        $mainSpecialPrice = $this->convertPrice($product->getSpecialPrice());
+
         $data = [
-            'title' => [
+            'projectId'             => $this->getProjectId(),
+            'title'                 => [
                 'en' => $product->getName(),
-                'ch' => $product->getName()
             ],
-            'bodyHtml' => [
+            'bodyHtml'              => [
                 'en' => $product->getDescription(),
-                'ch' => $product->getDescription()
             ],
-            'variants' => [
+            'manageInventory'       => true,
+            'visibility'            => $product->getVisibility() != \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE,
+            'displayPrice'          => $mainPrice,
+            'displayCompareAtPrice' => $mainSpecialPrice,
+            'variants'              => [
                 [
-                    'title' => [
+                    'id'                => $product->getId(),
+                    'inventoryQuantity' => $this->stockItemRepository->get($product->getId())->getQty(),
+                    'weight'            => $product->getWeight(),
+                    'requiresShipping'  => true,
+                    'title'             => [
                         'en' => $product->getName(),
-                        'ch' => $product->getName()
                     ],
-                    'sku' => $product->getSku(),
-                    'price' => $this->convertPrice($product->getPrice())
-                ]
-            ]
+                    'sku'               => $product->getSku(),
+                    'price'             => $mainPrice,
+                    'compareAtPrice'    => $mainSpecialPrice,
+                    'visibility'        => $product->getVisibility() != \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE,
+                    'taxable'           => (bool)$product->getTaxClassId(),
+                ],
+            ],
         ];
+
+        if ($product->getTypeId() === \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE) {
+            $configurableOptions = $product->getTypeInstance()->getConfigurableOptions($product);
+
+            $data['variantOptions'] = [];
+
+            foreach ($configurableOptions as $option) {
+                foreach ($option as $variation) {
+                    $data['variantOptions'][] = $variation['attribute_code'];
+
+                    break;
+                }
+            }
+
+            /** @var \Magento\Catalog\Model\Product[] $children */
+            $children = $product->getTypeInstance()->getUsedProducts($product);
+
+            if ($children) {
+                $data['variants'] = [];
+
+                foreach ($children as $k => $child) {
+                    $data['variants'][$k] = [
+                        'id'                => $child->getId(),
+                        'inventoryQuantity' => $this->stockItemRepository->get($child->getId())->getQty(),
+                        'weight'            => $child->getWeight(),
+                        'requiresShipping'  => true,
+                        'title'             => [
+                            'en' => $child->getName(),
+                        ],
+                        'sku'               => $child->getSku(),
+                        'price'             => $this->convertPrice($child->getPrice()),
+                        'compareAtPrice'    => $this->convertPrice($child->getSpecialPrice()),
+                        'visibility'        => $child->getVisibility() != \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE,
+                        'taxable'           => (bool)$child->getTaxClassId(),
+                    ];
+
+                    foreach ($data['variantOptions'] as $n => $attributeCode) {
+                        $data['variants'][$k]['options'][] = [
+                            'id'       => $attributeCode,
+                            'name'     => [
+                                'en' => $child->getResource()->getAttribute($attributeCode)->getFrontend()->getLabel($child),
+                            ],
+                            'position' => $n,
+                            'value'    => [
+                                'en' => $child->getAttributeText($attributeCode),
+                            ],
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Prepare order data for API
+     *
+     * @param \Magento\Sales\Model\Order $order
+     *
+     * @return array
+     */
+    public function prepareOrderData($order)
+    {
+        $data = [
+            'id' => $order->getWalkthechatId(),
+        ];
+
+        switch ($order->getState()) {
+            case 'new':
+                $data['status'] = 'waiting-for-payment';
+                break;
+            case 'processing':
+                if ($order->hasInvoices() && $order->hasShipments()) {
+                    $data['status'] = 'shipped';
+                } elseif (!$order->hasInvoices() && $order->hasShipments()) {
+                    $data['status'] = 'waiting-for-payment';
+                } elseif ($order->hasInvoices() && !$order->hasShipments()) {
+                    $data['status'] = 'waiting-for-shipment';
+                }
+                break;
+            case 'complete':
+                $tracksCollection = $order->getTracksCollection();
+
+                $data['parcels'] = [];
+
+                foreach ($tracksCollection->getItems() as $track) {
+                    $data['parcels'][] = [
+                        'trackingNumber' => $track->getTrackNumber(),
+                        'carrier'        => $track->getTitle(),
+                    ];
+                }
+
+                $data['status'] = 'shipped';
+                break;
+            case 'closed':
+                $data['status'] = 'refunded';
+                break;
+            case 'canceled':
+                $data['status'] = 'canceled';
+                break;
+        }
 
         return $data;
     }

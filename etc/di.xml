@@ -1,20 +1,21 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="Divante\Walkthechat\Api\QueueRepositoryInterface" type="Divante\Walkthechat\Model\QueueRepository"/>
-    <preference for="Divante\Walkthechat\Api\Data\QueueInterface" type="Divante\Walkthechat\Model\Queue"/>
-    <preference for="Divante\Walkthechat\Api\Data\QueueSearchResultsInterface" type="Divante\Walkthechat\Model\QueueSearchResults"/>
+    <preference for="Divante\Walkthechat\Api\QueueRepositoryInterface" type="Divante\Walkthechat\Model\QueueRepository" />
+    <preference for="Divante\Walkthechat\Api\Data\QueueInterface" type="Divante\Walkthechat\Model\Queue" />
+    <preference for="Divante\Walkthechat\Api\Data\QueueSearchResultsInterface" type="Divante\Walkthechat\Model\QueueSearchResults" />
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
-                <item name="walkthechat_queue_grid_data_source" xsi:type="string">Divante\Walkthechat\Model\ResourceModel\Queue\Grid\Collection</item>
+                <item name="divante_walkthechat_queue_grid_data_source" xsi:type="string">Divante\Walkthechat\Model\ResourceModel\Queue\Grid\Collection</item>
+                <item name="divante_walkthechat_api_log_grid_data_source" xsi:type="string">Divante\Walkthechat\Model\ResourceModel\ApiLog\Grid\Collection</item>
             </argument>
         </arguments>
     </type>
     <type name="Divante\Walkthechat\Model\ResourceModel\Queue\Grid\Collection">
         <arguments>
-            <argument name="mainTable" xsi:type="string">walkthechat_queue</argument>
-            <argument name="eventPrefix" xsi:type="string">walkthechat_queue_grid_collection</argument>
-            <argument name="eventObject" xsi:type="string">walkthechat_queue_grid_collection</argument>
+            <argument name="mainTable" xsi:type="string">divante_walkthechat_queue</argument>
+            <argument name="eventPrefix" xsi:type="string">divante_walkthechat_queue_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">divante_walkthechat_queue_grid_collection</argument>
             <argument name="resourceModel" xsi:type="string">Divante\Walkthechat\Model\ResourceModel\Queue</argument>
         </arguments>
     </type>
@@ -30,6 +31,12 @@
                 <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
                 <item name="fulltext" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\FulltextFilter</item>
             </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Divante\Walkthechat\Model\ResourceModel\ApiLog\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">divante_walkthechat_api_log</argument>
+            <argument name="resourceModel" xsi:type="string">Divante\Walkthechat\Model\ResourceModel\ApiLog</argument>
         </arguments>
     </virtualType>
 </config>

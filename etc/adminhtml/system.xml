@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="walkthechat" translate="label" sortOrder="200">
             <label>Walkthechat</label>
@@ -14,6 +13,10 @@
                 <field id="token" translate="label" sortOrder="1" showInDefault="1">
                     <label>Status</label>
                     <frontend_model>Divante\Walkthechat\Block\Adminhtml\System\Config\Status</frontend_model>
+                </field>
+                <field id="project_id" type="hidden" />
+                <field id="shop_name" translate="label" type="text" sortOrder="5" showInDefault="1">
+                    <label>Shop Name</label>
                 </field>
                 <field id="api_url" translate="label" type="text" sortOrder="10" showInDefault="1">
                     <label>API Url</label>

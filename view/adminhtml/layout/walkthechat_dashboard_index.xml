@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <update handle="styles"/>
+    <update handle="styles" />
     <body>
         <referenceBlock name="page.title">
             <action method="setPageTitle">
@@ -8,7 +8,7 @@
             </action>
         </referenceBlock>
         <referenceContainer name="content">
-            <uiComponent name="walkthechat_queue_listing"/>
+            <uiComponent name="divante_walkthechat_queue_listing" />
         </referenceContainer>
     </body>
 </page>

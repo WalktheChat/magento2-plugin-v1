@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Model;
 
 use Magento\Framework\Model\AbstractModel;
@@ -16,17 +17,17 @@ class Queue extends AbstractModel implements QueueInterface, IdentityInterface
     /**
      *
      */
-    const CACHE_TAG = 'walkthechat_queue_grid';
+    const CACHE_TAG = 'divante_walkthechat_queue_grid';
 
     /**
      * @var string
      */
-    protected $_cacheTag = 'walkthechat_queue_grid';
+    protected $_cacheTag = 'divante_walkthechat_queue_grid';
 
     /**
      * @var string
      */
-    protected $_eventPrefix = 'walkthechat_queue_grid';
+    protected $_eventPrefix = 'divante_walkthechat_queue_grid';
 
     /**
      * Initialize resource model
@@ -45,6 +46,6 @@ class Queue extends AbstractModel implements QueueInterface, IdentityInterface
      */
     public function getIdentities()
     {
-        return [self::CACHE_TAG . '_' . $this->getId()];
+        return [self::CACHE_TAG.'_'.$this->getId()];
     }
 }

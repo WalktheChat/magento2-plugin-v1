@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Observer;
 
 /**
@@ -26,24 +27,26 @@ class SalesOrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * CatalogProductSaveAfter constructor.
-     * @param \Divante\Walkthechat\Model\QueueFactory $queueFactory
+     *
+     * @param \Divante\Walkthechat\Model\QueueFactory    $queueFactory
      * @param \Divante\Walkthechat\Model\QueueRepository $queueRepository
-     * @param \Divante\Walkthechat\Helper\Data $helper
+     * @param \Divante\Walkthechat\Helper\Data           $helper
      */
     public function __construct(
         \Divante\Walkthechat\Model\QueueFactory $queueFactory,
         \Divante\Walkthechat\Model\QueueRepository $queueRepository,
         \Divante\Walkthechat\Helper\Data $helper
     ) {
-        $this->queueFactory = $queueFactory;
+        $this->queueFactory    = $queueFactory;
         $this->queueRepository = $queueRepository;
-        $this->helper = $helper;
+        $this->helper          = $helper;
     }
 
     /**
      * Add item to queue once order is placed
      *
      * @param \Magento\Framework\Event\Observer $observer
+     *
      * @throws \Magento\Framework\Exception\CouldNotSaveException
      */
     public function execute(\Magento\Framework\Event\Observer $observer)

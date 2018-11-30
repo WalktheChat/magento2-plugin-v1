@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Model\ResourceModel\Queue;
 
 /**

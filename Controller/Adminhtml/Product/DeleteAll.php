@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Controller\Adminhtml\Product;
 
 /**
@@ -12,7 +13,7 @@ class DeleteAll extends \Magento\Backend\App\Action
     /**
      * @var \Divante\Walkthechat\Service\ProductsRepository
      */
-    protected $productsRepository;
+    protected $queueProductRepository;
 
     /**
      * @var \Divante\Walkthechat\Model\QueueService
@@ -21,19 +22,19 @@ class DeleteAll extends \Magento\Backend\App\Action
 
     /**
      * DeleteAll constructor.
-     * @param \Magento\Backend\App\Action\Context $context
+     *
+     * @param \Magento\Backend\App\Action\Context             $context
      * @param \Divante\Walkthechat\Service\ProductsRepository $productsRepository
-     * @param \Divante\Walkthechat\Model\QueueService $queueService
+     * @param \Divante\Walkthechat\Model\QueueService         $queueService
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Divante\Walkthechat\Service\ProductsRepository $productsRepository,
         \Divante\Walkthechat\Model\QueueService $queueService
-    )
-    {
+    ) {
         parent::__construct($context);
-        $this->productsRepository = $productsRepository;
-        $this->queueService = $queueService;
+        $this->queueProductRepository = $productsRepository;
+        $this->queueService           = $queueService;
     }
 
     /**
@@ -44,13 +45,13 @@ class DeleteAll extends \Magento\Backend\App\Action
     public function execute()
     {
         try {
-            $result = $this->productsRepository->find();
+            $result = $this->queueProductRepository->find();
 
             foreach ($result as $row) {
                 if (isset($row['id'])) {
                     $data = [
                         'walkthechat_id' => $row['id'],
-                        'action' => 'delete'
+                        'action'         => 'delete',
                     ];
 
                     $this->queueService->create($data);

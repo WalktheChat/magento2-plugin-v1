@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Controller\Adminhtml\Product;
 
 /**
@@ -31,11 +32,12 @@ class Export extends \Magento\Backend\App\Action
 
     /**
      * Export constructor.
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Ui\Component\MassAction\Filter $filter
+     *
+     * @param \Magento\Backend\App\Action\Context                            $context
+     * @param \Magento\Ui\Component\MassAction\Filter                        $filter
      * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $collectionFactory
-     * @param \Divante\Walkthechat\Model\QueueFactory $queueFactory
-     * @param \Divante\Walkthechat\Model\QueueRepository $queueRepository
+     * @param \Divante\Walkthechat\Model\QueueFactory                        $queueFactory
+     * @param \Divante\Walkthechat\Model\QueueRepository                     $queueRepository
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -45,10 +47,10 @@ class Export extends \Magento\Backend\App\Action
         \Divante\Walkthechat\Model\QueueRepository $queueRepository
     ) {
         parent::__construct($context);
-        $this->filter = $filter;
+        $this->filter            = $filter;
         $this->collectionFactory = $collectionFactory;
-        $this->queueFactory = $queueFactory;
-        $this->queueRepository = $queueRepository;
+        $this->queueFactory      = $queueFactory;
+        $this->queueRepository   = $queueRepository;
     }
 
     /**

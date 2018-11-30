@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\HTTP;
 
 /**
@@ -17,6 +18,7 @@ class ZendClient extends \Magento\Framework\HTTP\ZendClient
         if (extension_loaded('curl')) {
             $this->setAdapter(new \Divante\Walkthechat\HTTP\Adapter\Curl());
         }
+
         return $this;
     }
 }

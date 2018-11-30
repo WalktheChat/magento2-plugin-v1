@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Controller\Adminhtml\Product;
 
 /**
@@ -21,19 +22,19 @@ class ExportAll extends \Magento\Backend\App\Action
 
     /**
      * ExportAll constructor.
-     * @param \Magento\Backend\App\Action\Context $context
+     *
+     * @param \Magento\Backend\App\Action\Context       $context
      * @param \Divante\Walkthechat\Model\ProductService $productService
-     * @param \Divante\Walkthechat\Model\QueueService $queueService
+     * @param \Divante\Walkthechat\Model\QueueService   $queueService
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Divante\Walkthechat\Model\ProductService $productService,
         \Divante\Walkthechat\Model\QueueService $queueService
-    )
-    {
+    ) {
         parent::__construct($context);
         $this->productService = $productService;
-        $this->queueService = $queueService;
+        $this->queueService   = $queueService;
     }
 
     /**
@@ -50,12 +51,15 @@ class ExportAll extends \Magento\Backend\App\Action
         $products = $this->productService->getAllForExport();
 
         foreach ($products as $product) {
-            $data = [
-                'product_id' => $product->getId(),
-                'action' => 'add'
-            ];
+            // temporary solution (null filter doesn't work)
+            if (!$product->getWalkthechatId()) {
+                $data = [
+                    'product_id' => $product->getId(),
+                    'action'     => 'add',
+                ];
 
-            $this->queueService->create($data);
+                $this->queueService->create($data);
+            }
         }
 
         $this->messageManager->addSuccessMessage(__('Added to queue.'));

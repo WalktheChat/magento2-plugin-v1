@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Service\Resource\Products;
 
 /**
@@ -24,7 +25,7 @@ class Create extends \Divante\Walkthechat\Service\Resource\AbstractResource
      */
     protected $headers = [
         'x-access-token' => '',
-        'Accept' => "application/json, appl-header 'Content-Type: application/json",
-        'Content-Type' => "application/json"
+        'Accept'         => "application/json, appl-header 'Content-Type: application/json",
+        'Content-Type'   => "application/json",
     ];
 }

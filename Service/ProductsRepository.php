@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Service;
 
 /**
@@ -10,47 +11,53 @@ namespace Divante\Walkthechat\Service;
 class ProductsRepository extends AbstractService
 {
     /**
-     * @var Resource\Products\Create
+     * @var \Divante\Walkthechat\Service\Resource\Products\Create
      */
     protected $productCreateResource;
 
     /**
-     * @var Resource\Products\Delete
+     * @var \Divante\Walkthechat\Service\Resource\Products\Delete
      */
     protected $productDeleteResource;
 
     /**
-     * @var Resource\Products\Find
+     * @var \Divante\Walkthechat\Service\Resource\Products\Find
      */
     protected $productFindResource;
 
     /**
-     * Products constructor.
-     * @param Client $serviceClient
-     * @param \Magento\Framework\Json\Helper\Data $jsonHelper
-     * @param \Divante\Walkthechat\Helper\Data $helper
-     * @param Resource\Products\Create $productCreateResource
-     * @param Resource\Products\Delete $productDeleteResource
-     * @param Resource\Products\Find $productFindResource
+     * {@inheritdoc}
+     *
+     * @param \Divante\Walkthechat\Service\Resource\Products\Create $productCreateResource
+     * @param \Divante\Walkthechat\Service\Resource\Products\Delete $productDeleteResource
+     * @param \Divante\Walkthechat\Service\Resource\Products\Find   $productFindResource
      */
     public function __construct(
         Client $serviceClient,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Divante\Walkthechat\Helper\Data $helper,
-        Resource\Products\Create $productCreateResource,
-        Resource\Products\Delete $productDeleteResource,
-        Resource\Products\Find $productFindResource
-    )
-    {
-        parent::__construct($serviceClient, $jsonHelper, $helper);
+        \Divante\Walkthechat\Log\ApiLogger $logger,
+        \Divante\Walkthechat\Service\Resource\Products\Create $productCreateResource,
+        \Divante\Walkthechat\Service\Resource\Products\Delete $productDeleteResource,
+        \Divante\Walkthechat\Service\Resource\Products\Find $productFindResource
+    ) {
         $this->productCreateResource = $productCreateResource;
         $this->productDeleteResource = $productDeleteResource;
-        $this->productFindResource = $productFindResource;
+        $this->productFindResource   = $productFindResource;
+
+        parent::__construct(
+            $serviceClient,
+            $jsonHelper,
+            $helper,
+            $logger
+        );
     }
 
     /**
      * Create product
+     *
      * @param array $data
+     *
      * @return string|null
      * @throws \Zend_Http_Client_Exception
      */
@@ -63,7 +70,9 @@ class ProductsRepository extends AbstractService
 
     /**
      * Delete product
+     *
      * @param $id
+     *
      * @return mixed
      * @throws \Zend_Http_Client_Exception
      */
@@ -74,6 +83,7 @@ class ProductsRepository extends AbstractService
 
     /**
      * Find product
+     *
      * @return mixed
      * @throws \Zend_Http_Client_Exception
      */

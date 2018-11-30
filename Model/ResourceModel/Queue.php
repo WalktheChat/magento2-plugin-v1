@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Model\ResourceModel;
 
 /**
@@ -12,7 +13,7 @@ class Queue extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Table name
      */
-    const TABLE_NAME = 'walkthechat_queue';
+    const TABLE_NAME = 'divante_walkthechat_queue';
 
     /**
      * Initialize resource model

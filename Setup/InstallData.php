@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Setup;
 
 use Magento\Framework\Setup\InstallDataInterface;
@@ -35,7 +36,8 @@ class InstallData implements InstallDataInterface
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @param ModuleDataSetupInterface $setup
-     * @param ModuleContextInterface $context
+     * @param ModuleContextInterface   $context
+     *
      * @return void
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
@@ -45,7 +47,7 @@ class InstallData implements InstallDataInterface
 
         $entities = [
             \Magento\Catalog\Model\Product::ENTITY,
-            \Magento\Sales\Model\Order::ENTITY
+            \Magento\Sales\Model\Order::ENTITY,
         ];
 
         foreach ($entities as $entity) {
@@ -53,14 +55,14 @@ class InstallData implements InstallDataInterface
                 $entity,
                 \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE,
                 [
-                    'type' => 'varchar',
-                    'label' => 'Walkthechat ID',
-                    'input' => 'text',
-                    'required' => false,
-                    'global' => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_STORE,
+                    'type'                    => 'varchar',
+                    'label'                   => 'Walkthechat ID',
+                    'input'                   => 'text',
+                    'required'                => false,
+                    'global'                  => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_STORE,
                     'used_in_product_listing' => false,
-                    'unique' => true,
-                    'visible' => false
+                    'unique'                  => true,
+                    'visible'                 => false,
                 ]
             );
         }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Model;
 
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -35,9 +36,10 @@ class QueueRepository implements \Divante\Walkthechat\Api\QueueRepositoryInterfa
 
     /**
      * QueueRepository constructor.
-     * @param ResourceQueue $resource
-     * @param ResourceModel\Queue\CollectionFactory $queueCollectionFactory
-     * @param \Divante\Walkthechat\Api\Data\QueueSearchResultsInterfaceFactory $searchResultsFactory
+     *
+     * @param ResourceQueue                                                      $resource
+     * @param ResourceModel\Queue\CollectionFactory                              $queueCollectionFactory
+     * @param \Divante\Walkthechat\Api\Data\QueueSearchResultsInterfaceFactory   $searchResultsFactory
      * @param \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor
      */
     public function __construct(
@@ -45,16 +47,16 @@ class QueueRepository implements \Divante\Walkthechat\Api\QueueRepositoryInterfa
         ResourceModel\Queue\CollectionFactory $queueCollectionFactory,
         \Divante\Walkthechat\Api\Data\QueueSearchResultsInterfaceFactory $searchResultsFactory,
         \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor
-    )
-    {
-        $this->resource = $resource;
+    ) {
+        $this->resource               = $resource;
         $this->queueCollectionFactory = $queueCollectionFactory;
-        $this->searchResultsFactory = $searchResultsFactory;
-        $this->collectionProcessor = $collectionProcessor;
+        $this->searchResultsFactory   = $searchResultsFactory;
+        $this->collectionProcessor    = $collectionProcessor;
     }
 
     /**
      * @param int $id
+     *
      * @return \Divante\Walkthechat\Api\Data\QueueInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -64,11 +66,13 @@ class QueueRepository implements \Divante\Walkthechat\Api\QueueRepositoryInterfa
         if (!$queue->getId()) {
             throw new NoSuchEntityException(__('Queue with id "%1" does not exist.', $id));
         }
+
         return $queue;
     }
 
     /**
      * @param \Divante\Walkthechat\Api\Data\QueueInterface $queue
+     *
      * @return \Divante\Walkthechat\Api\Data\QueueInterface
      * @throws CouldNotSaveException
      */
@@ -82,11 +86,13 @@ class QueueRepository implements \Divante\Walkthechat\Api\QueueRepositoryInterfa
                 $exception
             );
         }
+
         return $queue;
     }
 
     /**
      * @param \Divante\Walkthechat\Api\Data\QueueInterface $queue
+     *
      * @return bool|void
      * @throws CouldNotDeleteException
      */
@@ -97,11 +103,13 @@ class QueueRepository implements \Divante\Walkthechat\Api\QueueRepositoryInterfa
         } catch (\Exception $exception) {
             throw new CouldNotDeleteException(__('Could not delete the queue: %1', $exception->getMessage()));
         }
+
         return true;
     }
 
     /**
      * @param \Magento\Framework\Api\SearchCriteriaInterface $criteria
+     *
      * @return \Divante\Walkthechat\Api\Data\QueueSearchResultInterface
      */
     public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria)

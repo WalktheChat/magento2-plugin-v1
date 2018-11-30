@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Model;
 
 /**
@@ -15,38 +16,22 @@ class ProductService
     protected $productRepository;
 
     /**
-     * @var \Magento\Framework\Api\SearchCriteriaInterface
+     * @var \Magento\Framework\Api\SearchCriteriaBuilder
      */
-    protected $searchCriteria;
-
-    /**
-     * @var \Magento\Framework\Api\Search\FilterGroup
-     */
-    protected $filterGroup;
-
-    /**
-     * @var \Magento\Framework\Api\FilterBuilder
-     */
-    protected $filterBuilder;
+    protected $searchCriteriaBuilder;
 
     /**
      * ProductService constructor.
-     * @param \Magento\Catalog\Model\ProductRepository $productRepository
-     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-     * @param \Magento\Framework\Api\Search\FilterGroup $filterGroup
-     * @param \Magento\Framework\Api\FilterBuilder $filterBuilder
+     *
+     * @param \Magento\Catalog\Model\ProductRepository     $productRepository
+     * @param \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
         \Magento\Catalog\Model\ProductRepository $productRepository,
-        \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria,
-        \Magento\Framework\Api\Search\FilterGroup $filterGroup,
-        \Magento\Framework\Api\FilterBuilder $filterBuilder
-    )
-    {
-        $this->productRepository = $productRepository;
-        $this->searchCriteria = $searchCriteria;
-        $this->filterGroup = $filterGroup;
-        $this->filterBuilder = $filterBuilder;
+        \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
+    ) {
+        $this->productRepository     = $productRepository;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
     /**
@@ -56,23 +41,31 @@ class ProductService
      */
     public function getAllForExport()
     {
-        $this->filterGroup->setFilters([
-            $this->filterBuilder
-                ->setField('type_id')
-                ->setConditionType('in')
-                ->setValue([
-                    \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE,
-                    \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE
-                ])
-                ->create(),
-            $this->filterBuilder
-                ->setField('walkthechat_id')
-                ->setConditionType('null')
-                ->create()
-        ]);
+        $configurableProductsSearchCriteria = $this
+            ->searchCriteriaBuilder
+            ->addFilter('type_id', \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE)
+            ->create();
 
-        $this->searchCriteria->setFilterGroups([$this->filterGroup]);
-        $products = $this->productRepository->getList($this->searchCriteria);
-        return $products->getItems();
+        $configurableProducts = $this->productRepository->getList($configurableProductsSearchCriteria);
+
+        $ignoreSimpleIds = [];
+
+        foreach ($configurableProducts->getItems() as $configurableProduct) {
+            foreach ($configurableProduct->getTypeInstance()->getUsedProducts($configurableProduct) as $child) {
+                $ignoreSimpleIds[] = $child->getId();
+            }
+        }
+
+        array_unique($ignoreSimpleIds);
+
+        $simpleProductsSearchCriteria = $this
+            ->searchCriteriaBuilder
+            ->addFilter('type_id', \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE)
+            ->addFilter('entity_id', $ignoreSimpleIds, 'nin')
+            ->create();
+
+        $simpleProducts = $this->productRepository->getList($simpleProductsSearchCriteria);
+
+        return array_merge($simpleProducts->getItems(), $configurableProducts->getItems());
     }
 }

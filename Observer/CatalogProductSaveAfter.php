@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Observer;
 
 /**
@@ -25,32 +26,44 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
     protected $helper;
 
     /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $registry;
+
+    /**
      * CatalogProductSaveAfter constructor.
-     * @param \Divante\Walkthechat\Model\QueueFactory $queueFactory
+     *
+     * @param \Divante\Walkthechat\Model\QueueFactory    $queueFactory
      * @param \Divante\Walkthechat\Model\QueueRepository $queueRepository
-     * @param \Divante\Walkthechat\Helper\Data $helper
+     * @param \Divante\Walkthechat\Helper\Data           $helper
+     * @param \Magento\Framework\Registry                $registry
      */
     public function __construct(
         \Divante\Walkthechat\Model\QueueFactory $queueFactory,
         \Divante\Walkthechat\Model\QueueRepository $queueRepository,
-        \Divante\Walkthechat\Helper\Data $helper
+        \Divante\Walkthechat\Helper\Data $helper,
+        \Magento\Framework\Registry $registry
     ) {
-        $this->queueFactory = $queueFactory;
+        $this->queueFactory    = $queueFactory;
         $this->queueRepository = $queueRepository;
-        $this->helper = $helper;
+        $this->helper          = $helper;
+        $this->registry        = $registry;
     }
 
     /**
      * Add item to queue once product is updated
      *
      * @param \Magento\Framework\Event\Observer $observer
+     *
      * @throws \Magento\Framework\Exception\CouldNotSaveException
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         if ($this->helper->isEnabledProductSync()) {
             $product = $observer->getProduct();
-            if ($product instanceof \Magento\Catalog\Model\Product) {
+            if ($product instanceof \Magento\Catalog\Model\Product
+                && $product->getWalkthechatId()
+                && !$this->registry->registry('omit_product_update_action')) {
                 $model = $this->queueFactory->create();
                 $model->setProductId($product->getId());
                 $model->setAction('update');

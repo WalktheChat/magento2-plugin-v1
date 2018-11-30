@@ -18,4 +18,13 @@ class Create extends \Divante\Walkthechat\Service\Resource\AbstractResource
      * @var string
      */
     protected $path = 'orders/:id/parcels';
+
+    /**
+     * @var array
+     */
+    protected $headers = [
+        'x-access-token' => '',
+        'Accept' => "application/json, appl-header 'Content-Type: application/json",
+        'Content-Type' => "application/json"
+    ];
 }

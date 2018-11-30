@@ -1,4 +1,5 @@
 <?php
+
 namespace Divante\Walkthechat\Model\Config\Source;
 
 /**
@@ -17,8 +18,8 @@ class Roundmethod implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         return [
-            ['value' => 1,  'label' => __('Nearest Integer')],
-            ['value' => 2,  'label' => __('China friendly price')],
+            ['value' => 1, 'label' => __('Nearest Integer')],
+            ['value' => 2, 'label' => __('China friendly price')],
         ];
     }
 
