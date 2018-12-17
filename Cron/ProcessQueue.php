@@ -56,8 +56,6 @@ class ProcessQueue
      */
     public function execute()
     {
-        $this->state->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
-
         $this->registry->register('omit_product_update_action', true);
 
         $items = $this->queueService->getAllNotProcessed();
