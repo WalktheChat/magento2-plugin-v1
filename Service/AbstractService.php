@@ -64,15 +64,15 @@ abstract class AbstractService
     {
         $headers = $resource->getHeaders();
 
-        if (isset($headers['x-access-token']) && !$headers['x-access-token']) {
-            $headers['x-access-token'] = $this->helper->getToken();
-        }
+        $headers['x-access-token'] = $this->helper->getToken();
 
         $path = $resource->getPath();
 
         if (isset($params['id'])) {
             $path = str_replace(':id', $params['id'], $path);
         }
+
+        $params['projectId'] = $this->helper->getProjectId();
 
         $response = $this->serviceClient->request($resource->getType(), $path, $params, $headers);
 
