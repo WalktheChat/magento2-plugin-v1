@@ -56,6 +56,12 @@ class ProcessQueue
      */
     public function execute()
     {
+        try {
+            $this->state->getAreaCode();
+        } catch (\Magento\Framework\Exception\LocalizedException $exception) {
+            $this->state->setAreaCode('frontend');
+        }
+
         $this->registry->register('omit_product_update_action', true);
 
         $items = $this->queueService->getAllNotProcessed();

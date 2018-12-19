@@ -246,7 +246,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $mainSpecialPrice = $this->convertPrice($product->getSpecialPrice());
 
         $data = [
-            'projectId'             => $this->getProjectId(),
             'title'                 => [
                 'en' => $product->getName(),
             ],
