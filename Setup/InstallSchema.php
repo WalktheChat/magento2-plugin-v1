@@ -28,6 +28,7 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
 
         $installer->startSetup();
 
+        $this->createWalkTheChatIdAttribute($installer);
         $this->createLogsTable($installer);
         $this->createQueueTable($installer);
 
@@ -235,6 +236,29 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
                 )->setComment('Walkthechat Queue Table');
 
             $installer->getConnection()->createTable($table);
+        }
+    }
+
+    /**
+     * Create new column in order table
+     *
+     * @param \Magento\Framework\Setup\SchemaSetupInterface $installer
+     */
+    protected function createWalkTheChatIdAttribute(\Magento\Framework\Setup\SchemaSetupInterface $installer)
+    {
+        $connection = $installer->getConnection();
+
+        if ($connection->tableColumnExists('sales_order', 'walkthechat_id') === false) {
+            $connection
+                ->addColumn(
+                    $connection->getTableName('sales_order'),
+                    'walkthechat_id',
+                    [
+                        'type'    => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                        'length'  => 255,
+                        'comment' => 'Walkthechat ID',
+                    ]
+                );
         }
     }
 }

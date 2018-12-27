@@ -58,7 +58,7 @@ abstract class AbstractService
      *
      * @return mixed
      * @throws \Zend_Http_Client_Exception
-     * @throws \Exception
+     * @throws \Magento\Framework\Exception\CronException
      */
     public function request($resource, $params = [])
     {
@@ -81,7 +81,7 @@ abstract class AbstractService
         if ($response->getStatus() == 200) {
             return $this->jsonHelper->jsonDecode($response->getBody());
         } else {
-            throw new \Exception(
+            throw new \Magento\Framework\Exception\CronException(
                 __('API error. Check logs for more details.')
             );
         }

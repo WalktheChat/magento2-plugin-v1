@@ -236,22 +236,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Prepare product data for API
      *
      * @param \Magento\Catalog\Model\Product $product
+     * @param bool                           $isNew
      *
      * @return array
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function prepareProductData($product)
+    public function prepareProductData($product, $isNew = true)
     {
         $mainPrice        = $this->convertPrice($product->getPrice());
         $mainSpecialPrice = $this->convertPrice($product->getSpecialPrice());
 
         $data = [
-            'title'                 => [
-                'en' => $product->getName(),
-            ],
-            'bodyHtml'              => [
-                'en' => $product->getDescription(),
-            ],
             'manageInventory'       => true,
             'visibility'            => $product->getVisibility() != \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE,
             'displayPrice'          => $mainPrice,
@@ -262,9 +257,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     'inventoryQuantity' => $this->stockItemRepository->get($product->getId())->getQty(),
                     'weight'            => $product->getWeight(),
                     'requiresShipping'  => true,
-                    'title'             => [
-                        'en' => $product->getName(),
-                    ],
                     'sku'               => $product->getSku(),
                     'price'             => $mainPrice,
                     'compareAtPrice'    => $mainSpecialPrice,
@@ -273,6 +265,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 ],
             ],
         ];
+
+        if ($isNew) {
+            $data['title'] = [
+                'en' => $product->getName(),
+            ];
+
+            $data['bodyHtml'] = [
+                'en' => $product->getDescription(),
+            ];
+
+            $data['variants'][0]['title'] = [
+                'en' => $product->getName(),
+            ];
+        }
 
         if ($product->getTypeId() === \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE) {
             $configurableOptions = $product->getTypeInstance()->getConfigurableOptions($product);
@@ -299,15 +305,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         'inventoryQuantity' => $this->stockItemRepository->get($child->getId())->getQty(),
                         'weight'            => $child->getWeight(),
                         'requiresShipping'  => true,
-                        'title'             => [
-                            'en' => $child->getName(),
-                        ],
                         'sku'               => $child->getSku(),
                         'price'             => $this->convertPrice($child->getPrice()),
                         'compareAtPrice'    => $this->convertPrice($child->getSpecialPrice()),
                         'visibility'        => $child->getVisibility() != \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE,
                         'taxable'           => (bool)$child->getTaxClassId(),
                     ];
+
+                    if ($isNew) {
+                        $data['variants'][$k]['title'] = [
+                            'en' => $child->getName(),
+                        ];
+                    }
 
                     foreach ($data['variantOptions'] as $n => $attributeCode) {
                         $data['variants'][$k]['options'][] = [

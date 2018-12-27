@@ -44,6 +44,9 @@ class Curl extends \Magento\Framework\HTTP\Adapter\Curl
             curl_setopt($this->_getResource(), CURLOPT_CUSTOMREQUEST, 'GET');
         } elseif ($method == \Zend_Http_Client::DELETE) {
             curl_setopt($this->_getResource(), CURLOPT_CUSTOMREQUEST, 'DELETE');
+        } elseif ($method == \Zend_Http_Client::PATCH) {
+            curl_setopt($this->_getResource(), CURLOPT_POSTFIELDS, $body);
+            curl_setopt($this->_getResource(), CURLOPT_CUSTOMREQUEST, 'PATCH');
         }
 
         if (is_array($headers)) {

@@ -33,9 +33,9 @@ class ApiLogger
     /**
      * ApiLogger constructor.
      *
-     * @param \Divante\Walkthechat\Model\ApiLogFactory $apiLogFactory
-     * @param \Divante\Walkthechat\Model\ApiLogRepository   $apiLogRepository
-     * @param \Psr\Log\LoggerInterface                             $logger
+     * @param \Divante\Walkthechat\Model\ApiLogFactory    $apiLogFactory
+     * @param \Divante\Walkthechat\Model\ApiLogRepository $apiLogRepository
+     * @param \Psr\Log\LoggerInterface                    $logger
      */
     public function __construct(
         \Divante\Walkthechat\Model\ApiLogFactory $apiLogFactory,
@@ -63,9 +63,14 @@ class ApiLogger
         $apiLog = $this->apiLogFactory->create();
 
         $responseText = $response->asString();
+        $path         = $requestResource->getPath();
+
+        if (isset($params['id'])) {
+            $path = str_replace(':id', $params['id'], $path);
+        }
 
         $apiLog
-            ->setRequestPath($requestResource->getPath())
+            ->setRequestPath($path)
             ->setRequestParams($params)
             ->setRequestMethod($requestResource->getType())
             ->setResponseCode($response::extractCode($responseText))

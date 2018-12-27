@@ -59,12 +59,17 @@ class Client
         $httpClient = $this->httpClientFactory->create();
 
         $httpClient->setUri($this->getEndpoint().$path);
+
+        $headers['accept-encoding'] = 'identity';
+
         $httpClient->setHeaders($headers);
 
         if ($type == 'POST' || $type == 'PUT') {
             $httpClient->setParameterPost($data);
         } elseif ($type == 'GET') {
             $httpClient->setParameterGet($data);
+        } elseif ($type == 'PATCH') {
+            $httpClient->setRawData(json_encode($data));
         }
 
         return $httpClient->request($type);

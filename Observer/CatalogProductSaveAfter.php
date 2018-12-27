@@ -61,13 +61,25 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
     {
         if ($this->helper->isEnabledProductSync()) {
             $product = $observer->getProduct();
-            if ($product instanceof \Magento\Catalog\Model\Product
-                && $product->getWalkthechatId()
-                && !$this->registry->registry('omit_product_update_action')) {
-                $model = $this->queueFactory->create();
-                $model->setProductId($product->getId());
-                $model->setAction('update');
-                $this->queueRepository->save($model);
+
+            if ($product instanceof \Magento\Catalog\Model\Product) {
+                $walkTheChatIdAttribute = $product->getCustomAttribute('walkthechat_id');
+
+                if ($walkTheChatIdAttribute instanceof \Magento\Framework\Api\AttributeValue) {
+                    $walkTheChatId = $walkTheChatIdAttribute->getValue();
+
+                    if (
+                        $walkTheChatId
+                        && !$this->registry->registry('omit_product_update_action')
+                    ) {
+                        $model = $this->queueFactory->create();
+                        $model->setProductId($product->getId());
+                        $model->setWalkthechatId($walkTheChatId);
+                        $model->setAction('update');
+
+                        $this->queueRepository->save($model);
+                    }
+                }
             }
         }
     }

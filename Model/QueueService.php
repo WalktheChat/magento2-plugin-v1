@@ -148,41 +148,44 @@ class QueueService
      * @param \Divante\Walkthechat\Api\Data\QueueInterface $item
      *
      * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Magento\Framework\Exception\StateException
+     * @throws \Zend_Http_Client_Exception
      */
     public function sync($item)
     {
         $error = false;
 
-        try {
-            switch ($item->getAction()) {
-                case 'delete':
-                    $this->queueProductRepository->delete(['id' => $item->getWalkthechatId()]);
-                    break;
-                case 'add':
-                    $product = $this->productRepository->getById($item->getProductId());
-                    $data    = $this->helper->prepareProductData($product);
-                    $id      = $this->queueProductRepository->create($data);
+        switch ($item->getAction()) {
+            case 'delete':
+                $this->queueProductRepository->delete(['id' => $item->getWalkthechatId()]);
+                break;
+            case 'add':
+                $product = $this->productRepository->getById($item->getProductId());
+                $data    = $this->helper->prepareProductData($product);
+                $id      = $this->queueProductRepository->create($data);
 
-                    if ($id) {
-                        $product->setWalkthechatId($id);
-                        $this->productRepository->save($product);
-                    } else {
-                        $error = true;
-                    }
-                    break;
-                case 'update':
-                    if ($item->getProductId()) {
-                        $product = $this->productRepository->getById($item->getProductId());
-                        $data    = $this->helper->prepareProductData($product);
-                        $this->queueProductRepository->update($data);
-                    } elseif ($item->getOrderId()) {
-                        $order = $this->orderRepository->get($item->getOrderId());
-                        $data  = $this->helper->prepareOrderData($order);
-                        $this->queueOrderRepository->update($data);
-                    }
-            }
-        } catch (\Exception $e) {
-            $error = true;
+                if ($id) {
+                    $product->setWalkthechatId($id);
+                    $this->productRepository->save($product);
+                } else {
+                    $error = true;
+                }
+                break;
+            case 'update':
+                if ($item->getProductId()) {
+                    $product = $this->productRepository->getById($item->getProductId());
+                    $data    = $this->helper->prepareProductData($product, false);
+
+                    $data['id'] = $item->getWalkthechatId();
+
+                    $this->queueProductRepository->update($data);
+                } elseif ($item->getOrderId()) {
+                    $order = $this->orderRepository->get($item->getOrderId());
+                    $data  = $this->helper->prepareOrderData($order);
+                    $this->queueOrderRepository->update($data);
+                }
         }
 
         if (!$error) {

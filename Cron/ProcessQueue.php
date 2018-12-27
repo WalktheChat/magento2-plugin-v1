@@ -53,6 +53,7 @@ class ProcessQueue
      *
      * @throws \Magento\Framework\Exception\CouldNotSaveException
      * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Zend_Http_Client_Exception
      */
     public function execute()
     {

@@ -53,11 +53,18 @@ class CatalogProductDeleteAfter implements \Magento\Framework\Event\ObserverInte
     {
         if ($this->helper->isEnabledProductSync()) {
             $product = $observer->getProduct();
-            if ($product instanceof \Magento\Catalog\Model\Product && $product->getWalkthechatId()) {
-                $model = $this->queueFactory->create();
-                $model->setWalkthechatId($product->getWalkthechatId());
-                $model->setAction('delete');
-                $this->queueRepository->save($model);
+
+            if ($product instanceof \Magento\Catalog\Model\Product) {
+                $walkTheChatIdAttribute = $product->getCustomAttribute('walkthechat_id');
+
+                if ($walkTheChatIdAttribute instanceof \Magento\Framework\Api\AttributeValue) {
+                    if ($walkTheChatIdAttribute->getValue()) {
+                        $model = $this->queueFactory->create();
+                        $model->setWalkthechatId($walkTheChatIdAttribute->getValue());
+                        $model->setAction('delete');
+                        $this->queueRepository->save($model);
+                    }
+                }
             }
         }
     }

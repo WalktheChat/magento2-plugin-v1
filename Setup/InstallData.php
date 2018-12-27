@@ -39,32 +39,37 @@ class InstallData implements InstallDataInterface
      * @param ModuleContextInterface   $context
      *
      * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
         /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
 
-        $entities = [
+        $eavSetup->addAttribute(
             \Magento\Catalog\Model\Product::ENTITY,
-            \Magento\Sales\Model\Order::ENTITY,
-        ];
-
-        foreach ($entities as $entity) {
-            $eavSetup->addAttribute(
-                $entity,
-                \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE,
-                [
-                    'type'                    => 'varchar',
-                    'label'                   => 'Walkthechat ID',
-                    'input'                   => 'text',
-                    'required'                => false,
-                    'global'                  => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_STORE,
-                    'used_in_product_listing' => false,
-                    'unique'                  => true,
-                    'visible'                 => false,
-                ]
-            );
-        }
+            \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE,
+            [
+                'type'                    => 'varchar',
+                'label'                   => 'Walkthechat ID',
+                'input'                   => 'text',
+                'required'                => false,
+                'global'                  => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_GLOBAL,
+                'used_in_product_listing' => false,
+                'unique'                  => true,
+                'visible'                 => false,
+                'backend'                 => '',
+                'frontend'                => '',
+                'class'                   => '',
+                'source'                  => '',
+                'user_defined'            => false,
+                'default'                 => '',
+                'searchable'              => false,
+                'filterable'              => false,
+                'comparable'              => false,
+                'visible_on_front'        => false,
+                'apply_to'                => '',
+            ]
+        );
     }
 }
