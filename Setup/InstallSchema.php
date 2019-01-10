@@ -248,7 +248,7 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
     {
         $connection = $installer->getConnection();
 
-        if ($connection->tableColumnExists('sales_order', 'walkthechat_id') === false) {
+        if (!$connection->tableColumnExists('sales_order', 'walkthechat_id')) {
             $connection
                 ->addColumn(
                     $connection->getTableName('sales_order'),

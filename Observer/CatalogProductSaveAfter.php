@@ -31,23 +31,38 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
     protected $registry;
 
     /**
+     * @var \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable
+     */
+    protected $configurableProductType;
+    /**
+     * @var \Magento\Catalog\Api\ProductRepositoryInterface
+     */
+    private $productRepository;
+
+    /**
      * CatalogProductSaveAfter constructor.
      *
-     * @param \Divante\Walkthechat\Model\QueueFactory    $queueFactory
-     * @param \Divante\Walkthechat\Model\QueueRepository $queueRepository
-     * @param \Divante\Walkthechat\Helper\Data           $helper
-     * @param \Magento\Framework\Registry                $registry
+     * @param \Divante\Walkthechat\Model\QueueFactory                                    $queueFactory
+     * @param \Divante\Walkthechat\Model\QueueRepository                                 $queueRepository
+     * @param \Divante\Walkthechat\Helper\Data                                           $helper
+     * @param \Magento\Framework\Registry                                                $registry
+     * @param \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableProductType
+     * @param \Magento\Catalog\Api\ProductRepositoryInterface                            $productRepository
      */
     public function __construct(
         \Divante\Walkthechat\Model\QueueFactory $queueFactory,
         \Divante\Walkthechat\Model\QueueRepository $queueRepository,
         \Divante\Walkthechat\Helper\Data $helper,
-        \Magento\Framework\Registry $registry
+        \Magento\Framework\Registry $registry,
+        \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableProductType,
+        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
     ) {
-        $this->queueFactory    = $queueFactory;
-        $this->queueRepository = $queueRepository;
-        $this->helper          = $helper;
-        $this->registry        = $registry;
+        $this->queueFactory            = $queueFactory;
+        $this->queueRepository         = $queueRepository;
+        $this->helper                  = $helper;
+        $this->registry                = $registry;
+        $this->configurableProductType = $configurableProductType;
+        $this->productRepository       = $productRepository;
     }
 
     /**
@@ -56,6 +71,7 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
@@ -63,24 +79,64 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
             $product = $observer->getProduct();
 
             if ($product instanceof \Magento\Catalog\Model\Product) {
-                $walkTheChatIdAttribute = $product->getCustomAttribute('walkthechat_id');
+                $walkTheChatId = $this->getWalkTheChatAttribute($product);
 
-                if ($walkTheChatIdAttribute instanceof \Magento\Framework\Api\AttributeValue) {
-                    $walkTheChatId = $walkTheChatIdAttribute->getValue();
+                if (!$this->registry->registry('omit_product_update_action')) {
+                    if ($walkTheChatId) {
+                        $this->addProductToQueue($product->getId(), $walkTheChatId);
+                    }
 
-                    if (
-                        $walkTheChatId
-                        && !$this->registry->registry('omit_product_update_action')
-                    ) {
-                        $model = $this->queueFactory->create();
-                        $model->setProductId($product->getId());
-                        $model->setWalkthechatId($walkTheChatId);
-                        $model->setAction('update');
+                    if ($product->getTypeId() === \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE) {
+                        foreach ($this->configurableProductType->getParentIdsByChild($product->getId()) as $parentId) {
+                            $parent = $this->productRepository->getById($parentId);
 
-                        $this->queueRepository->save($model);
+                            $parentWalkTheChatId = $this->getWalkTheChatAttribute($parent);
+
+                            if ($parentWalkTheChatId) {
+                                $this->addProductToQueue($parentId, $parentWalkTheChatId);
+                            }
+                        }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Add product to queue
+     *
+     * @param int $productId
+     * @param int $walkTheChatId
+     *
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     */
+    protected function addProductToQueue($productId, $walkTheChatId)
+    {
+        /** @var \Divante\Walkthechat\Model\Queue $model */
+        $model = $this->queueFactory->create();
+
+        $model->setProductId($productId);
+        $model->setWalkthechatId($walkTheChatId);
+        $model->setAction('update');
+
+        $this->queueRepository->save($model);
+    }
+
+    /**
+     * Return Walk the chat ID form product
+     *
+     * @param \Magento\Catalog\Model\Product $product
+     *
+     * @return string|null
+     */
+    protected function getWalkTheChatAttribute(\Magento\Catalog\Api\Data\ProductInterface $product)
+    {
+        $walkTheChatIdAttribute = $product->getCustomAttribute('walkthechat_id');
+
+        if ($walkTheChatIdAttribute instanceof \Magento\Framework\Api\AttributeValue) {
+            return $walkTheChatIdAttribute->getValue();
+        }
+
+        return null;
     }
 }
