@@ -86,7 +86,10 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
                         $this->addProductToQueue($product->getId(), $walkTheChatId);
                     }
 
-                    if ($product->getTypeId() === \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE) {
+                    if (in_array($product->getTypeId(), [
+                        \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE,
+                        \Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL,
+                    ])) {
                         foreach ($this->configurableProductType->getParentIdsByChild($product->getId()) as $parentId) {
                             $parent = $this->productRepository->getById($parentId);
 
@@ -125,7 +128,7 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
     /**
      * Return Walk the chat ID form product
      *
-     * @param \Magento\Catalog\Model\Product $product
+     * @param \Magento\Catalog\Api\Data\ProductInterface $product
      *
      * @return string|null
      */

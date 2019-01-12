@@ -60,7 +60,14 @@ class ProductService
 
         $simpleProductsSearchCriteria = $this
             ->searchCriteriaBuilder
-            ->addFilter('type_id', \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE)
+            ->addFilter(
+                'type_id',
+                [
+                    \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE,
+                    \Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL,
+                ],
+                'in'
+            )
             ->addFilter('entity_id', $ignoreSimpleIds, 'nin')
             ->create();
 
