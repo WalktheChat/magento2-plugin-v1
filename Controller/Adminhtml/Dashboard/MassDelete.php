@@ -54,14 +54,18 @@ class MassDelete extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        /** @var Collection $collection */
+        /** @var \Divante\Walkthechat\Model\ResourceModel\Queue\Collection $collection */
         $collection = $this->filter->getCollection($this->collectionFactory->create());
+
+        $count = 0;
 
         foreach ($collection as $item) {
             $this->queueRepository->delete($item);
+
+            $count++;
         }
 
-        $this->messageManager->addSuccessMessage(__('Deleted items.'));
+        $this->messageManager->addSuccessMessage(__('%1 item(s) deleted.', $count));
 
         $this->_redirect('*/*/index');
     }

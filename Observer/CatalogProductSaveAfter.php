@@ -79,7 +79,7 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
             $product = $observer->getProduct();
 
             if ($product instanceof \Magento\Catalog\Model\Product) {
-                $walkTheChatId = $this->getWalkTheChatAttribute($product);
+                $walkTheChatId = $this->helper->getWalkTheChatAttribute($product);
 
                 if (!$this->registry->registry('omit_product_update_action')) {
                     if ($walkTheChatId) {
@@ -93,7 +93,7 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
                         foreach ($this->configurableProductType->getParentIdsByChild($product->getId()) as $parentId) {
                             $parent = $this->productRepository->getById($parentId);
 
-                            $parentWalkTheChatId = $this->getWalkTheChatAttribute($parent);
+                            $parentWalkTheChatId = $this->helper->getWalkTheChatAttribute($parent);
 
                             if ($parentWalkTheChatId) {
                                 $this->addProductToQueue($parentId, $parentWalkTheChatId);
@@ -123,23 +123,5 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
         $model->setAction('update');
 
         $this->queueRepository->save($model);
-    }
-
-    /**
-     * Return Walk the chat ID form product
-     *
-     * @param \Magento\Catalog\Api\Data\ProductInterface $product
-     *
-     * @return string|null
-     */
-    protected function getWalkTheChatAttribute(\Magento\Catalog\Api\Data\ProductInterface $product)
-    {
-        $walkTheChatIdAttribute = $product->getCustomAttribute('walkthechat_id');
-
-        if ($walkTheChatIdAttribute instanceof \Magento\Framework\Api\AttributeValue) {
-            return $walkTheChatIdAttribute->getValue();
-        }
-
-        return null;
     }
 }

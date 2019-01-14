@@ -46,6 +46,7 @@ class DeleteAll extends \Magento\Backend\App\Action
     {
         try {
             $result = $this->queueProductRepository->find();
+            $count  = 0;
 
             foreach ($result as $row) {
                 if (isset($row['id'])) {
@@ -55,10 +56,12 @@ class DeleteAll extends \Magento\Backend\App\Action
                     ];
 
                     $this->queueService->create($data);
+
+                    $count++;
                 }
             }
 
-            $this->messageManager->addSuccessMessage(__('Added to queue.'));
+            $this->messageManager->addSuccessMessage(__('%1 product(s) added to queue.', $count));
         } catch (\Exception $e) {
             $this->messageManager->addErrorMessage($e->getMessage());
         }

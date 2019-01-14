@@ -387,4 +387,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return $data;
     }
+
+    /**
+     * Return Walk the chat ID form product
+     *
+     * @param \Magento\Catalog\Api\Data\ProductInterface $product
+     *
+     * @return string|null
+     */
+    public function getWalkTheChatAttribute(\Magento\Catalog\Api\Data\ProductInterface $product)
+    {
+        $walkTheChatIdAttribute = $product->getCustomAttribute('walkthechat_id');
+
+        if ($walkTheChatIdAttribute instanceof \Magento\Framework\Api\AttributeValue) {
+            return $walkTheChatIdAttribute->getValue();
+        }
+
+        return null;
+    }
 }

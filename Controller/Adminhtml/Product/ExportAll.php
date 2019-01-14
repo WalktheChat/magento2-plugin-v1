@@ -49,6 +49,7 @@ class ExportAll extends \Magento\Backend\App\Action
          * @var \Magento\Catalog\Api\Data\ProductInterface[]
          */
         $products = $this->productService->getAllForExport();
+        $count    = 0;
 
         foreach ($products as $product) {
             // temporary solution (null filter doesn't work)
@@ -59,10 +60,12 @@ class ExportAll extends \Magento\Backend\App\Action
                 ];
 
                 $this->queueService->create($data);
+
+                $count++;
             }
         }
 
-        $this->messageManager->addSuccessMessage(__('Added to queue.'));
+        $this->messageManager->addSuccessMessage(__('%1 product(s) added to queue.', $count));
 
         $this->_redirect('*/dashboard/index');
     }
