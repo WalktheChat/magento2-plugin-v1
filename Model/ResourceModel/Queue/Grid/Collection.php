@@ -1,36 +1,49 @@
 <?php
-
-namespace Divante\Walkthechat\Model\ResourceModel\Queue\Grid;
-
-use Magento\Framework\Api\Search\SearchResultInterface;
-use Magento\Framework\Search\AggregationInterface;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
  */
-class Collection extends \Divante\Walkthechat\Model\ResourceModel\Queue\Collection implements SearchResultInterface
+
+namespace Divante\Walkthechat\Model\ResourceModel\Queue\Grid;
+
+/**
+ * Class Collection
+ *
+ * @package Divante\Walkthechat\Model\ResourceModel\Queue\Grid
+ */
+class Collection extends \Divante\Walkthechat\Model\ResourceModel\Queue\Collection
+    implements \Magento\Framework\Api\Search\SearchResultInterface
 {
     /**
-     * @var AggregationInterface
+     * @var \Magento\Framework\Api\Search\AggregationInterface
      */
     protected $aggregations;
 
     /**
-     * @param \Magento\Framework\Data\Collection\EntityFactoryInterface    $entityFactory
-     * @param \Psr\Log\LoggerInterface                                     $logger
-     * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
-     * @param \Magento\Framework\Event\ManagerInterface                    $eventManager
-     * @param \Magento\Store\Model\StoreManagerInterface                   $storeManager
-     * @param mixed|null                                                   $mainTable
-     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb         $eventPrefix
-     * @param mixed                                                        $eventObject
-     * @param mixed                                                        $resourceModel
-     * @param string                                                       $model
-     * @param null                                                         $connection
-     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb|null    $resource
+     * @var mixed|null
+     */
+    protected $mainTable;
+
+    /**
+     * @var mixed
+     */
+    protected $resourceModel;
+
+    /**
+     * @var string
+     */
+    protected $model;
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param mixed|null                                           $mainTable
+     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb $eventPrefix
+     * @param mixed                                                $eventObject
+     * @param mixed                                                $resourceModel
+     * @param string                                               $model
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
@@ -39,7 +52,6 @@ class Collection extends \Divante\Walkthechat\Model\ResourceModel\Queue\Collecti
         \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy,
         \Magento\Framework\Event\ManagerInterface $eventManager,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
         $mainTable,
         $eventPrefix,
         $eventObject,
@@ -48,15 +60,35 @@ class Collection extends \Divante\Walkthechat\Model\ResourceModel\Queue\Collecti
         $connection = null,
         \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null
     ) {
-        parent::__construct($entityFactory, $logger, $fetchStrategy, $eventManager, $connection, $resource);
-        $this->_eventPrefix = $eventPrefix;
-        $this->_eventObject = $eventObject;
-        $this->_init($model, $resourceModel);
-        $this->setMainTable($mainTable);
+        $this->_eventPrefix  = $eventPrefix;
+        $this->_eventObject  = $eventObject;
+        $this->mainTable     = $mainTable;
+        $this->resourceModel = $resourceModel;
+        $this->model         = $model;
+
+        parent::__construct(
+            $entityFactory,
+            $logger,
+            $fetchStrategy,
+            $eventManager,
+            $connection,
+            $resource
+        );
     }
 
     /**
-     * @return AggregationInterface
+     * {@inheritdoc}
+     */
+    protected function _construct()
+    {
+        parent::_construct();
+
+        $this->_init($this->model, $this->resourceModel);
+        $this->setMainTable($this->mainTable);
+    }
+
+    /**
+     * @return \Magento\Framework\Api\Search\AggregationInterface
      */
     public function getAggregations()
     {
@@ -64,13 +96,15 @@ class Collection extends \Divante\Walkthechat\Model\ResourceModel\Queue\Collecti
     }
 
     /**
-     * @param AggregationInterface $aggregations
+     * @param \Magento\Framework\Api\Search\AggregationInterface $aggregations
      *
      * @return $this
      */
     public function setAggregations($aggregations)
     {
         $this->aggregations = $aggregations;
+
+        return $this;
     }
 
     /**

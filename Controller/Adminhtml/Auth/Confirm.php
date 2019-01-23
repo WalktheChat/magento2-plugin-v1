@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Controller\Adminhtml\Auth;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Controller\Adminhtml\Auth;
+
+/**
+ * Class Confirm
+ *
+ * @package Divante\Walkthechat\Controller\Adminhtml\Auth
  */
 class Confirm extends \Magento\Backend\App\Action
 {
@@ -21,11 +26,10 @@ class Confirm extends \Magento\Backend\App\Action
     protected $request;
 
     /**
-     * Confirm constructor.
+     * {@inheritdoc}
      *
-     * @param \Magento\Backend\App\Action\Context                   $context
-     * @param \Magento\Framework\App\RequestInterface               $request
-     * @param \Divante\Walkthechat\Service\AuthorizeRepository      $authorizeRepository
+     * @param \Magento\Framework\App\RequestInterface          $request
+     * @param \Divante\Walkthechat\Service\AuthorizeRepository $authorizeRepository
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,

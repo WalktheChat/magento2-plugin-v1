@@ -1,26 +1,27 @@
 <?php
-
-namespace Divante\Walkthechat\Model;
-
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Exception\CouldNotDeleteException;
-use Magento\Framework\Exception\CouldNotSaveException;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
  */
+
+namespace Divante\Walkthechat\Model;
+
+/**
+ * Class QueueRepository
+ *
+ * @package Divante\Walkthechat\Model
+ */
 class QueueRepository implements \Divante\Walkthechat\Api\QueueRepositoryInterface
 {
     /**
-     * @var ResourceQueue
+     * @var \Divante\Walkthechat\Model\ResourceModel\Queue
      */
     protected $resource;
 
     /**
-     * @var ResourceModel\Queue\CollectionFactory
+     * @var \Divante\Walkthechat\Model\ResourceModel\Queue\CollectionFactory
      */
     protected $queueCollectionFactory;
 
@@ -35,23 +36,31 @@ class QueueRepository implements \Divante\Walkthechat\Api\QueueRepositoryInterfa
     protected $collectionProcessor;
 
     /**
+     * @var \Divante\Walkthechat\Api\Data\QueueInterfaceFactory
+     */
+    protected $queueFactory;
+
+    /**
      * QueueRepository constructor.
      *
-     * @param ResourceQueue                                                      $resource
-     * @param ResourceModel\Queue\CollectionFactory                              $queueCollectionFactory
+     * @param \Divante\Walkthechat\Model\ResourceModel\Queue                     $resource
+     * @param \Divante\Walkthechat\Model\ResourceModel\Queue\CollectionFactory   $queueCollectionFactory
      * @param \Divante\Walkthechat\Api\Data\QueueSearchResultsInterfaceFactory   $searchResultsFactory
      * @param \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor
+     * @param \Divante\Walkthechat\Api\Data\QueueInterfaceFactory                $queueFactory
      */
     public function __construct(
-        ResourceModel\Queue $resource,
-        ResourceModel\Queue\CollectionFactory $queueCollectionFactory,
+        \Divante\Walkthechat\Model\ResourceModel\Queue $resource,
+        \Divante\Walkthechat\Model\ResourceModel\Queue\CollectionFactory $queueCollectionFactory,
         \Divante\Walkthechat\Api\Data\QueueSearchResultsInterfaceFactory $searchResultsFactory,
-        \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor
+        \Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface $collectionProcessor,
+        \Divante\Walkthechat\Api\Data\QueueInterfaceFactory $queueFactory
     ) {
         $this->resource               = $resource;
         $this->queueCollectionFactory = $queueCollectionFactory;
         $this->searchResultsFactory   = $searchResultsFactory;
         $this->collectionProcessor    = $collectionProcessor;
+        $this->queueFactory           = $queueFactory;
     }
 
     /**
@@ -62,9 +71,14 @@ class QueueRepository implements \Divante\Walkthechat\Api\QueueRepositoryInterfa
      */
     public function getById($id)
     {
-        $queue = $this->resource->load($id);
+        /** @var \Divante\Walkthechat\Api\Data\QueueInterface $emptyModel */
+        $emptyModel = $this->queueFactory->create();
+
+        /** @var \Divante\Walkthechat\Api\Data\QueueInterface $queue */
+        $queue = $this->resource->load($emptyModel, $id);
+
         if (!$queue->getId()) {
-            throw new NoSuchEntityException(__('Queue with id "%1" does not exist.', $id));
+            throw new \Magento\Framework\Exception\NoSuchEntityException(__('Queue with id "%1" does not exist.', $id));
         }
 
         return $queue;
@@ -74,14 +88,14 @@ class QueueRepository implements \Divante\Walkthechat\Api\QueueRepositoryInterfa
      * @param \Divante\Walkthechat\Api\Data\QueueInterface $queue
      *
      * @return \Divante\Walkthechat\Api\Data\QueueInterface
-     * @throws CouldNotSaveException
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
      */
     public function save(\Divante\Walkthechat\Api\Data\QueueInterface $queue)
     {
         try {
             $this->resource->save($queue);
         } catch (\Exception $exception) {
-            throw new CouldNotSaveException(
+            throw new \Magento\Framework\Exception\CouldNotSaveException(
                 __('Could not save the queue: %1', $exception->getMessage()),
                 $exception
             );
@@ -93,15 +107,15 @@ class QueueRepository implements \Divante\Walkthechat\Api\QueueRepositoryInterfa
     /**
      * @param \Divante\Walkthechat\Api\Data\QueueInterface $queue
      *
-     * @return bool|void
-     * @throws CouldNotDeleteException
+     * @return bool
+     * @throws \Magento\Framework\Exception\CouldNotDeleteException
      */
     public function delete(\Divante\Walkthechat\Api\Data\QueueInterface $queue)
     {
         try {
             $this->resource->delete($queue);
         } catch (\Exception $exception) {
-            throw new CouldNotDeleteException(__('Could not delete the queue: %1', $exception->getMessage()));
+            throw new \Magento\Framework\Exception\CouldNotDeleteException(__('Could not delete the queue: %1', $exception->getMessage()));
         }
 
         return true;
@@ -110,15 +124,18 @@ class QueueRepository implements \Divante\Walkthechat\Api\QueueRepositoryInterfa
     /**
      * @param \Magento\Framework\Api\SearchCriteriaInterface $criteria
      *
-     * @return \Divante\Walkthechat\Api\Data\QueueSearchResultInterface
+     * @return \Divante\Walkthechat\Api\Data\QueueSearchResultsInterface
      */
     public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria)
     {
+        /** @var \Divante\Walkthechat\Model\ResourceModel\Queue\Collection $collection */
         $collection = $this->queueCollectionFactory->create();
 
         $this->collectionProcessor->process($criteria, $collection);
 
+        /** @var \Divante\Walkthechat\Api\Data\QueueSearchResultsInterface $searchResults */
         $searchResults = $this->searchResultsFactory->create();
+
         $searchResults->setSearchCriteria($criteria);
         $searchResults->setItems($collection->getItems());
         $searchResults->setTotalCount($collection->getSize());

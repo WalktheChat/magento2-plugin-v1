@@ -3,8 +3,8 @@
     <event name="catalog_product_save_after">
         <observer name="walkthechat_catalog_product_save_after" instance="Divante\Walkthechat\Observer\CatalogProductSaveAfter" />
     </event>
-    <event name="catalog_product_delete_after">
-        <observer name="walkthechat_catalog_product_delete_after" instance="Divante\Walkthechat\Observer\CatalogProductDeleteAfter" />
+    <event name="catalog_product_delete_before">
+        <observer name="walkthechat_catalog_product_delete_before" instance="Divante\Walkthechat\Observer\CatalogProductDeleteBefore" />
     </event>
     <event name="sales_order_save_after">
         <observer name="walkthechat_sales_order_save_after" instance="Divante\Walkthechat\Observer\SalesOrderSaveAfter" />

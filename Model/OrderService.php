@@ -1,11 +1,17 @@
 <?php
-namespace Divante\Walkthechat\Model;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Model;
+
+/**
+ * Class OrderService
+ *
+ * @package Divante\Walkthechat\Model
  */
 class OrderService
 {
@@ -41,12 +47,13 @@ class OrderService
 
     /**
      * OrderService constructor.
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
-     * @param \Magento\Quote\Model\QuoteManagement $quoteManagement
-     * @param \Magento\Sales\Model\OrderRepository $orderRepository
+     *
+     * @param \Magento\Store\Model\StoreManagerInterface   $storeManager
+     * @param \Magento\Quote\Model\QuoteFactory            $quoteFactory
+     * @param \Magento\Quote\Model\QuoteManagement         $quoteManagement
+     * @param \Magento\Sales\Model\OrderRepository         $orderRepository
      * @param \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param \Magento\Catalog\Model\ProductRepository $productRepository
+     * @param \Magento\Catalog\Model\ProductRepository     $productRepository
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -55,35 +62,34 @@ class OrderService
         \Magento\Sales\Model\OrderRepository $orderRepository,
         \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
         \Magento\Catalog\Model\ProductRepository $productRepository
-    )
-    {
-        $this->storeManager = $storeManager;
-        $this->quoteFactory = $quoteFactory;
-        $this->quoteManagement = $quoteManagement;
-        $this->orderRepository = $orderRepository;
+    ) {
+        $this->storeManager          = $storeManager;
+        $this->quoteFactory          = $quoteFactory;
+        $this->quoteManagement       = $quoteManagement;
+        $this->orderRepository       = $orderRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->productRepository = $productRepository;
+        $this->productRepository     = $productRepository;
     }
 
     /**
      * Create/update order
      *
      * @param $data
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function processImportRequest($data)
     {
         $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter('walkthechat_id', $data['id'], 'eq')
+            ->addFilter(\Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE, $data['id'], 'eq')
             ->create();
 
         $orderList = $this->orderRepository->getList($searchCriteria)
-            ->getItems();
+                                           ->getItems();
 
         if (isset($orderList[0])) {
             $order = $orderList[0];
-
             // TO-DO update order status once we know data structure
         } else {
             $store = $this->storeManager->getStore();
@@ -105,15 +111,15 @@ class OrderService
 
             $shippingAddress = $quote->getShippingAddress();
             $shippingAddress->setCollectShippingRates(true)
-                ->collectShippingRates()
-                ->setShippingMethod('freeshipping_freeshipping');
+                            ->collectShippingRates()
+                            ->setShippingMethod('freeshipping_freeshipping');
 
             $quote->setPaymentMethod('checkmo');
             $quote->save();
 
             $quote->getPayment()->importData(['method' => 'checkmo']);
             $quote->collectTotals()
-                ->save();
+                  ->save();
 
             $this->quoteManagement->submit($quote);
         }

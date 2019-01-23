@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Model;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Model;
+
+/**
+ * Class ShippingService
+ *
+ * @package Divante\Walkthechat\Model
  */
 class ShippingService
 {
@@ -15,10 +20,23 @@ class ShippingService
      */
     protected $helper;
 
+    /**
+     * @var \Magento\OfflineShipping\Model\ResourceModel\Carrier\Tablerate\CollectionFactory
+     */
     protected $collectionFactory;
 
+    /**
+     * @var \Divante\Walkthechat\Service\ShippingZonesRepository
+     */
     protected $shippingZonesRepository;
 
+    /**
+     * ShippingService constructor.
+     *
+     * @param \Divante\Walkthechat\Helper\Data                                                 $helper
+     * @param \Magento\OfflineShipping\Model\ResourceModel\Carrier\Tablerate\CollectionFactory $collectionFactory
+     * @param \Divante\Walkthechat\Service\ShippingZonesRepository                             $shippingZonesRepository
+     */
     public function __construct(
         \Divante\Walkthechat\Helper\Data $helper,
         \Magento\OfflineShipping\Model\ResourceModel\Carrier\Tablerate\CollectionFactory $collectionFactory,
@@ -33,7 +51,6 @@ class ShippingService
      * Sync Table Rates with Walkthechat
      *
      * @return bool
-     * @throws \Zend_Http_Client_Exception
      */
     public function sync()
     {
@@ -54,7 +71,9 @@ class ShippingService
                 }
             }
 
+            /** @var \Magento\OfflineShipping\Model\ResourceModel\Carrier\Tablerate\Collection $collection */
             $collection = $this->collectionFactory->create();
+
             $collection->addFieldToFilter('condition_name', $this->helper->getTableRateConditionName());
             $collection->setOrder('condition_value', 'DESC');
             $collection->load();
@@ -65,7 +84,7 @@ class ShippingService
                 $rates[$row->getDestCountryId()][$row->getConditionValue()] = $row->getPrice();
             }
 
-            foreach ($rates as $code => $rates) {
+            foreach ($rates as $code => $rate) {
                 $data = [
                     'name'      => [
                         'en' => $code,
@@ -77,7 +96,7 @@ class ShippingService
                 ];
 
                 $max = 999999999;
-                foreach ($rates as $min => $value) {
+                foreach ($rate as $min => $value) {
                     $name = $code.' '.$min.'-'.$max;
 
                     $data['rates'][] = [

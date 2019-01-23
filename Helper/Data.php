@@ -1,14 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Helper;
-
-use Magento\TestFramework\Event\Magento;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Helper;
+
+/**
+ * Class Data
+ *
+ * @package Divante\Walkthechat\Helper
  */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -54,6 +57,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Return x-token-access from configuration
+     *
      * @return string
      */
     public function getToken()
@@ -62,6 +67,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Return project id from configuration
+     *
      * @return string
      */
     public function getProjectId()
@@ -70,6 +77,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Return shop name from configuration
+     *
      * @return string
      */
     public function getShopName()
@@ -78,6 +87,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Return app ID from configuration
+     *
      * @return string
      */
     public function getAppId()
@@ -86,6 +97,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Return app key from configuration
+     *
      * @return string
      */
     public function getAppKey()
@@ -94,6 +107,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Check if integration connected
+     *
      * @return boolean
      */
     public function isConnected()
@@ -102,6 +117,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Checks if all necessary data was set to try to connect
+     *
      * @return boolean
      */
     public function canConnect()
@@ -110,6 +127,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Checks if product synchronisation is enabled
+     *
      * @return boolean
      */
     public function isEnabledProductSync()
@@ -118,6 +137,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Checks if order synchronisation is enabled
+     *
      * @return boolean
      */
     public function isEnabledOrderSync()
@@ -126,6 +147,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Checks if currency conversation is enabled
+     *
      * @return boolean
      */
     public function isCurrencyConversionActive()
@@ -134,6 +157,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Checks if table rate shipping is enabled
+     *
      * @return boolean
      */
     public function isTableRateActive()
@@ -142,6 +167,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Return table rate condition name
+     *
      * @return string
      */
     public function getTableRateConditionName()
@@ -150,6 +177,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Return table rate condition rate
+     *
      * @return string
      */
     public function getCurrencyConversionRate()
@@ -158,6 +187,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Return table rate condition method
+     *
      * @return string
      */
     public function getCurrencyConversionMethod()
@@ -179,6 +210,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Return API url
+     *
      * @return string
      */
     public function getApiUrl()
@@ -237,11 +270,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param \Magento\Catalog\Model\Product $product
      * @param bool                           $isNew
+     * @param array                          $imagesData
      *
      * @return array
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function prepareProductData($product, $isNew = true)
+    public function prepareProductData($product, $isNew = true, array $imagesData = [])
     {
         $mainPrice        = $this->convertPrice($product->getPrice());
         $mainSpecialPrice = $this->convertPrice($product->getSpecialPrice());
@@ -251,6 +285,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'visibility'            => $product->getVisibility() != \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE,
             'displayPrice'          => $mainPrice,
             'displayCompareAtPrice' => $mainSpecialPrice,
+            'images'                => $imagesData['main'] ?? [],
             'variants'              => [
                 [
                     'id'                => $product->getId(),
@@ -266,6 +301,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             ],
         ];
 
+        // if is "update" action - don't update the title and description
         if ($isNew) {
             $data['title'] = [
                 'en' => $product->getName(),
@@ -285,6 +321,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
             $data['variantOptions'] = [];
 
+            // send all available options in configurable product
             foreach ($configurableOptions as $option) {
                 foreach ($option as $variation) {
                     $data['variantOptions'][] = $variation['attribute_code'];
@@ -297,7 +334,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $children = $product->getTypeInstance()->getUsedProducts($product);
 
             if ($children) {
-                $data['variants'] = [];
+                // if product is configurable - remove main product variant
+                $data['variants'][0] = [];
 
                 foreach ($children as $k => $child) {
                     $data['variants'][$k] = [
@@ -312,12 +350,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                         'taxable'           => (bool)$child->getTaxClassId(),
                     ];
 
+                    $imageData = $imagesData['children'][$child->getId()] ?? [];
+
+                    // add images to each variant
+                    if ($imageData && is_array($imageData)) {
+                        $data['variants'][$k]['images'] = $imageData;
+                    }
+
+                    // if is "update" action - don't update the title
                     if ($isNew) {
                         $data['variants'][$k]['title'] = [
                             'en' => $child->getName(),
                         ];
                     }
 
+                    // add available options for current variant
                     foreach ($data['variantOptions'] as $n => $attributeCode) {
                         $data['variants'][$k]['options'][] = [
                             'id'       => $attributeCode,
@@ -340,12 +387,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Prepare order data for API
      *
-     * @param \Magento\Sales\Model\Order $order
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
      *
      * @return array
      */
-    public function prepareOrderData($order)
+    public function prepareOrderData(\Magento\Sales\Api\Data\OrderInterface $order)
     {
+        /** @var \Magento\Sales\Model\Order $order */
+
         $data = [
             'id' => $order->getWalkthechatId(),
         ];
@@ -395,14 +444,28 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return string|null
      */
-    public function getWalkTheChatAttribute(\Magento\Catalog\Api\Data\ProductInterface $product)
+    public function getWalkTheChatAttributeValue(\Magento\Catalog\Api\Data\ProductInterface $product)
     {
-        $walkTheChatIdAttribute = $product->getCustomAttribute('walkthechat_id');
+        $value = null;
 
+        $walkTheChatIdAttribute = $product->getCustomAttribute(
+            \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE
+        );
+
+        // try to fetch from loaded data first, if noting then make a separate request
         if ($walkTheChatIdAttribute instanceof \Magento\Framework\Api\AttributeValue) {
-            return $walkTheChatIdAttribute->getValue();
+            $value = $walkTheChatIdAttribute->getValue();
+        } else {
+            /** @var \Magento\Catalog\Model\ResourceModel\Product $productResource */
+            $productResource = $product->getResource();
+
+            $value = $productResource->getAttributeRawValue(
+                $product->getId(),
+                \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE,
+                $product->getStore()->getId()
+            );
         }
 
-        return null;
+        return is_string($value) ? $value : null;
     }
 }

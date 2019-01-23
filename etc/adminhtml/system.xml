@@ -60,7 +60,7 @@
                 </field>
                 <field id="round_method" translate="label" type="select" sortOrder="30" showInDefault="1">
                     <label>Round Method</label>
-                    <source_model>Divante\Walkthechat\Model\Config\Source\Roundmethod</source_model>
+                    <source_model>Divante\Walkthechat\Model\Config\Source\RoundMethod</source_model>
                     <depends>
                         <field id="walkthechat_settings/currency/conversion_active">1</field>
                     </depends>

@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Controller\Adminhtml\Product;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Controller\Adminhtml\Product;
+
+/**
+ * Class DeleteAll
+ *
+ * @package Divante\Walkthechat\Controller\Adminhtml\Product
  */
 class DeleteAll extends \Magento\Backend\App\Action
 {
@@ -21,20 +26,36 @@ class DeleteAll extends \Magento\Backend\App\Action
     protected $queueService;
 
     /**
-     * DeleteAll constructor.
+     * @var \Divante\Walkthechat\Api\Data\QueueInterfaceFactory
+     */
+    protected $queueFactory;
+
+    /**
+     * @var \Divante\Walkthechat\Api\QueueRepositoryInterface
+     */
+    protected $queueRepository;
+
+    /**
+     * {@inheritdoc}
      *
-     * @param \Magento\Backend\App\Action\Context             $context
-     * @param \Divante\Walkthechat\Service\ProductsRepository $productsRepository
-     * @param \Divante\Walkthechat\Model\QueueService         $queueService
+     * @param \Divante\Walkthechat\Service\ProductsRepository     $productsRepository
+     * @param \Divante\Walkthechat\Model\QueueService             $queueService
+     * @param \Divante\Walkthechat\Api\Data\QueueInterfaceFactory $queueFactory
+     * @param \Divante\Walkthechat\Api\QueueRepositoryInterface   $queueRepository
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Divante\Walkthechat\Service\ProductsRepository $productsRepository,
-        \Divante\Walkthechat\Model\QueueService $queueService
+        \Divante\Walkthechat\Model\QueueService $queueService,
+        \Divante\Walkthechat\Api\Data\QueueInterfaceFactory $queueFactory,
+        \Divante\Walkthechat\Api\QueueRepositoryInterface $queueRepository
     ) {
-        parent::__construct($context);
         $this->queueProductRepository = $productsRepository;
         $this->queueService           = $queueService;
+        $this->queueFactory           = $queueFactory;
+        $this->queueRepository        = $queueRepository;
+
+        parent::__construct($context);
     }
 
     /**
@@ -49,13 +70,21 @@ class DeleteAll extends \Magento\Backend\App\Action
             $count  = 0;
 
             foreach ($result as $row) {
-                if (isset($row['id'])) {
-                    $data = [
-                        'walkthechat_id' => $row['id'],
-                        'action'         => 'delete',
-                    ];
+                if (
+                    isset($row['id'])
+                    && !$this->queueService->isDuplicate(
+                        $row['id'],
+                        \Divante\Walkthechat\Model\Action\Delete::ACTION,
+                        \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE
+                    )
+                ) {
+                    /** @var \Divante\Walkthechat\Api\Data\QueueInterface $model */
+                    $model = $this->queueFactory->create();
 
-                    $this->queueService->create($data);
+                    $model->setWalkthechatId($row['id']);
+                    $model->setAction(\Divante\Walkthechat\Model\Action\Delete::ACTION);
+
+                    $this->queueRepository->save($model);
 
                     $count++;
                 }

@@ -1,16 +1,23 @@
 <?php
-
-namespace Divante\Walkthechat\Api;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
  */
+
+namespace Divante\Walkthechat\Api;
+
+/**
+ * Interface QueueRepositoryInterface
+ *
+ * @package Divante\Walkthechat\Api
+ */
 interface QueueRepositoryInterface
 {
     /**
+     * Return entity by ID
+     *
      * @param int $id
      *
      * @return \Divante\Walkthechat\Api\Data\QueueInterface
@@ -19,6 +26,8 @@ interface QueueRepositoryInterface
     public function getById($id);
 
     /**
+     * Saves entity
+     *
      * @param \Divante\Walkthechat\Api\Data\QueueInterface $queue
      *
      * @return \Divante\Walkthechat\Api\Data\QueueInterface
@@ -26,6 +35,8 @@ interface QueueRepositoryInterface
     public function save(\Divante\Walkthechat\Api\Data\QueueInterface $queue);
 
     /**
+     * Remove entity
+     *
      * @param \Divante\Walkthechat\Api\Data\QueueInterface $queue
      *
      * @return void
@@ -33,9 +44,11 @@ interface QueueRepositoryInterface
     public function delete(\Divante\Walkthechat\Api\Data\QueueInterface $queue);
 
     /**
+     * Return list of entities
+     *
      * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
      *
-     * @return \Divante\Walkthechat\Api\Data\QueueSearchResultInterface
+     * @return \Divante\Walkthechat\Api\Data\QueueSearchResultsInterface
      */
     public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria);
 }

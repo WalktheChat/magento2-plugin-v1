@@ -1,14 +1,19 @@
 <?php
-
-namespace Divante\Walkthechat\Model\Config\Source;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
  */
-class Roundmethod implements \Magento\Framework\Option\ArrayInterface
+
+namespace Divante\Walkthechat\Model\Config\Source;
+
+/**
+ * Class RoundMethod
+ *
+ * @package Divante\Walkthechat\Model\Config\Source
+ */
+class RoundMethod implements \Magento\Framework\Option\ArrayInterface
 {
     /**
      * Options getter

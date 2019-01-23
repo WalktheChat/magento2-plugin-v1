@@ -1,19 +1,23 @@
 <?php
-
-namespace Divante\Walkthechat\Block\Adminhtml\System\Config;
-
-use Magento\Backend\Block\Template\Context;
-use Magento\Config\Block\System\Config\Form\Field;
-use Magento\Framework\Data\Form\Element\AbstractElement;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
  */
-class Status extends Field
+
+namespace Divante\Walkthechat\Block\Adminhtml\System\Config;
+
+/**
+ * Class Status
+ *
+ * @package Divante\Walkthechat\Block\Adminhtml\System\Config
+ */
+class Status extends \Magento\Config\Block\System\Config\Form\Field
 {
+    /**
+     * @var string
+     */
     protected $_template = 'Divante_Walkthechat::system/config/status.phtml';
 
     /**
@@ -22,27 +26,26 @@ class Status extends Field
     protected $helper;
 
     /**
-     * Constructor
+     * {@inheritdoc}
      *
      * @param \Divante\Walkthechat\Helper\Data $helper
-     * @param Context                          $context
-     * @param array                            $data
      */
     public function __construct(
+        \Magento\Backend\Block\Template\Context $context,
         \Divante\Walkthechat\Helper\Data $helper,
-        Context $context,
         array $data = []
     ) {
-        parent::__construct($context, $data);
         $this->helper = $helper;
+
+        parent::__construct($context, $data);
     }
 
     /**
-     * @param AbstractElement $element
+     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string
      */
-    protected function _getElementHtml(AbstractElement $element)
+    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
         return $this->_toHtml();
     }

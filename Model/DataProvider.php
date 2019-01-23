@@ -18,11 +18,12 @@ class DataProvider extends \Magento\Ui\DataProvider\AbstractDataProvider
     /**
      * @var \Divante\Walkthechat\Api\ApiLogRepositoryInterface
      */
-    private $apiLogRepository;
+    protected $apiLogRepository;
+
     /**
      * @var \Magento\Framework\App\RequestInterface
      */
-    private $request;
+    protected $request;
 
     /**
      * {@inheritdoc}

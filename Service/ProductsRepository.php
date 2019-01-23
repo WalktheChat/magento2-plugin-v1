@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Service;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Service;
+
+/**
+ * Class ProductsRepository
+ *
+ * @package Divante\Walkthechat\Service
  */
 class ProductsRepository extends AbstractService
 {
@@ -39,7 +44,7 @@ class ProductsRepository extends AbstractService
      * @param \Divante\Walkthechat\Service\Resource\Products\Update $productUpdateResource
      */
     public function __construct(
-        Client $serviceClient,
+        \Divante\Walkthechat\Service\Client $serviceClient,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Divante\Walkthechat\Helper\Data $helper,
         \Divante\Walkthechat\Log\ApiLogger $logger,
@@ -68,6 +73,7 @@ class ProductsRepository extends AbstractService
      *
      * @return string|null
      * @throws \Zend_Http_Client_Exception
+     * @throws \Magento\Framework\Exception\CronException
      */
     public function create($data)
     {
@@ -83,6 +89,7 @@ class ProductsRepository extends AbstractService
      *
      * @return mixed
      * @throws \Zend_Http_Client_Exception
+     * @throws \Magento\Framework\Exception\CronException
      */
     public function delete($id)
     {
@@ -94,6 +101,7 @@ class ProductsRepository extends AbstractService
      *
      * @return mixed
      * @throws \Zend_Http_Client_Exception
+     * @throws \Magento\Framework\Exception\CronException
      */
     public function find()
     {
@@ -107,6 +115,7 @@ class ProductsRepository extends AbstractService
      *
      * @return mixed
      * @throws \Zend_Http_Client_Exception
+     * @throws \Magento\Framework\Exception\CronException
      */
     public function update($data)
     {

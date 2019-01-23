@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Controller\Adminhtml\Dashboard;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Controller\Adminhtml\Dashboard;
+
+/**
+ * Class MassDelete
+ *
+ * @package Divante\Walkthechat\Controller\Adminhtml\Dashboard
  */
 class MassDelete extends \Magento\Backend\App\Action
 {
@@ -26,9 +31,8 @@ class MassDelete extends \Magento\Backend\App\Action
     protected $queueRepository;
 
     /**
-     * MassDelete constructor.
+     * {@inheritdoc}
      *
-     * @param \Magento\Backend\App\Action\Context                              $context
      * @param \Magento\Ui\Component\MassAction\Filter                          $filter
      * @param \Divante\Walkthechat\Model\ResourceModel\Queue\CollectionFactory $collectionFactory
      * @param \Divante\Walkthechat\Model\QueueRepository                       $queueRepository
@@ -39,10 +43,11 @@ class MassDelete extends \Magento\Backend\App\Action
         \Divante\Walkthechat\Model\ResourceModel\Queue\CollectionFactory $collectionFactory,
         \Divante\Walkthechat\Model\QueueRepository $queueRepository
     ) {
-        parent::__construct($context);
         $this->filter            = $filter;
         $this->collectionFactory = $collectionFactory;
         $this->queueRepository   = $queueRepository;
+
+        parent::__construct($context);
     }
 
     /**

@@ -1,17 +1,22 @@
 <?php
-
-namespace Divante\Walkthechat\Observer;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
  */
+
+namespace Divante\Walkthechat\Observer;
+
+/**
+ * Class SalesOrderSaveAfter
+ *
+ * @package Divante\Walkthechat\Observer
+ */
 class SalesOrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
 {
     /**
-     * @var \Divante\Walkthechat\Model\QueueFactory
+     * @var \Divante\Walkthechat\Api\Data\QueueInterfaceFactory
      */
     protected $queueFactory;
 
@@ -26,20 +31,28 @@ class SalesOrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
     protected $helper;
 
     /**
+     * @var \Divante\Walkthechat\Model\QueueService
+     */
+    protected $queueService;
+
+    /**
      * CatalogProductSaveAfter constructor.
      *
-     * @param \Divante\Walkthechat\Model\QueueFactory    $queueFactory
-     * @param \Divante\Walkthechat\Model\QueueRepository $queueRepository
-     * @param \Divante\Walkthechat\Helper\Data           $helper
+     * @param \Divante\Walkthechat\Api\Data\QueueInterfaceFactory $queueFactory
+     * @param \Divante\Walkthechat\Model\QueueRepository          $queueRepository
+     * @param \Divante\Walkthechat\Helper\Data                    $helper
+     * @param \Divante\Walkthechat\Model\QueueService             $queueService
      */
     public function __construct(
-        \Divante\Walkthechat\Model\QueueFactory $queueFactory,
+        \Divante\Walkthechat\Api\Data\QueueInterfaceFactory $queueFactory,
         \Divante\Walkthechat\Model\QueueRepository $queueRepository,
-        \Divante\Walkthechat\Helper\Data $helper
+        \Divante\Walkthechat\Helper\Data $helper,
+        \Divante\Walkthechat\Model\QueueService $queueService
     ) {
         $this->queueFactory    = $queueFactory;
         $this->queueRepository = $queueRepository;
         $this->helper          = $helper;
+        $this->queueService    = $queueService;
     }
 
     /**
@@ -54,10 +67,20 @@ class SalesOrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
         if ($this->helper->isEnabledOrderSync()) {
             $order = $observer->getEvent()->getOrder();
 
-            if ($order instanceof \Magento\Sales\Model\Order) {
+            if (
+                $order instanceof \Magento\Sales\Model\Order
+                && !$this->queueService->isDuplicate(
+                    $order->getId(),
+                    \Divante\Walkthechat\Model\Action\Update::ACTION,
+                    'order_id'
+                )
+            ) {
+                /** @var \Divante\Walkthechat\Api\Data\QueueInterface $model */
                 $model = $this->queueFactory->create();
+
                 $model->setOrderId($order->getId());
-                $model->setAction('update');
+                $model->setAction(\Divante\Walkthechat\Model\Action\Update::ACTION);
+
                 $this->queueRepository->save($model);
             }
         }

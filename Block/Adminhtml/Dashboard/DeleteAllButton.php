@@ -40,7 +40,10 @@ class DeleteAllButton implements \Magento\Framework\View\Element\UiComponent\Con
     {
         return [
             'label'      => __('Delete All Products from Walkthechat'),
-            'on_click'   => sprintf('deleteConfirm("Are you sure you want to delete products from WalkTheChat?", "%s")', $this->getDeleteAllUrl()),
+            'on_click'   => sprintf(
+                'deleteConfirm("This will delete ALL products from your WalktheChat store.<br><br>Are you sure you want to proceed?", "%s")',
+                $this->getDeleteAllUrl()
+            ),
             'class'      => 'delete',
             'sort_order' => 500,
         ];
