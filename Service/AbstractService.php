@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Service;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Service;
+
+/**
+ * Class AbstractService
+ *
+ * @package Divante\Walkthechat\Service
  */
 abstract class AbstractService
 {
@@ -55,12 +60,13 @@ abstract class AbstractService
      *
      * @param \Divante\Walkthechat\Service\Resource\AbstractResource $resource
      * @param array                                                  $params
+     * @param bool                                                   $isImageUpload
      *
      * @return mixed
-     * @throws \Zend_Http_Client_Exception
      * @throws \Magento\Framework\Exception\CronException
+     * @throws \Zend_Http_Client_Exception
      */
-    public function request($resource, $params = [])
+    public function request($resource, $params = [], $isImageUpload = false)
     {
         $headers = $resource->getHeaders();
 
@@ -72,9 +78,11 @@ abstract class AbstractService
             $path = str_replace(':id', $params['id'], $path);
         }
 
-        $params['projectId'] = $this->helper->getProjectId();
+        if (!$isImageUpload) {
+            $params['projectId'] = $this->helper->getProjectId();
+        }
 
-        $response = $this->serviceClient->request($resource->getType(), $path, $params, $headers);
+        $response = $this->serviceClient->request($resource->getType(), $path, $params, $headers, $isImageUpload);
 
         $this->logger->log($resource, $params, $response);
 

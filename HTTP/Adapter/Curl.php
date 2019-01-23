@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\HTTP\Adapter;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\HTTP\Adapter;
+
+/**
+ * Class Curl
+ *
+ * @package Divante\Walkthechat\HTTP\Adapter
  */
 class Curl extends \Magento\Framework\HTTP\Adapter\Curl
 {
@@ -21,17 +26,23 @@ class Curl extends \Magento\Framework\HTTP\Adapter\Curl
      *
      * @return string Request as text
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @throws \Zend_Uri_Exception
      */
     public function write($method, $url, $http_ver = '1.1', $headers = [], $body = '')
     {
         if ($url instanceof \Zend_Uri_Http) {
             $url = $url->getUri();
         }
+
         $this->_applyConfig();
 
         // set url to post to
         curl_setopt($this->_getResource(), CURLOPT_URL, $url);
         curl_setopt($this->_getResource(), CURLOPT_RETURNTRANSFER, true);
+
+        // debug option (logs of connections shows in terminal)
+        curl_setopt($this->_getResource(), CURLOPT_VERBOSE, 1);
+
         if ($method == \Zend_Http_Client::POST) {
             curl_setopt($this->_getResource(), CURLOPT_POST, true);
             curl_setopt($this->_getResource(), CURLOPT_CUSTOMREQUEST, 'POST');
@@ -57,6 +68,7 @@ class Curl extends \Magento\Framework\HTTP\Adapter\Curl
          * @internal Curl options setter have to be re-factored
          */
         $header = isset($this->_config['header']) ? $this->_config['header'] : true;
+
         curl_setopt($this->_getResource(), CURLOPT_HEADER, $header);
 
         return $body;

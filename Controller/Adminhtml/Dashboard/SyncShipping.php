@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Controller\Adminhtml\Dashboard;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Controller\Adminhtml\Dashboard;
+
+/**
+ * Class SyncShipping
+ *
+ * @package Divante\Walkthechat\Controller\Adminhtml\Dashboard
  */
 class SyncShipping extends \Magento\Backend\App\Action
 {
@@ -21,9 +26,8 @@ class SyncShipping extends \Magento\Backend\App\Action
     protected $shippingService;
 
     /**
-     * SyncShipping constructor.
+     * {@inheritdoc}
      *
-     * @param \Magento\Backend\App\Action\Context        $context
      * @param \Divante\Walkthechat\Helper\Data           $helper
      * @param \Divante\Walkthechat\Model\ShippingService $shippingService
      */
@@ -32,14 +36,14 @@ class SyncShipping extends \Magento\Backend\App\Action
         \Divante\Walkthechat\Helper\Data $helper,
         \Divante\Walkthechat\Model\ShippingService $shippingService
     ) {
-        parent::__construct($context);
         $this->helper          = $helper;
         $this->shippingService = $shippingService;
+
+        parent::__construct($context);
     }
 
     /**
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
-     * @throws \Zend_Http_Client_Exception
      */
     public function execute()
     {

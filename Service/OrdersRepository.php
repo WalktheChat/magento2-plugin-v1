@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Service;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Service;
+
+/**
+ * Class OrdersRepository
+ *
+ * @package Divante\Walkthechat\Service
  */
 class OrdersRepository extends AbstractService
 {
@@ -27,7 +32,7 @@ class OrdersRepository extends AbstractService
      * @param Resource\Orders\Parcels\Create $orderParcelCreateResource
      */
     public function __construct(
-        Client $serviceClient,
+        \Divante\Walkthechat\Service\Client $serviceClient,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Divante\Walkthechat\Helper\Data $helper,
         \Divante\Walkthechat\Log\ApiLogger $logger,
@@ -50,6 +55,7 @@ class OrdersRepository extends AbstractService
      *
      * @param $data
      *
+     * @throws \Magento\Framework\Exception\CronException
      * @throws \Zend_Http_Client_Exception
      */
     public function update($data)

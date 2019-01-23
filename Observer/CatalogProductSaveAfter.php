@@ -1,17 +1,22 @@
 <?php
-
-namespace Divante\Walkthechat\Observer;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
  */
+
+namespace Divante\Walkthechat\Observer;
+
+/**
+ * Class CatalogProductSaveAfter
+ *
+ * @package Divante\Walkthechat\Observer
+ */
 class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterface
 {
     /**
-     * @var \Divante\Walkthechat\Model\QueueFactory
+     * @var \Divante\Walkthechat\Api\Data\QueueInterfaceFactory
      */
     protected $queueFactory;
 
@@ -34,28 +39,36 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
      * @var \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable
      */
     protected $configurableProductType;
+
     /**
      * @var \Magento\Catalog\Api\ProductRepositoryInterface
      */
-    private $productRepository;
+    protected $productRepository;
+
+    /**
+     * @var \Divante\Walkthechat\Model\QueueService
+     */
+    protected $queueService;
 
     /**
      * CatalogProductSaveAfter constructor.
      *
-     * @param \Divante\Walkthechat\Model\QueueFactory                                    $queueFactory
+     * @param \Divante\Walkthechat\Api\Data\QueueInterfaceFactory                        $queueFactory
      * @param \Divante\Walkthechat\Model\QueueRepository                                 $queueRepository
      * @param \Divante\Walkthechat\Helper\Data                                           $helper
      * @param \Magento\Framework\Registry                                                $registry
      * @param \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableProductType
      * @param \Magento\Catalog\Api\ProductRepositoryInterface                            $productRepository
+     * @param \Divante\Walkthechat\Model\QueueService                                    $queueService
      */
     public function __construct(
-        \Divante\Walkthechat\Model\QueueFactory $queueFactory,
+        \Divante\Walkthechat\Api\Data\QueueInterfaceFactory $queueFactory,
         \Divante\Walkthechat\Model\QueueRepository $queueRepository,
         \Divante\Walkthechat\Helper\Data $helper,
         \Magento\Framework\Registry $registry,
         \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableProductType,
-        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
+        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
+        \Divante\Walkthechat\Model\QueueService $queueService
     ) {
         $this->queueFactory            = $queueFactory;
         $this->queueRepository         = $queueRepository;
@@ -63,6 +76,7 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
         $this->registry                = $registry;
         $this->configurableProductType = $configurableProductType;
         $this->productRepository       = $productRepository;
+        $this->queueService            = $queueService;
     }
 
     /**
@@ -79,13 +93,15 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
             $product = $observer->getProduct();
 
             if ($product instanceof \Magento\Catalog\Model\Product) {
-                $walkTheChatId = $this->helper->getWalkTheChatAttribute($product);
+                $walkTheChatId = $this->helper->getWalkTheChatAttributeValue($product);
 
                 if (!$this->registry->registry('omit_product_update_action')) {
+                    // add main product to queue
                     if ($walkTheChatId) {
                         $this->addProductToQueue($product->getId(), $walkTheChatId);
                     }
 
+                    // if product is a child of exported configurable product - add parent to queue
                     if (in_array($product->getTypeId(), [
                         \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE,
                         \Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL,
@@ -93,7 +109,7 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
                         foreach ($this->configurableProductType->getParentIdsByChild($product->getId()) as $parentId) {
                             $parent = $this->productRepository->getById($parentId);
 
-                            $parentWalkTheChatId = $this->helper->getWalkTheChatAttribute($parent);
+                            $parentWalkTheChatId = $this->helper->getWalkTheChatAttributeValue($parent);
 
                             if ($parentWalkTheChatId) {
                                 $this->addProductToQueue($parentId, $parentWalkTheChatId);
@@ -115,13 +131,19 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
      */
     protected function addProductToQueue($productId, $walkTheChatId)
     {
-        /** @var \Divante\Walkthechat\Model\Queue $model */
-        $model = $this->queueFactory->create();
+        if (!$this->queueService->isDuplicate(
+            $productId,
+            \Divante\Walkthechat\Model\Action\Update::ACTION,
+            'product_id'
+        )) {
+            /** @var \Divante\Walkthechat\Api\Data\QueueInterface $model */
+            $model = $this->queueFactory->create();
 
-        $model->setProductId($productId);
-        $model->setWalkthechatId($walkTheChatId);
-        $model->setAction('update');
+            $model->setProductId($productId);
+            $model->setWalkthechatId($walkTheChatId);
+            $model->setAction(\Divante\Walkthechat\Model\Action\Update::ACTION);
 
-        $this->queueRepository->save($model);
+            $this->queueRepository->save($model);
+        }
     }
 }

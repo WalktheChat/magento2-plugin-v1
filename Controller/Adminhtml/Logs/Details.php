@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Controller\Adminhtml\Logs;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Controller\Adminhtml\Logs;
+
+/**
+ * Class Details
+ *
+ * @package Divante\Walkthechat\Controller\Adminhtml\Logs
  */
 class Details extends \Magento\Backend\App\Action
 {

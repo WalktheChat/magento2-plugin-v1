@@ -1,38 +1,22 @@
 <?php
-
-namespace Divante\Walkthechat\Model;
-
-use Magento\Framework\Model\AbstractModel;
-use Divante\Walkthechat\Api\Data\QueueInterface;
-use Magento\Framework\DataObject\IdentityInterface;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
  */
-class Queue extends AbstractModel implements QueueInterface, IdentityInterface
+
+namespace Divante\Walkthechat\Model;
+
+/**
+ * Class Queue
+ *
+ * @package Divante\Walkthechat\Model
+ */
+class Queue extends \Magento\Framework\Model\AbstractModel implements \Divante\Walkthechat\Api\Data\QueueInterface
 {
     /**
-     *
-     */
-    const CACHE_TAG = 'divante_walkthechat_queue_grid';
-
-    /**
-     * @var string
-     */
-    protected $_cacheTag = 'divante_walkthechat_queue_grid';
-
-    /**
-     * @var string
-     */
-    protected $_eventPrefix = 'divante_walkthechat_queue_grid';
-
-    /**
-     * Initialize resource model
-     *
-     * @return void
+     * {@inheritdoc}
      */
     protected function _construct()
     {
@@ -40,12 +24,98 @@ class Queue extends AbstractModel implements QueueInterface, IdentityInterface
     }
 
     /**
-     * Return unique ID(s) for each object in system
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    public function getIdentities()
+    public function getProductId()
     {
-        return [self::CACHE_TAG.'_'.$this->getId()];
+        return $this->getData(self::PRODUCT_ID);
+    }
+
+    /**
+     * @inheritdoc}
+     */
+    public function setProductId($id)
+    {
+        return $this->setData(self::PRODUCT_ID, $id);
+    }
+
+    /**
+     * @inheritdoc}
+     */
+    public function getOrderId()
+    {
+        return $this->getData(self::ORDER_ID);
+    }
+
+    /**
+     * @inheritdoc}
+     */
+    public function setOrderId($id)
+    {
+        return $this->setData(self::ORDER_ID, $id);
+    }
+
+    /**
+     * @inheritdoc}
+     */
+    public function getWalkthechatId()
+    {
+        return $this->getData(self::WALKTHECHAT_ID);
+    }
+
+    /**
+     * @inheritdoc}
+     */
+    public function setWalkthechatId($id)
+    {
+        return $this->setData(self::WALKTHECHAT_ID, $id);
+    }
+
+    /**
+     * @inheritdoc}
+     */
+    public function getAction()
+    {
+        return $this->getData(self::ACTION);
+    }
+
+    /**
+     * @inheritdoc}
+     */
+    public function setAction($action)
+    {
+        return $this->setData(self::ACTION, $action);
+    }
+
+    /**
+     * @inheritdoc}
+     */
+    public function getCreatedAt()
+    {
+        return $this->getData(self::CREATED_AT);
+    }
+
+    /**
+     * @inheritdoc}
+     */
+    public function setCreatedAt($gsmDate)
+    {
+        return $this->setData(self::CREATED_AT, $gsmDate);
+    }
+
+    /**
+     * @inheritdoc}
+     */
+    public function getProcessedAt()
+    {
+        return $this->getData(self::PROCESSED_AT);
+    }
+
+    /**
+     * @inheritdoc}
+     */
+    public function setProcessedAt($gsmDate)
+    {
+        return $this->setData(self::PROCESSED_AT, $gsmDate);
     }
 }

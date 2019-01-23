@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Service;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Service;
+
+/**
+ * Class ShippingZonesRepository
+ *
+ * @package Divante\Walkthechat\Service
  */
 class ShippingZonesRepository extends AbstractService
 {
@@ -26,18 +31,14 @@ class ShippingZonesRepository extends AbstractService
     protected $shippingZonesDeleteResource;
 
     /**
-     * ShippingZonesRepository constructor.
+     * {@inheritdoc}
      *
-     * @param Client                                                     $serviceClient
-     * @param \Magento\Framework\Json\Helper\Data                        $jsonHelper
-     * @param \Divante\Walkthechat\Helper\Data                           $helper
-     * @param \Divante\Walkthechat\Log\ApiLogger                         $logger
      * @param \Divante\Walkthechat\Service\Resource\ShippingZones\Create $shippingZonesCreateResource
      * @param \Divante\Walkthechat\Service\Resource\ShippingZones\Find   $shippingZonesFindResource
      * @param \Divante\Walkthechat\Service\Resource\ShippingZones\Delete $shippingZonesDeleteResource
      */
     public function __construct(
-        Client $serviceClient,
+        \Divante\Walkthechat\Service\Client $serviceClient,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Divante\Walkthechat\Helper\Data $helper,
         \Divante\Walkthechat\Log\ApiLogger $logger,
@@ -63,6 +64,7 @@ class ShippingZonesRepository extends AbstractService
      * @param $data
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\CronException
      * @throws \Zend_Http_Client_Exception
      */
     public function create($data)
@@ -76,6 +78,7 @@ class ShippingZonesRepository extends AbstractService
      * @param $id
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\CronException
      * @throws \Zend_Http_Client_Exception
      */
     public function delete($id)
@@ -87,6 +90,7 @@ class ShippingZonesRepository extends AbstractService
      * Find shipping zone
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\CronException
      * @throws \Zend_Http_Client_Exception
      */
     public function find()

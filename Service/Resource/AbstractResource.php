@@ -1,26 +1,37 @@
 <?php
-
-namespace Divante\Walkthechat\Service\Resource;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
  */
+
+namespace Divante\Walkthechat\Service\Resource;
+
+/**
+ * Class AbstractResource
+ *
+ * @package Divante\Walkthechat\Service\Resource
+ */
 class AbstractResource
 {
     /**
+     * HTTP Method
+     *
      * @var string
      */
     protected $type = '';
 
     /**
+     * Path to resource
+     *
      * @var string
      */
     protected $path = '';
 
     /**
+     * Custom headers
+     *
      * @var array
      */
     protected $headers = [];

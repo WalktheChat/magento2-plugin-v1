@@ -8,17 +8,12 @@
 
 namespace Divante\Walkthechat\Ui\Component\Listing\Column;
 
-use Magento\Framework\View\Element\UiComponent\ContextInterface;
-use Magento\Framework\View\Element\UiComponentFactory;
-use Magento\Ui\Component\Listing\Columns\Column;
-use Magento\Framework\UrlInterface;
-
 /**
  * Class Actions
  *
  * @package Divante\Walkthechat\Ui\Component\Listing\Column
  */
-class Actions extends Column
+class Actions extends \Magento\Ui\Component\Listing\Columns\Column
 {
     /**
      * Url path
@@ -28,23 +23,19 @@ class Actions extends Column
     const URL_PATH_DETAILS = 'walkthechat/logs/details';
 
     /**
-     * @var UrlInterface
+     * @var \Magento\Framework\UrlInterface
      */
     protected $urlBuilder;
 
     /**
-     * Controller
+     * {@inheritdoc}
      *
-     * @param ContextInterface   $context
-     * @param UiComponentFactory $uiComponentFactory
-     * @param UrlInterface       $urlBuilder
-     * @param array              $components
-     * @param array              $data
+     * @param \Magento\Framework\UrlInterface $urlBuilder
      */
     public function __construct(
-        ContextInterface $context,
-        UiComponentFactory $uiComponentFactory,
-        UrlInterface $urlBuilder,
+        \Magento\Framework\View\Element\UiComponent\ContextInterface $context,
+        \Magento\Framework\View\Element\UiComponentFactory $uiComponentFactory,
+        \Magento\Framework\UrlInterface $urlBuilder,
         array $components = [],
         array $data = []
     ) {
@@ -76,7 +67,7 @@ class Actions extends Column
                         'href'  => $this->urlBuilder->getUrl(
                             self::URL_PATH_DETAILS,
                             [
-                                'entity_id' => $item['entity_id']
+                                'entity_id' => $item['entity_id'],
                             ]
                         ),
                         'label' => __('Details'),

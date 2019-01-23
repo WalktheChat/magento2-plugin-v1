@@ -51,12 +51,12 @@ class ApiLogger
      * Log API into database
      *
      * @param \Divante\Walkthechat\Service\Resource\AbstractResource $requestResource
-     * @param array                                                  $params
+     * @param array|string                                           $params
      * @param \Zend_Http_Response                                    $response
      */
     public function log(
         \Divante\Walkthechat\Service\Resource\AbstractResource $requestResource,
-        array $params,
+        $params,
         \Zend_Http_Response $response
     ) {
         /** @var \Divante\Walkthechat\Api\Data\ApiLogInterface $apiLog */

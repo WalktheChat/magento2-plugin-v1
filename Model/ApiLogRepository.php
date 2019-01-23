@@ -21,7 +21,7 @@ class ApiLogRepository implements \Divante\Walkthechat\Api\ApiLogRepositoryInter
     protected $logResource;
 
     /**
-     * @var \Divante\Walkthechat\Model\ApiLog
+     * @var \Divante\Walkthechat\Api\Data\ApiLogInterfaceFactory
      */
     protected $logFactory;
 
@@ -29,11 +29,11 @@ class ApiLogRepository implements \Divante\Walkthechat\Api\ApiLogRepositoryInter
      * ApiLogRepository constructor.
      *
      * @param \Divante\Walkthechat\Model\ResourceModel\ApiLog      $logResource
-     * @param \Divante\Walkthechat\Model\ApiLog $logFactory
+     * @param \Divante\Walkthechat\Api\Data\ApiLogInterfaceFactory $logFactory
      */
     public function __construct(
         \Divante\Walkthechat\Model\ResourceModel\ApiLog $logResource,
-        \Divante\Walkthechat\Model\ApiLogFactory $logFactory
+        \Divante\Walkthechat\Api\Data\ApiLogInterfaceFactory $logFactory
     ) {
         $this->logResource = $logResource;
         $this->logFactory  = $logFactory;

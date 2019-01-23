@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Service;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Service;
+
+/**
+ * Class Client
+ *
+ * @package Divante\Walkthechat\Service
  */
 class Client
 {
@@ -45,32 +50,41 @@ class Client
     /**
      * Send request to API
      *
-     * @param string $type
-     * @param string $path
-     * @param array  $data
-     * @param array  $headers
+     * @param string       $type
+     * @param string       $path
+     * @param array|string $data
+     * @param array        $headers
+     * @param bool         $isImageUpload
      *
      * @return \Zend_Http_Response
      * @throws \Zend_Http_Client_Exception
      */
-    public function request($type, $path, $data, $headers)
+    public function request($type, $path, $data, $headers, $isImageUpload = false)
     {
         /** @var \Divante\Walkthechat\HTTP\ZendClient $httpClient */
         $httpClient = $this->httpClientFactory->create();
 
-        $httpClient->setUri($this->getEndpoint().$path);
+        $httpClient
+            ->setUri($this->getEndpoint().$path)
+            ->setConfig(['timeout' => 600]); // China is a problematic connection country :)
 
         $headers['accept-encoding'] = 'identity';
 
-        $httpClient->setHeaders($headers);
-
         if ($type == 'POST' || $type == 'PUT') {
-            $httpClient->setParameterPost($data);
+            if ($isImageUpload && isset($data['file'])) {
+                $httpClient->setFileUpload($data['file'], 'file');
+
+                $httpClient->setConfig(['timeout' => 3600]); // China is a problematic connection country :)
+            } else {
+                $httpClient->setParameterPost($data);
+            }
         } elseif ($type == 'GET') {
             $httpClient->setParameterGet($data);
         } elseif ($type == 'PATCH') {
             $httpClient->setRawData(json_encode($data));
         }
+
+        $httpClient->setHeaders($headers);
 
         return $httpClient->request($type);
     }

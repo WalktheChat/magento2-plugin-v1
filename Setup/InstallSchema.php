@@ -155,7 +155,8 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
                         'primary'  => true,
                     ],
                     'Entity Id'
-                )->addColumn(
+                )
+                ->addColumn(
                     \Divante\Walkthechat\Api\Data\QueueInterface::PRODUCT_ID,
                     \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
                     null,
@@ -165,7 +166,8 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
                         'default'  => null,
                     ],
                     'Magento Product Id'
-                )->addColumn(
+                )
+                ->addColumn(
                     \Divante\Walkthechat\Api\Data\QueueInterface::ORDER_ID,
                     \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
                     null,
@@ -175,7 +177,8 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
                         'default'  => null,
                     ],
                     'Magento Order Id'
-                )->addColumn(
+                )
+                ->addColumn(
                     \Divante\Walkthechat\Api\Data\QueueInterface::WALKTHECHAT_ID,
                     \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
                     255,
@@ -184,7 +187,8 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
                         'default'  => null,
                     ],
                     'Walkthechat Id'
-                )->addColumn(
+                )
+                ->addColumn(
                     \Divante\Walkthechat\Api\Data\QueueInterface::ACTION,
                     \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
                     32,
@@ -193,7 +197,8 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
                         'default'  => 'add',
                     ],
                     'Action'
-                )->addColumn(
+                )
+                ->addColumn(
                     \Divante\Walkthechat\Api\Data\QueueInterface::CREATED_AT,
                     \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
                     null,
@@ -202,7 +207,8 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
                         'default'  => \Magento\Framework\DB\Ddl\Table::TIMESTAMP_INIT,
                     ],
                     'Created At'
-                )->addColumn(
+                )
+                ->addColumn(
                     \Divante\Walkthechat\Api\Data\QueueInterface::PROCESSED_AT,
                     \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
                     null,
@@ -211,7 +217,8 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
                         'default'  => null,
                     ],
                     'Processed At'
-                )->addForeignKey(
+                )
+                ->addForeignKey(
                     $installer->getFkName(
                         \Divante\Walkthechat\Model\ResourceModel\Queue::TABLE_NAME,
                         \Divante\Walkthechat\Api\Data\QueueInterface::PRODUCT_ID,
@@ -222,7 +229,8 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
                     $installer->getTable('catalog_product_entity'),
                     'entity_id',
                     \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
-                )->addForeignKey(
+                )
+                ->addForeignKey(
                     $installer->getFkName(
                         \Divante\Walkthechat\Model\ResourceModel\Queue::TABLE_NAME,
                         \Divante\Walkthechat\Api\Data\QueueInterface::ORDER_ID,
@@ -233,7 +241,8 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
                     $installer->getTable('sales_order'),
                     'entity_id',
                     \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
-                )->setComment('Walkthechat Queue Table');
+                )
+                ->setComment('Walkthechat Queue Table');
 
             $installer->getConnection()->createTable($table);
         }
@@ -248,11 +257,11 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
     {
         $connection = $installer->getConnection();
 
-        if (!$connection->tableColumnExists('sales_order', 'walkthechat_id')) {
+        if (!$connection->tableColumnExists('sales_order', \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE)) {
             $connection
                 ->addColumn(
                     $connection->getTableName('sales_order'),
-                    'walkthechat_id',
+                    \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE,
                     [
                         'type'    => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
                         'length'  => 255,

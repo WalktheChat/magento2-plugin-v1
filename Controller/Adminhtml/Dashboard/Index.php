@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Controller\Adminhtml\Dashboard;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Controller\Adminhtml\Dashboard;
+
+/**
+ * Class Index
+ *
+ * @package Divante\Walkthechat\Controller\Adminhtml\Dashboard
  */
 class Index extends \Magento\Backend\App\Action
 {
@@ -16,15 +21,17 @@ class Index extends \Magento\Backend\App\Action
     protected $resultPageFactory;
 
     /**
-     * @param \Magento\Backend\App\Action\Context        $context
+     * {@inheritdoc}
+     *
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory
     ) {
-        parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
+
+        parent::__construct($context);
     }
 
     /**

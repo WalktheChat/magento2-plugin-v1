@@ -1,12 +1,17 @@
 <?php
-
-namespace Divante\Walkthechat\Model;
-
 /**
  * @package   Divante\Walkthechat
  * @author    Divante Tech Team <tech@divante.pl>
  * @copyright 2018 Divante Sp. z o.o.
  * @license   See LICENSE_DIVANTE.txt for license details.
+ */
+
+namespace Divante\Walkthechat\Model;
+
+/**
+ * Class QueueService
+ *
+ * @package Divante\Walkthechat\Model
  */
 class QueueService
 {
@@ -16,110 +21,38 @@ class QueueService
     protected $date;
 
     /**
-     * @var \Divante\Walkthechat\Helper\Data
-     */
-    protected $helper;
-
-    /**
-     * @var \Magento\Catalog\Model\ProductRepository
-     */
-    protected $productRepository;
-
-    /**
-     * @var \Magento\Sales\Model\OrderRepository
-     */
-    protected $orderRepository;
-
-    /**
-     * @var QueueFactory
-     */
-    protected $queueFactory;
-
-    /**
-     * @var QueueRepository
+     * @var \Divante\Walkthechat\Api\QueueRepositoryInterface
      */
     protected $queueRepository;
 
     /**
-     * @var \Magento\Framework\Api\SearchCriteriaInterface
+     * @var \Divante\Walkthechat\Model\ActionFactory
      */
-    protected $searchCriteria;
+    protected $actionFactory;
 
     /**
-     * @var \Magento\Framework\Api\Search\FilterGroup
+     * @var \Magento\Framework\Api\SearchCriteriaBuilder
      */
-    protected $filterGroup;
-
-    /**
-     * @var \Magento\Framework\Api\FilterBuilder
-     */
-    protected $filterBuilder;
-
-    /**
-     * @var \Divante\Walkthechat\Service\ProductsRepository
-     */
-    protected $queueProductRepository;
-
-    /**
-     * @var \Divante\Walkthechat\Service\OrdersRepository
-     */
-    protected $queueOrderRepository;
+    protected $searchCriteriaBuilder;
 
     /**
      * QueueService constructor.
      *
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime     $date
-     * @param \Divante\Walkthechat\Helper\Data                $helper
-     * @param \Magento\Catalog\Model\ProductRepository        $productRepository
-     * @param \Magento\Sales\Model\OrderRepository            $orderRepository
-     * @param QueueFactory                                    $queueFactory
-     * @param QueueRepository                                 $queueRepository
-     * @param \Magento\Framework\Api\SearchCriteriaInterface  $searchCriteria
-     * @param \Magento\Framework\Api\Search\FilterGroup       $filterGroup
-     * @param \Magento\Framework\Api\FilterBuilder            $filterBuilder
-     * @param \Divante\Walkthechat\Service\ProductsRepository $queueProductRepository
-     * @param \Divante\Walkthechat\Service\OrdersRepository   $queueOrderRepository
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime           $date
+     * @param \Divante\Walkthechat\Api\QueueRepositoryInterface     $queueRepository
+     * @param \Divante\Walkthechat\Model\ActionFactory              $actionFactory
+     * @param \Magento\Framework\Api\SearchCriteriaBuilder          $searchCriteriaBuilder
      */
     public function __construct(
         \Magento\Framework\Stdlib\DateTime\DateTime $date,
-        \Divante\Walkthechat\Helper\Data $helper,
-        \Magento\Catalog\Model\ProductRepository $productRepository,
-        \Magento\Sales\Model\OrderRepository $orderRepository,
-        QueueFactory $queueFactory,
-        QueueRepository $queueRepository,
-        \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria,
-        \Magento\Framework\Api\Search\FilterGroup $filterGroup,
-        \Magento\Framework\Api\FilterBuilder $filterBuilder,
-        \Divante\Walkthechat\Service\ProductsRepository $queueProductRepository,
-        \Divante\Walkthechat\Service\OrdersRepository $queueOrderRepository
+        \Divante\Walkthechat\Api\QueueRepositoryInterface $queueRepository,
+        \Divante\Walkthechat\Model\ActionFactory $actionFactory,
+        \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
-        $this->date                   = $date;
-        $this->helper                 = $helper;
-        $this->productRepository      = $productRepository;
-        $this->orderRepository        = $orderRepository;
-        $this->queueFactory           = $queueFactory;
-        $this->queueRepository        = $queueRepository;
-        $this->searchCriteria         = $searchCriteria;
-        $this->filterGroup            = $filterGroup;
-        $this->filterBuilder          = $filterBuilder;
-        $this->queueProductRepository = $queueProductRepository;
-        $this->queueOrderRepository   = $queueOrderRepository;
-    }
-
-    /**
-     * Add new row to queue
-     *
-     * @param array $data
-     *
-     * @return \Divante\Walkthechat\Api\Data\QueueInterface
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
-     */
-    public function create($data)
-    {
-        $model = $this->queueFactory->create();
-        $model->setData($data);
-
-        return $this->queueRepository->save($model);
+        $this->date                  = $date;
+        $this->queueRepository       = $queueRepository;
+        $this->actionFactory         = $actionFactory;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
     /**
@@ -129,17 +62,35 @@ class QueueService
      */
     public function getAllNotProcessed()
     {
-        $this->filterGroup->setFilters([
-            $this->filterBuilder
-                ->setField('processed_at')
-                ->setConditionType('null')
-                ->create(),
-        ]);
+        $this->searchCriteriaBuilder->addFilter('processed_at', true, 'null');
 
-        $this->searchCriteria->setFilterGroups([$this->filterGroup]);
-        $results = $this->queueRepository->getList($this->searchCriteria);
+        /** @var \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria */
+        $searchCriteria = $this->searchCriteriaBuilder->create();
+
+        $results = $this->queueRepository->getList($searchCriteria);
 
         return $results->getItems();
+    }
+
+    /**
+     * @param int|string $id
+     * @param string $action
+     * @param string $idField
+     *
+     * @return bool
+     */
+    public function isDuplicate($id, $action, $idField)
+    {
+        $this->searchCriteriaBuilder->addFilter('action', $action);
+        $this->searchCriteriaBuilder->addFilter($idField, $id);
+        $this->searchCriteriaBuilder->addFilter('processed_at', true, 'null');
+
+        /** @var \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria */
+        $searchCriteria = $this->searchCriteriaBuilder->create();
+
+        $results = $this->queueRepository->getList($searchCriteria);
+
+        return (bool)$results->getItems();
     }
 
     /**
@@ -147,49 +98,17 @@ class QueueService
      *
      * @param \Divante\Walkthechat\Api\Data\QueueInterface $item
      *
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \Magento\Framework\Exception\StateException
-     * @throws \Zend_Http_Client_Exception
+     * @throws \Exception
      */
-    public function sync($item)
+    public function sync(\Divante\Walkthechat\Api\Data\QueueInterface $item)
     {
-        $error = false;
+        $action = $this->actionFactory->create($item->getAction());
 
-        switch ($item->getAction()) {
-            case 'delete':
-                $this->queueProductRepository->delete(['id' => $item->getWalkthechatId()]);
-                break;
-            case 'add':
-                $product = $this->productRepository->getById($item->getProductId());
-                $data    = $this->helper->prepareProductData($product);
-                $id      = $this->queueProductRepository->create($data);
+        $isSuccess = $action->execute($item);
 
-                if ($id) {
-                    $product->setWalkthechatId($id);
-                    $this->productRepository->save($product);
-                } else {
-                    $error = true;
-                }
-                break;
-            case 'update':
-                if ($item->getProductId()) {
-                    $product = $this->productRepository->getById($item->getProductId());
-                    $data    = $this->helper->prepareProductData($product, false);
-
-                    $data['id'] = $item->getWalkthechatId();
-
-                    $this->queueProductRepository->update($data);
-                } elseif ($item->getOrderId()) {
-                    $order = $this->orderRepository->get($item->getOrderId());
-                    $data  = $this->helper->prepareOrderData($order);
-                    $this->queueOrderRepository->update($data);
-                }
-        }
-
-        if (!$error) {
+        if ($isSuccess) {
             $item->setProcessedAt($this->date->gmtDate());
+
             $this->queueRepository->save($item);
         }
     }
