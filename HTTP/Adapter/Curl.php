@@ -41,7 +41,7 @@ class Curl extends \Magento\Framework\HTTP\Adapter\Curl
         curl_setopt($this->_getResource(), CURLOPT_RETURNTRANSFER, true);
 
         // debug option (logs of connections shows in terminal)
-        curl_setopt($this->_getResource(), CURLOPT_VERBOSE, 1);
+        //curl_setopt($this->_getResource(), CURLOPT_VERBOSE, 1);
 
         if ($method == \Zend_Http_Client::POST) {
             curl_setopt($this->_getResource(), CURLOPT_POST, true);

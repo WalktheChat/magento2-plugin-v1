@@ -69,10 +69,11 @@ class SalesOrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 
             if ($order instanceof \Magento\Sales\Model\Order) {
                 foreach ($order->getAllItems() as $item) {
-                    $product = $item->getProduct();
+                    $product       = $item->getProduct();
+                    $walkTheChatId = $product->getWalkthechatId();
 
                     if (
-                        $product->getWalkthechatId()
+                        $walkTheChatId
                         && !$this->queueService->isDuplicate(
                             $product->getId(),
                             \Divante\Walkthechat\Model\Action\Update::ACTION,
@@ -83,6 +84,7 @@ class SalesOrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
                         $model = $this->queueFactory->create();
 
                         $model->setProductId($product->getId());
+                        $model->setWalkthechatId($walkTheChatId);
                         $model->setAction(\Divante\Walkthechat\Model\Action\Update::ACTION);
 
                         $this->queueRepository->save($model);
