@@ -94,9 +94,12 @@ class OrderService
         } else {
             $store = $this->storeManager->getStore();
 
-            $quote = $this->quote->create();
+            /** @var \Magento\Quote\Model\Quote $quote */
+            $quote = $this->quoteFactory->create();
             $quote->setStore($store);
             $quote->setCurrency();
+
+
 
             foreach ($data['items'] as $item) {
                 $product = $this->productRepository->get($item['sku']);

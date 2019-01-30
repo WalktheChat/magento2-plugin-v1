@@ -105,7 +105,7 @@ class Update extends \Divante\Walkthechat\Model\Action\AbstractAction
 
             $this->queueProductRepository->update($data);
 
-            if ($imagesData['_syncImageData']) {
+            if (isset($imagesData['_syncImageData']) && $imagesData['_syncImageData']) {
                 $this->saveImagesToSyncTable($imagesData['_syncImageData']);
             }
         } elseif ($queueItem->getOrderId()) {

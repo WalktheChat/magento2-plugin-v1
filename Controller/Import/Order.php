@@ -13,7 +13,7 @@ namespace Divante\Walkthechat\Controller\Import;
  *
  * @package Divante\Walkthechat\Controller\Import
  */
-class Index extends \Magento\Framework\App\Action\Action
+class Order extends \Magento\Framework\App\Action\Action
 {
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
@@ -54,7 +54,7 @@ class Index extends \Magento\Framework\App\Action\Action
         $this->helper            = $helper;
         $this->request           = $request;
         $this->orderService      = $orderService;
-        
+
         parent::__construct($context);
     }
 
