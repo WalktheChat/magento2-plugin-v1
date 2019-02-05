@@ -36,23 +36,31 @@ class SalesOrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     protected $queueService;
 
     /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $registry;
+
+    /**
      * CatalogProductSaveAfter constructor.
      *
      * @param \Divante\Walkthechat\Api\Data\QueueInterfaceFactory $queueFactory
      * @param \Divante\Walkthechat\Model\QueueRepository          $queueRepository
      * @param \Divante\Walkthechat\Helper\Data                    $helper
      * @param \Divante\Walkthechat\Model\QueueService             $queueService
+     * @param \Magento\Framework\Registry                         $registry
      */
     public function __construct(
         \Divante\Walkthechat\Api\Data\QueueInterfaceFactory $queueFactory,
         \Divante\Walkthechat\Model\QueueRepository $queueRepository,
         \Divante\Walkthechat\Helper\Data $helper,
-        \Divante\Walkthechat\Model\QueueService $queueService
+        \Divante\Walkthechat\Model\QueueService $queueService,
+        \Magento\Framework\Registry $registry
     ) {
         $this->queueFactory    = $queueFactory;
         $this->queueRepository = $queueRepository;
         $this->helper          = $helper;
         $this->queueService    = $queueService;
+        $this->registry        = $registry;
     }
 
     /**
@@ -67,7 +75,15 @@ class SalesOrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         if ($this->helper->isEnabledOrderSync()) {
             $order = $observer->getEvent()->getOrder();
 
-            if ($order instanceof \Magento\Sales\Model\Order) {
+            if (
+                $order instanceof \Magento\Sales\Model\Order
+                && !$this->registry->registry('walkthechat_omit_update_action')
+                && !$this->queueService->isDuplicate(
+                    $order->getId(),
+                    \Divante\Walkthechat\Model\Action\Update::ACTION,
+                    'order_id'
+                )
+            ) {
                 foreach ($order->getAllItems() as $item) {
                     $product       = $item->getProduct();
                     $walkTheChatId = $product->getWalkthechatId();

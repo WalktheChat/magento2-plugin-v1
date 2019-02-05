@@ -95,7 +95,7 @@ class CatalogProductSaveAfter implements \Magento\Framework\Event\ObserverInterf
             if ($product instanceof \Magento\Catalog\Model\Product) {
                 $walkTheChatId = $this->helper->getWalkTheChatAttributeValue($product);
 
-                if (!$this->registry->registry('omit_product_update_action')) {
+                if (!$this->registry->registry('walkthechat_omit_update_action')) {
                     // add main product to queue
                     if ($walkTheChatId) {
                         $this->addProductToQueue($product->getId(), $walkTheChatId);

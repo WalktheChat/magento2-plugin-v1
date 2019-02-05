@@ -10,5 +10,16 @@
                 <order_sync_active>1</order_sync_active>
             </sync>
         </walkthechat_settings>
+        <carriers>
+            <walkthechat>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>Divante\Walkthechat\Model\Carrier\WTCShipping</model>
+                <name>WalkTheChat</name>
+                <title>WalkTheChat</title>
+                <type>I</type>
+                <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+            </walkthechat>
+        </carriers>
     </default>
 </config>
