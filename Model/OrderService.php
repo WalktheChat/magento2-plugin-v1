@@ -46,6 +46,11 @@ class OrderService
     protected $productRepository;
 
     /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $registry;
+
+    /**
      * OrderService constructor.
      *
      * @param \Magento\Store\Model\StoreManagerInterface   $storeManager
@@ -54,6 +59,7 @@ class OrderService
      * @param \Magento\Sales\Model\OrderRepository         $orderRepository
      * @param \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
      * @param \Magento\Catalog\Model\ProductRepository     $productRepository
+     * @param \Magento\Framework\Registry                  $registry
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -61,7 +67,8 @@ class OrderService
         \Magento\Quote\Model\QuoteManagement $quoteManagement,
         \Magento\Sales\Model\OrderRepository $orderRepository,
         \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
-        \Magento\Catalog\Model\ProductRepository $productRepository
+        \Magento\Catalog\Model\ProductRepository $productRepository,
+        \Magento\Framework\Registry $registry
     ) {
         $this->storeManager          = $storeManager;
         $this->quoteFactory          = $quoteFactory;
@@ -69,6 +76,7 @@ class OrderService
         $this->orderRepository       = $orderRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->productRepository     = $productRepository;
+        $this->registry              = $registry;
     }
 
     /**
@@ -96,26 +104,35 @@ class OrderService
 
             /** @var \Magento\Quote\Model\Quote $quote */
             $quote = $this->quoteFactory->create();
+
             $quote->setStore($store);
             $quote->setCurrency();
 
-
-
-            foreach ($data['items'] as $item) {
+            foreach ($data['itemsToFulfill'] as $item) {
                 $product = $this->productRepository->get($item['sku']);
+
                 $quote->addProduct(
                     $product,
                     intval($item['qty'])
                 );
             }
 
+            // set shipping price
+            $this->registry->register(
+                \Divante\Walkthechat\Model\Carrier\WTCShipping::WALKTHECHAT_SHIPPING_PRICE_KEY,
+                (float)$data['shippingRate']['rate']
+            );
+
             $quote->getBillingAddress()->addData($data['billing_address']);
             $quote->getShippingAddress()->addData($data['shipping_address']);
 
+            $quote->setCustomerTaxvat();
+
             $shippingAddress = $quote->getShippingAddress();
-            $shippingAddress->setCollectShippingRates(true)
-                            ->collectShippingRates()
-                            ->setShippingMethod('freeshipping_freeshipping');
+            $shippingAddress
+                ->setCollectShippingRates(true)
+                ->collectShippingRates()
+                ->setShippingMethod('walkthechat');
 
             $quote->setPaymentMethod('checkmo');
             $quote->save();
@@ -124,7 +141,13 @@ class OrderService
             $quote->collectTotals()
                   ->save();
 
-            $this->quoteManagement->submit($quote);
+            $order = $this->quoteManagement->submit($quote);
+
+            if ($order instanceof \Magento\Sales\Api\Data\OrderInterface) {
+                $order->setWalkTheChatId($data['id']);
+
+                $this->orderRepository->save($order);
+            }
         }
     }
 }

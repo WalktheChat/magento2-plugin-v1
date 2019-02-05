@@ -109,7 +109,7 @@ class ProcessQueue
                 $this->initAreaCode();
 
                 // after saving walkthechat_id into product, set flag not to execute observer methods
-                $this->registry->register('omit_product_update_action', true);
+                $this->registry->register('walkthechat_omit_update_action', true);
 
                 $items = $this->queueService->getAllNotProcessed();
 
