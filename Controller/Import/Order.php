@@ -36,24 +36,32 @@ class Order extends \Magento\Framework\App\Action\Action
     protected $orderService;
 
     /**
+     * @var \Magento\Framework\Registry
+     */
+    protected $registry;
+
+    /**
      * {@inheritdoc}
      *
      * @param \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory
      * @param \Divante\Walkthechat\Helper\Data                 $helper
      * @param \Magento\Framework\App\RequestInterface          $request
      * @param \Divante\Walkthechat\Model\OrderService          $orderService
+     * @param \Magento\Framework\Registry                      $registry
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $jsonResultFactory,
         \Divante\Walkthechat\Helper\Data $helper,
         \Magento\Framework\App\RequestInterface $request,
-        \Divante\Walkthechat\Model\OrderService $orderService
+        \Divante\Walkthechat\Model\OrderService $orderService,
+        \Magento\Framework\Registry $registry
     ) {
         $this->jsonResultFactory = $jsonResultFactory;
         $this->helper            = $helper;
         $this->request           = $request;
         $this->orderService      = $orderService;
+        $this->registry          = $registry;
 
         parent::__construct($context);
     }
@@ -71,6 +79,8 @@ class Order extends \Magento\Framework\App\Action\Action
             $params = $this->request->getParams();
 
             try {
+                $this->registry->register('walkthechat_payment_and_shipping_available', true);
+
                 $this->orderService->processImportRequest($params);
             } catch (\Exception $e) {
                 $result->setHttpResponseCode(\Magento\Framework\Webapi\Exception::HTTP_BAD_REQUEST);

@@ -51,7 +51,6 @@ class WTCShipping extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
      *
      * @param \Magento\Shipping\Model\Rate\ResultFactory                  $rateResultFactory
      * @param \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory
-     * @param \Magento\Framework\App\State                                $state
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -59,13 +58,11 @@ class WTCShipping extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
         \Psr\Log\LoggerInterface $logger,
         \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory,
         \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
-        \Magento\Framework\App\State $state,
         \Magento\Framework\Registry $registry,
         array $data = []
     ) {
         $this->rateResultFactory = $rateResultFactory;
         $this->rateMethodFactory = $rateMethodFactory;
-        $this->state             = $state;
         $this->registry          = $registry;
 
         parent::__construct(
@@ -74,20 +71,6 @@ class WTCShipping extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
             $logger,
             $data
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * Allow only in admin panel
-     */
-    public function isActive()
-    {
-        try {
-            return $this->state->getAreaCode() === \Magento\Framework\App\Area::AREA_ADMINHTML;
-        } catch (\Magento\Framework\Exception\LocalizedException $exception) {
-            return false;
-        }
     }
 
     /**
@@ -106,6 +89,10 @@ class WTCShipping extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
     public function collectRates(\Magento\Quote\Model\Quote\Address\RateRequest $request)
     {
         if (!$this->getConfigFlag('active')) {
+            return false;
+        }
+
+        if (!$this->registry->registry('walkthechat_payment_and_shipping_available')) {
             return false;
         }
 

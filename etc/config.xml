@@ -21,5 +21,15 @@
                 <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
             </walkthechat>
         </carriers>
+        <payment>
+            <walkthechat>
+                <order_status>processing</order_status>
+                <model>Divante\Walkthechat\Model\WTCPayment</model>
+                <active>1</active>
+                <title>WalkTheChat</title>
+                <payment_action>true</payment_action>
+                <group>offline</group>
+            </walkthechat>
+        </payment>
     </default>
 </config>
