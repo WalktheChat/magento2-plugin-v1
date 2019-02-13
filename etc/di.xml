@@ -8,6 +8,7 @@
     <preference for="Divante\Walkthechat\Api\Data\QueueSearchResultsInterface" type="Divante\Walkthechat\Model\QueueSearchResults" />
     <preference for="Divante\Walkthechat\Api\Data\ImageSyncSearchResultsInterface" type="Divante\Walkthechat\Model\ImageSyncSearchResults" />
     <preference for="Divante\Walkthechat\Api\Data\ImageSyncInterface" type="Divante\Walkthechat\Model\ImageSync" />
+    <preference for="Divante\Walkthechat\Api\OrderImportInterface" type="Divante\Walkthechat\Model\OrderImport" />
 
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
