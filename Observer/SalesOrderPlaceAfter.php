@@ -76,7 +76,7 @@ class SalesOrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
             $order = $observer->getEvent()->getOrder();
 
             if (
-                $order instanceof \Magento\Sales\Model\Order
+                $order instanceof \Magento\Sales\Api\Data\OrderInterface
                 && !$this->registry->registry('walkthechat_omit_update_action')
                 && !$this->queueService->isDuplicate(
                     $order->getId(),

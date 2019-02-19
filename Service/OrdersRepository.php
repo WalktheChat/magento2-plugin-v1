@@ -26,21 +26,46 @@ class OrdersRepository extends AbstractService
     protected $orderParcelCreateResource;
 
     /**
+     * @var \Divante\Walkthechat\Service\Resource\Orders\Refund
+     */
+    protected $orderRefundResource;
+
+    /**
+     * @var \Magento\Sales\Api\ShipmentRepositoryInterface
+     */
+    protected $shipmentRepository;
+
+    /**
+     * @var \Magento\Sales\Api\CreditmemoRepositoryInterface
+     */
+    protected $creditmemoRepository;
+
+    /**
      * {@inheritdoc}
      *
-     * @param Resource\Orders\Update         $orderUpdateResource
-     * @param Resource\Orders\Parcels\Create $orderParcelCreateResource
+     * @param \Divante\Walkthechat\Service\Resource\Orders\Update         $orderUpdateResource
+     * @param \Divante\Walkthechat\Service\Resource\Orders\Parcels\Create $orderParcelCreateResource
+     * @param \Divante\Walkthechat\Service\Resource\Orders\Refund         $orderRefundResource
+     * @param \Divante\Walkthechat\Service\Resource\Orders\Refund         $orderRefundResource
+     * @param \Magento\Sales\Api\ShipmentRepositoryInterface              $shipmentRepository
+     * @param \Magento\Sales\Api\CreditmemoRepositoryInterface            $creditmemoRepository
      */
     public function __construct(
         \Divante\Walkthechat\Service\Client $serviceClient,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Divante\Walkthechat\Helper\Data $helper,
         \Divante\Walkthechat\Log\ApiLogger $logger,
-        Resource\Orders\Update $orderUpdateResource,
-        Resource\Orders\Parcels\Create $orderParcelCreateResource
+        \Divante\Walkthechat\Service\Resource\Orders\Update $orderUpdateResource,
+        \Divante\Walkthechat\Service\Resource\Orders\Parcels\Create $orderParcelCreateResource,
+        \Divante\Walkthechat\Service\Resource\Orders\Refund $orderRefundResource,
+        \Magento\Sales\Api\ShipmentRepositoryInterface $shipmentRepository,
+        \Magento\Sales\Api\CreditmemoRepositoryInterface $creditmemoRepository
     ) {
         $this->orderUpdateResource       = $orderUpdateResource;
         $this->orderParcelCreateResource = $orderParcelCreateResource;
+        $this->orderRefundResource       = $orderRefundResource;
+        $this->shipmentRepository        = $shipmentRepository;
+        $this->creditmemoRepository      = $creditmemoRepository;
 
         parent::__construct(
             $serviceClient,
@@ -60,16 +85,47 @@ class OrdersRepository extends AbstractService
      */
     public function update($data)
     {
-        if (isset($data['status'])) {
-            // TO-DO missing status update method in API
-            //$this->request($this->orderUpdateResource, $data);
+        // proceed order cancellation
+        if ($data['is_canceled']) {
+            // todo: cancel request
         }
 
-        if (isset($data['parcels']) && is_array($data['parcels'])) {
-            foreach ($data['parcels'] as $parcel) {
-                $parcel['id'] = $data['id'];
-                $this->request($this->orderParcelCreateResource, $parcel);
-            }
+        // proceed parcels
+        foreach ($data['parcels'] as $parcel) {
+            $this->request($this->orderParcelCreateResource, $parcel['data']);
+
+            $this->setParcelAsSentToWalkTheChat($parcel['entity']);
         }
+
+        // proceed refunds
+        foreach ($data['refunds'] as $refund) {
+            $this->request($this->orderRefundResource, $refund['data']);
+
+            $this->setRefundAsSentToWalkTheChat($refund['entity']);
+        }
+    }
+
+    /**
+     * Set flag to omit double proceed the same parcel
+     *
+     * @param \Magento\Sales\Api\Data\ShipmentInterface $parcel
+     */
+    protected function setParcelAsSentToWalkTheChat(\Magento\Sales\Api\Data\ShipmentInterface $parcel)
+    {
+        $parcel->setIsSendWithWalkWheChat(true);
+
+        $this->shipmentRepository->save($parcel);
+    }
+
+    /**
+     * Set flag to omit double proceed the same parcel
+     *
+     * @param \Magento\Sales\Api\Data\CreditmemoInterface $refund
+     */
+    protected function setRefundAsSentToWalkTheChat(\Magento\Sales\Api\Data\CreditmemoInterface $refund)
+    {
+        $refund->setIsSendWithWalkWheChat(true);
+
+        $this->creditmemoRepository->save($refund);
     }
 }

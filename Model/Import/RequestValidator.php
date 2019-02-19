@@ -19,17 +19,19 @@ class RequestValidator
      * Validates params and throw exception if validation failed
      *
      * @param string $id
+     * @param mixed  $itemsToFulfill
      * @param array  $items
      * @param array  $deliveryAddress
      * @param array  $shippingRate
      * @param array  $tax
-     * @param array  $coupon
      * @param array  $total
+     *
+     * @param array  $coupon
      *
      * @return array
      * @throws \Magento\Framework\Exception\ValidatorException
      */
-    public function validate($id, $items, $deliveryAddress, $shippingRate, $tax, $total, $coupon)
+    public function validate($id, $itemsToFulfill, $items, $deliveryAddress, $shippingRate, $tax, $total, $coupon)
     {
         $this->validateId($id);
         $this->validateItems($items);
@@ -38,7 +40,16 @@ class RequestValidator
         $this->validateTax($tax);
         $this->validateTotal($total);
 
-        return compact('id', 'items', 'deliveryAddress', 'shippingRate', 'tax', 'total', 'coupon');
+        return compact(
+            'id',
+            'items',
+            'itemsToFulfill',
+            'deliveryAddress',
+            'shippingRate',
+            'tax',
+            'total',
+            'coupon'
+        );
     }
 
     /**

@@ -36,22 +36,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $stockItemRepository;
 
     /**
+     * @var \Magento\Sales\Api\OrderItemRepositoryInterface
+     */
+    protected $orderItemRepository;
+
+    /**
      * Constructor
      *
      * @param \Magento\Framework\App\Helper\Context                     $context
      * @param \Magento\Framework\App\Config\ScopeConfigInterface        $scopeConfig
      * @param \Magento\Backend\Model\UrlInterface                       $urlBackendBuilder $urlBackendBuilder
      * @param \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository
+     * @param \Magento\Sales\Api\OrderItemRepositoryInterface           $orderItemRepository
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Backend\Model\UrlInterface $urlBackendBuilder,
-        \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository
+        \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
+        \Magento\Sales\Api\OrderItemRepositoryInterface $orderItemRepository
     ) {
         $this->scopeConfig         = $scopeConfig;
         $this->urlBackendBuilder   = $urlBackendBuilder;
         $this->stockItemRepository = $stockItemRepository;
+        $this->orderItemRepository = $orderItemRepository;
 
         parent::__construct($context);
     }
@@ -396,43 +404,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         /** @var \Magento\Sales\Model\Order $order */
 
         $data = [
-            'id' => $order->getWalkthechatId(),
+            'is_canceled' => $this->checkCancellation($order),
+            'parcels'     => $this->checkShipments($order),
+            'refunds'     => $this->checkRefund($order),
         ];
-
-        switch ($order->getState()) {
-            case 'new':
-                $data['status'] = 'waiting-for-payment';
-                break;
-            case 'processing':
-                if ($order->hasInvoices() && $order->hasShipments()) {
-                    $data['status'] = 'shipped';
-                } elseif (!$order->hasInvoices() && $order->hasShipments()) {
-                    $data['status'] = 'waiting-for-payment';
-                } elseif ($order->hasInvoices() && !$order->hasShipments()) {
-                    $data['status'] = 'waiting-for-shipment';
-                }
-                break;
-            case 'complete':
-                $tracksCollection = $order->getTracksCollection();
-
-                $data['parcels'] = [];
-
-                foreach ($tracksCollection->getItems() as $track) {
-                    $data['parcels'][] = [
-                        'trackingNumber' => $track->getTrackNumber(),
-                        'carrier'        => $track->getTitle(),
-                    ];
-                }
-
-                $data['status'] = 'shipped';
-                break;
-            case 'closed':
-                $data['status'] = 'refunded';
-                break;
-            case 'canceled':
-                $data['status'] = 'canceled';
-                break;
-        }
 
         return $data;
     }
@@ -467,5 +442,100 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return is_string($value) ? $value : null;
+    }
+
+    /**
+     * Check shipments and return parcel data if exist
+     *
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     *
+     * @return array
+     */
+    protected function checkShipments(\Magento\Sales\Api\Data\OrderInterface $order)
+    {
+        /** @var \Magento\Sales\Model\Order $order */
+
+        $shipmentCollection = $order->getShipmentsCollection();
+
+        $data = [];
+
+        foreach ($shipmentCollection->getItems() as $parcel) {
+            // don't send already sent parcels
+            if (!$parcel->getIsSendWithWalkWheChat()) {
+                foreach ($parcel->getTracks() as $track) {
+                    $data[$parcel->getEntityId()]['data'] = [
+                        'id'             => $order->getWalkthechatId(),
+                        'trackingNumber' => $track->getTrackNumber(),
+                        'carrier'        => $track->getTitle(),
+                    ];
+
+                    break; // take only first tracking number
+                }
+
+                // prepare parcel items before send to WalkTheChat
+                foreach ($parcel->getItems() as $item) {
+                    $orderItem                = $this->orderItemRepository->get($item->getOrderItemId());
+                    $walkTheChatOrderItemData = json_decode($orderItem->getData('walkthechat_item_data'), true);
+
+                    $walkTheChatOrderItemData['quantity'] = $item->getQty();
+
+                    $data[$parcel->getEntityId()]['data']['items'][] = $walkTheChatOrderItemData;
+                }
+
+                $data[$parcel->getEntityId()]['entity'] = $parcel;
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Check if order was canceled
+     *
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     *
+     * @return bool
+     */
+    protected function checkCancellation(\Magento\Sales\Api\Data\OrderInterface $order)
+    {
+        return $order->getState() === \Magento\Sales\Model\Order::STATE_CANCELED;
+    }
+
+    /**
+     * Check if order was refunded
+     *
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     *
+     * @return array
+     */
+    protected function checkRefund(\Magento\Sales\Api\Data\OrderInterface $order)
+    {
+        /** @var \Magento\Sales\Model\Order $order */
+
+        $data       = [];
+        $collection = $order->getCreditmemosCollection();
+
+        foreach ($collection->getItems() as $creditMemo) {
+            // don't send already sent parcels
+            if (!$creditMemo->getIsSendWithWalkWheChat()) {
+                $comments = [];
+
+                foreach ($creditMemo->getComments() as $comment) {
+                    $comments[] = $comment->getComment();
+                }
+
+                $groupComment = implode("\n", $comments);
+
+                $data[$creditMemo->getEntityId()]['data'] = [
+                    'orderId' => $order->getWalkthechatId(),
+                    'amount'  => $this->convertPrice($creditMemo->getGrandTotal()),
+                    'comment' => $groupComment,
+                ];
+
+                $data[$creditMemo->getEntityId()]['entity'] = $creditMemo;
+            }
+        }
+
+        return $data;
     }
 }

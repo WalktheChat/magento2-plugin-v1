@@ -50,11 +50,12 @@ class OrderImport implements \Divante\Walkthechat\Api\OrderImportInterface
     /**
      * {@inheritdoc}
      */
-    public function import($id, $items, $deliveryAddress, $shippingRate, $tax, $total, $coupon = [])
+    public function import($id, $itemsToFulfill, $items, $deliveryAddress, $shippingRate, $tax, $total, $coupon = [])
     {
         try {
             $data = $this->requestValidator->validate(
                 $id,
+                $itemsToFulfill,
                 $items,
                 $deliveryAddress,
                 $shippingRate,

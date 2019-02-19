@@ -41,6 +41,11 @@ class SalesOrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
     protected $registry;
 
     /**
+     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     */
+    protected $orderRepository;
+
+    /**
      * CatalogProductSaveAfter constructor.
      *
      * @param \Divante\Walkthechat\Api\Data\QueueInterfaceFactory $queueFactory
@@ -48,19 +53,22 @@ class SalesOrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
      * @param \Divante\Walkthechat\Helper\Data                    $helper
      * @param \Divante\Walkthechat\Model\QueueService             $queueService
      * @param \Magento\Framework\Registry                         $registry
+     * @param \Magento\Sales\Api\OrderRepositoryInterface         $orderRepository
      */
     public function __construct(
         \Divante\Walkthechat\Api\Data\QueueInterfaceFactory $queueFactory,
         \Divante\Walkthechat\Model\QueueRepository $queueRepository,
         \Divante\Walkthechat\Helper\Data $helper,
         \Divante\Walkthechat\Model\QueueService $queueService,
-        \Magento\Framework\Registry $registry
+        \Magento\Framework\Registry $registry,
+        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
     ) {
         $this->queueFactory    = $queueFactory;
         $this->queueRepository = $queueRepository;
         $this->helper          = $helper;
         $this->queueService    = $queueService;
         $this->registry        = $registry;
+        $this->orderRepository = $orderRepository;
     }
 
     /**
@@ -75,12 +83,21 @@ class SalesOrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
         if ($this->helper->isEnabledOrderSync()) {
             $order = $observer->getEvent()->getOrder();
 
+            // is shipment was called then fetch order from shipment instance
+            if (!$order instanceof \Magento\Sales\Api\Data\OrderInterface) {
+                $shipment = $observer->getEvent()->getShipment();
+
+                if ($shipment instanceof \Magento\Sales\Api\Data\ShipmentInterface) {
+                    $order = $this->orderRepository->get($shipment->getOrderId());
+                }
+            }
+
             if (
-                $order instanceof \Magento\Sales\Model\Order
+                $order instanceof \Magento\Sales\Api\Data\OrderInterface
                 && !$this->registry->registry('walkthechat_omit_update_action')
-                && $order->getWalkTheChatId()
+                && $order->getWalkthechatId()
                 && !$this->queueService->isDuplicate(
-                    $order->getId(),
+                    $order->getEntityId(),
                     \Divante\Walkthechat\Model\Action\Update::ACTION,
                     'order_id'
                 )
@@ -88,7 +105,7 @@ class SalesOrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
                 /** @var \Divante\Walkthechat\Api\Data\QueueInterface $model */
                 $model = $this->queueFactory->create();
 
-                $model->setOrderId($order->getId());
+                $model->setOrderId($order->getEntityId());
                 $model->setAction(\Divante\Walkthechat\Model\Action\Update::ACTION);
 
                 $this->queueRepository->save($model);

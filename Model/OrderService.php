@@ -122,7 +122,7 @@ class OrderService
             $this->setOrderTotals($order, $quote);
 
             $order
-                ->setWalkTheChatId($data['id'])
+                ->setWalkthechatId($data['id'])
                 ->setEmailSent(0);
 
             $this->orderRepository->save($order);
@@ -185,7 +185,7 @@ class OrderService
     {
         /** @var \Magento\Quote\Model\Quote $quote */
 
-        foreach ($data['items']['products'] as $item) {
+        foreach ($data['items']['products'] as $k => $item) {
             $product = $this->productRepository->get($item['variant']['sku']);
 
             $qty       = $item['quantity'];
@@ -204,6 +204,14 @@ class OrderService
                 $quoteItem->setTaxAmount($this->helper->convertPrice($taxAmount, false));
                 $quoteItem->setBaseTaxAmount($taxAmount);
             }
+
+            // set array data to save it into the order entity
+            // so it can be used when order is canceled, refunded or shipped
+            // and Magento -> WalkTheChat request can be filled properly
+            $quoteItem->setData(
+                'walkthechat_item_data',
+                json_encode($data['itemsToFulfill'][$k], JSON_UNESCAPED_UNICODE)
+            );
 
             $this->preparedQuoteItems[$product->getSku()] = clone $quoteItem;
         }
@@ -311,6 +319,8 @@ class OrderService
 
             $item->setTaxAmount($quoteItem->getTaxAmount());
             $item->setBaseTaxAmount($quoteItem->getBaseTaxAmount());
+
+            $item->setData('walkthechat_item_data', $quoteItem->getData('walkthechat_item_data'));
 
             $this->orderItemRepository->save($item);
         }
