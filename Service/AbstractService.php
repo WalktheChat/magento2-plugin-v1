@@ -84,6 +84,7 @@ abstract class AbstractService
 
         $response = $this->serviceClient->request($resource->getType(), $path, $params, $headers, $isImageUpload);
 
+        // log into WalkTheChat log in Admin Panel
         $this->logger->log($resource, $params, $response);
 
         if ($response->getStatus() == 200) {

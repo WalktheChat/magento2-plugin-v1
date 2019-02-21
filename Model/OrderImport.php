@@ -50,11 +50,21 @@ class OrderImport implements \Divante\Walkthechat\Api\OrderImportInterface
     /**
      * {@inheritdoc}
      */
-    public function import($id, $items, $deliveryAddress, $shippingRate, $tax, $total, $coupon = [])
+    public function import($id, $financialStatus, $itemsToFulfill, $items, $deliveryAddress, $shippingRate, $tax, $total, $coupon = [])
     {
+        $om = \Magento\Framework\App\ObjectManager::getInstance();
+
+        $filesystem = $om->get('Magento\Framework\Filesystem');
+        $media = $filesystem->getDirectoryWrite(\Magento\Framework\App\Filesystem\DirectoryList::VAR_DIR);
+
+        $contents = var_export([$id, $financialStatus, $itemsToFulfill, $items, $deliveryAddress, $shippingRate, $tax, $total, $coupon], true);
+        $media->writeFile("wtc_request.txt", $contents);
+
         try {
             $data = $this->requestValidator->validate(
                 $id,
+                $financialStatus,
+                $itemsToFulfill,
                 $items,
                 $deliveryAddress,
                 $shippingRate,

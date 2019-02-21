@@ -17,6 +17,8 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
 {
     /**
      * {@inheritdoc}
+     *
+     * @throws \Zend_Db_Exception
      */
     public function upgrade(
         \Magento\Framework\Setup\SchemaSetupInterface $installer,
@@ -24,6 +26,14 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
     ) {
         if (version_compare($context->getVersion(), '0.2.0', '<')) {
             $this->createImageSyncTable($installer);
+        }
+
+        if (version_compare($context->getVersion(), '0.3.0', '<')) {
+            $this->addOrderWalkthechatItemDataField($installer);
+        }
+
+        if (version_compare($context->getVersion(), '0.4.1', '<')) {
+            $this->addIsSynchronizedWithWalkTheChatField($installer);
         }
     }
 
@@ -113,13 +123,13 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
                         \Divante\Walkthechat\Model\ResourceModel\ImageSync::TABLE_NAME,
                         [
                             \Divante\Walkthechat\Api\Data\ImageSyncInterface::PRODUCT_ID,
-                            \Divante\Walkthechat\Api\Data\ImageSyncInterface::IMAGE_ID
+                            \Divante\Walkthechat\Api\Data\ImageSyncInterface::IMAGE_ID,
                         ],
                         \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE
                     ),
                     [
                         \Divante\Walkthechat\Api\Data\ImageSyncInterface::PRODUCT_ID,
-                        \Divante\Walkthechat\Api\Data\ImageSyncInterface::IMAGE_ID
+                        \Divante\Walkthechat\Api\Data\ImageSyncInterface::IMAGE_ID,
                     ],
                     ['type' => \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE]
                 )
@@ -129,5 +139,66 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
         }
 
         return $this;
+    }
+
+    /**
+     * Add json formatted field for walkthechat representation item
+     *
+     * @param \Magento\Framework\Setup\SchemaSetupInterface $installer
+     */
+    protected function addOrderWalkthechatItemDataField(\Magento\Framework\Setup\SchemaSetupInterface $installer)
+    {
+        $connection = $installer->getConnection();
+
+        if (!$connection->tableColumnExists('sales_order_item', 'walkthechat_item_data')) {
+            $connection
+                ->addColumn(
+                    $installer->getTable('sales_order_item'),
+                    'walkthechat_item_data',
+                    [
+                        'type'    => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                        'length'  => null,
+                        'comment' => 'WalkTheChat item data',
+                    ]
+                );
+        }
+    }
+
+    /**
+     * Add field "is_synchronized_with_walk_the_chat" to "sales_shipment" and "sales_creditmemo" tables
+     *
+     * @param \Magento\Framework\Setup\SchemaSetupInterface $installer
+     */
+    protected function addIsSynchronizedWithWalkTheChatField(
+        \Magento\Framework\Setup\SchemaSetupInterface $installer
+    ) {
+        $connection = $installer->getConnection();
+        $fieldName  = 'is_sent_to_walk_the_chat';
+
+        if (!$connection->tableColumnExists('sales_shipment', $fieldName)) {
+            $connection
+                ->addColumn(
+                    $installer->getTable('sales_shipment'),
+                    $fieldName,
+                    [
+                        'type'    => \Magento\Framework\DB\Ddl\Table::TYPE_BOOLEAN,
+                        'default' => '0',
+                        'comment' => 'Is parcel sent to WalkTheChat?',
+                    ]
+                );
+        }
+
+        if (!$connection->tableColumnExists('sales_creditmemo', $fieldName)) {
+            $connection
+                ->addColumn(
+                    $installer->getTable('sales_creditmemo'),
+                    $fieldName,
+                    [
+                        'type'    => \Magento\Framework\DB\Ddl\Table::TYPE_BOOLEAN,
+                        'default' => '0',
+                        'comment' => 'Is refund sent to WalkTheChat?',
+                    ]
+                );
+        }
     }
 }

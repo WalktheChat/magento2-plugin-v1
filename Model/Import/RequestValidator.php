@@ -19,26 +19,39 @@ class RequestValidator
      * Validates params and throw exception if validation failed
      *
      * @param string $id
+     * @param string $financialStatus
+     * @param mixed  $itemsToFulfill
      * @param array  $items
      * @param array  $deliveryAddress
      * @param array  $shippingRate
      * @param array  $tax
-     * @param array  $coupon
      * @param array  $total
+     *
+     * @param array  $coupon
      *
      * @return array
      * @throws \Magento\Framework\Exception\ValidatorException
      */
-    public function validate($id, $items, $deliveryAddress, $shippingRate, $tax, $total, $coupon)
+    public function validate($id, $financialStatus, $itemsToFulfill, $items, $deliveryAddress, $shippingRate, $tax, $total, $coupon)
     {
         $this->validateId($id);
+        $this->validateStatus($financialStatus);
         $this->validateItems($items);
         $this->validateDeliveryAddress($deliveryAddress);
         $this->validateShippingRate($shippingRate);
         $this->validateTax($tax);
         $this->validateTotal($total);
 
-        return compact('id', 'items', 'deliveryAddress', 'shippingRate', 'tax', 'total', 'coupon');
+        return compact(
+            'id',
+            'items',
+            'itemsToFulfill',
+            'deliveryAddress',
+            'shippingRate',
+            'tax',
+            'total',
+            'coupon'
+        );
     }
 
     /**
@@ -179,6 +192,25 @@ class RequestValidator
 
         throw new \Magento\Framework\Exception\ValidatorException(
             __('Unable to proceed order import. Id was not passed.')
+        );
+    }
+
+    /**
+     * Throws exception if status is not paid
+     *
+     * @param string $financialStatus
+     *
+     * @return bool
+     * @throws \Magento\Framework\Exception\ValidatorException
+     */
+    protected function validateStatus($financialStatus)
+    {
+        if (strtolower($financialStatus) === 'paid') {
+            return true;
+        }
+
+        throw new \Magento\Framework\Exception\ValidatorException(
+            __('Unable to proceed order import. Order is not paid.')
         );
     }
 }

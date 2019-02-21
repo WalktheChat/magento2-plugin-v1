@@ -41,6 +41,11 @@ class ProcessQueue
     protected $directoryList;
 
     /**
+     * @var \Magento\Framework\Filesystem\Directory\WriteInterface
+     */
+    protected $varDirectory;
+
+    /**
      * Locking file (locked)
      *
      * @var string
@@ -53,7 +58,6 @@ class ProcessQueue
      * @var string
      */
     const QUEUE_LOCK_FILE_NAME_UNLOCKED = 'walkthechat_queue';
-
     /**
      * Description of file
      *
@@ -87,7 +91,6 @@ class ProcessQueue
     /**
      * Process items from queue
      *
-     * @throws \Magento\Framework\Exception\FileSystemException
      * @throws \Magento\Framework\Exception\CronException
      * @throws \Exception
      */
@@ -116,17 +119,13 @@ class ProcessQueue
                 foreach ($items as $item) {
                     $this->queueService->sync($item);
                 }
-
-                $this->unlockCron($varDirectory);
             }
         } catch (\Magento\Framework\Exception\FileSystemException $fileSystemException) {
             throw new \Magento\Framework\Exception\CronException(
                 __('Unable to lock the cron. Please check your "var" folder permissions.')
             );
-        } catch (\Exception $exception) {
+        } finally {
             $this->unlockCron($varDirectory);
-
-            throw $exception;
         }
     }
 

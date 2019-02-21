@@ -9,4 +9,7 @@
     <event name="sales_order_save_after">
         <observer name="walkthechat_sales_order_save_after" instance="Divante\Walkthechat\Observer\SalesOrderSaveAfter" />
     </event>
+    <event name="sales_order_shipment_save_after">
+        <observer name="walkthechat_sales_order_shipment_save_after" instance="Divante\Walkthechat\Observer\SalesOrderSaveAfter" />
+    </event>
 </config>
