@@ -180,10 +180,6 @@ class ImageService
             ->getList($this->searchCriteria)
             ->getItems();
 
-        if (!$savedImages) {
-            return [];
-        }
-
         $imagesData = [
             'main'           => [],
             'children'       => [],
