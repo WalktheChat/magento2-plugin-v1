@@ -248,7 +248,7 @@ class OrderService
 
         $quote->setShippingAmount($this->helper->convertPrice($data['total']['grandTotal']['shipping'], false));
         $quote->setBaseShippingAmount($data['total']['grandTotal']['shipping']);
-        $quote->setShippingDescription($data['shippingRate']['name']['en']);
+        $quote->setShippingDescription('WalkTheChat - '.$data['shippingRate']['name']['en']);
 
         $quote->setSubtotal(
             $this->helper->convertPrice($data['total']['grandTotal']['totalWithoutDiscountAndTax'], false)

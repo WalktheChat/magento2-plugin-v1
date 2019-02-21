@@ -38,5 +38,4 @@ class WTCPayment extends \Magento\Payment\Model\Method\AbstractMethod
     {
         return (bool)$this->_registry->registry('walkthechat_payment_and_shipping_available');
     }
-
 }

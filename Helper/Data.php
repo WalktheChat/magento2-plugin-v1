@@ -461,7 +461,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         foreach ($shipmentCollection->getItems() as $parcel) {
             // don't send already sent parcels
-            if (!$parcel->getIsSendWithWalkWheChat()) {
+            if (!$parcel->getIsSentToWalkTheChat()) {
+                // set default values in case tracks were not set
+                $data[$parcel->getEntityId()]['data'] = [
+                    'id'             => $order->getWalkthechatId(),
+                    'trackingNumber' => null,
+                    'carrier'        => null,
+                ];
+
                 foreach ($parcel->getTracks() as $track) {
                     $data[$parcel->getEntityId()]['data'] = [
                         'id'             => $order->getWalkthechatId(),
@@ -496,8 +503,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    protected function checkCancellation(\Magento\Sales\Api\Data\OrderInterface $order)
-    {
+    protected function checkCancellation(
+        \Magento\Sales\Api\Data\OrderInterface $order
+    ) {
         return $order->getState() === \Magento\Sales\Model\Order::STATE_CANCELED;
     }
 
@@ -508,8 +516,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return array
      */
-    protected function checkRefund(\Magento\Sales\Api\Data\OrderInterface $order)
-    {
+    protected function checkRefund(
+        \Magento\Sales\Api\Data\OrderInterface $order
+    ) {
         /** @var \Magento\Sales\Model\Order $order */
 
         $data       = [];
@@ -517,7 +526,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         foreach ($collection->getItems() as $creditMemo) {
             // don't send already sent parcels
-            if (!$creditMemo->getIsSendWithWalkWheChat()) {
+            if (!$creditMemo->getIsSentToWalkTheChat()) {
                 $comments = [];
 
                 foreach ($creditMemo->getComments() as $comment) {

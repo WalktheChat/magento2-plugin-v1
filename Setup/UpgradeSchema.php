@@ -32,7 +32,7 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
             $this->addOrderWalkthechatItemDataField($installer);
         }
 
-        if (version_compare($context->getVersion(), '0.4.0', '<')) {
+        if (version_compare($context->getVersion(), '0.4.1', '<')) {
             $this->addIsSynchronizedWithWalkTheChatField($installer);
         }
     }
@@ -173,7 +173,7 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
         \Magento\Framework\Setup\SchemaSetupInterface $installer
     ) {
         $connection = $installer->getConnection();
-        $fieldName  = 'is_sent_with_walk_the_chat';
+        $fieldName  = 'is_sent_to_walk_the_chat';
 
         if (!$connection->tableColumnExists('sales_shipment', $fieldName)) {
             $connection
@@ -182,7 +182,7 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
                     $fieldName,
                     [
                         'type'    => \Magento\Framework\DB\Ddl\Table::TYPE_BOOLEAN,
-                        'default' => false,
+                        'default' => '0',
                         'comment' => 'Is parcel sent to WalkTheChat?',
                     ]
                 );
@@ -195,7 +195,7 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
                     $fieldName,
                     [
                         'type'    => \Magento\Framework\DB\Ddl\Table::TYPE_BOOLEAN,
-                        'default' => false,
+                        'default' => '0',
                         'comment' => 'Is refund sent to WalkTheChat?',
                     ]
                 );

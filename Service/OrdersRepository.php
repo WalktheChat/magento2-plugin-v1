@@ -112,19 +112,19 @@ class OrdersRepository extends AbstractService
      */
     protected function setParcelAsSentToWalkTheChat(\Magento\Sales\Api\Data\ShipmentInterface $parcel)
     {
-        $parcel->setIsSendWithWalkWheChat(true);
+        $parcel->setIsSentToWalkTheChat(true);
 
         $this->shipmentRepository->save($parcel);
     }
 
     /**
-     * Set flag to omit double proceed the same parcel
+     * Set flag to omit double proceed the same credit memo
      *
      * @param \Magento\Sales\Api\Data\CreditmemoInterface $refund
      */
     protected function setRefundAsSentToWalkTheChat(\Magento\Sales\Api\Data\CreditmemoInterface $refund)
     {
-        $refund->setIsSendWithWalkWheChat(true);
+        $refund->setIsSentToWalkTheChat(true);
 
         $this->creditmemoRepository->save($refund);
     }

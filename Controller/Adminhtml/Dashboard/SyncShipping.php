@@ -49,6 +49,7 @@ class SyncShipping extends \Magento\Backend\App\Action
     {
         if ($this->helper->isTableRateActive()) {
             $this->shippingService->sync();
+
             $this->messageManager->addSuccessMessage(__('Shipping Synced.'));
         } else {
             $this->messageManager->addErrorMessage(__('Table Rate is disabled.'));
