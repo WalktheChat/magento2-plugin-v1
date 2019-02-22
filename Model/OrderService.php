@@ -307,7 +307,7 @@ class OrderService
         $order->setDiscountDescription($quote->getDiscountDescription());
 
         $order->setBaseTotalPaid($quote->getBaseGrandTotal());
-        $order->setTotalPaid($quote->getBaseGrandTotal());
+        $order->setTotalPaid($quote->getGrandTotal());
 
         foreach ($order->getItems() as $item) {
             $quoteItem = $this->preparedQuoteItems[$item->getSku()];
