@@ -87,7 +87,7 @@ class OrdersRepository extends AbstractService
     {
         // proceed order cancellation
         if ($data['is_canceled']) {
-            // todo: cancel request
+            // TODO: cancel request
         }
 
         // proceed parcels

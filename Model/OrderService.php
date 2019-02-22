@@ -294,6 +294,9 @@ class OrderService
         \Magento\Quote\Api\Data\CartInterface $quote
     ) {
         $order->setBaseCurrencyCode($this->baseCurrencyCode);
+        $order->setOrderCurrencyCode($this->baseCurrencyCode);
+
+        $order->setBaseToGlobalRate($this->helper->getCurrencyConversionRate());
 
         $order->setShippingAmount($quote->getShippingAmount());
         $order->setBaseShippingAmount($quote->getBaseShippingAmount());
