@@ -1,9 +1,11 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- * @author    Divante Tech Team <tech@divante.pl>
- * @copyright 2018 Divante Sp. z o.o.
- * @license   See LICENSE_DIVANTE.txt for license details.
+ *
+ * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
+ * @copyright 2019 Divante Sp. z o.o.
+ *
+ * @license   See LICENSE.txt for license details.
  */
 
 namespace Divante\Walkthechat\Model;
@@ -71,11 +73,6 @@ class OrderService
     protected $orderCurrencyCode;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $scopeConfig;
-
-    /**
      * @var string
      */
     protected $baseCurrencyCode;
@@ -92,7 +89,6 @@ class OrderService
      * @param \Divante\Walkthechat\Helper\Data                   $helper
      * @param \Magento\Sales\Api\OrderItemRepositoryInterface    $orderItemRepository
      * @param \Magento\Quote\Api\CartRepositoryInterface         $cartRepository
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -103,8 +99,7 @@ class OrderService
         \Magento\Framework\Registry $registry,
         \Divante\Walkthechat\Helper\Data $helper,
         \Magento\Sales\Api\OrderItemRepositoryInterface $orderItemRepository,
-        \Magento\Quote\Api\CartRepositoryInterface $cartRepository,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Quote\Api\CartRepositoryInterface $cartRepository
     ) {
         $this->storeManager        = $storeManager;
         $this->quoteFactory        = $quoteFactory;
@@ -115,7 +110,6 @@ class OrderService
         $this->helper              = $helper;
         $this->orderItemRepository = $orderItemRepository;
         $this->cartRepository      = $cartRepository;
-        $this->scopeConfig         = $scopeConfig;
     }
 
     /**
@@ -214,7 +208,7 @@ class OrderService
             $quoteItem->setDiscountAmount($discountAmount);
             $quoteItem->setBaseDiscountAmount($discountAmount);
 
-            if ($this->isDifferentCurrency($data['total']['currency'])) {
+            if ($this->helper->isDifferentCurrency($data['total']['currency'])) {
                 $quoteItem->setBaseDiscountAmount($this->helper->convertPrice($discountAmount, false));
             }
 
@@ -226,7 +220,7 @@ class OrderService
                 $quoteItem->setTaxAmount($taxAmount);
                 $quoteItem->setBaseTaxAmount($taxAmount);
 
-                if ($this->isDifferentCurrency($data['total']['currency'])) {
+                if ($this->helper->isDifferentCurrency($data['total']['currency'])) {
                     $quoteItem->setBaseTaxAmount($this->helper->convertPrice($taxAmount, false));
                 }
             }
@@ -284,35 +278,35 @@ class OrderService
         $quote->setShippingAmount($shippingAmount);
         $quote->setBaseShippingAmount($shippingAmount);
 
-        if ($this->isDifferentCurrency($this->orderCurrencyCode)) {
+        if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
             $quote->setBaseShippingAmount($this->helper->convertPrice($shippingAmount, false));
         }
 
         $quote->setSubtotal($subTotal);
         $quote->setBaseSubtotal($subTotal);
 
-        if ($this->isDifferentCurrency($this->orderCurrencyCode)) {
+        if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
             $quote->setBaseSubtotal($this->helper->convertPrice($subTotal, false));
         }
 
         $quote->setSubtotalWithDiscount($subTotalWithDiscount);
         $quote->setBaseSubtotalWithDiscount($subTotalWithDiscount);
 
-        if ($this->isDifferentCurrency($this->orderCurrencyCode)) {
+        if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
             $quote->setBaseSubtotalWithDiscount($this->helper->convertPrice($subTotalWithDiscount, false));
         }
 
         $quote->setTaxAmount($taxAmount);
         $quote->setBaseTaxAmount($taxAmount);
 
-        if ($this->isDifferentCurrency($this->orderCurrencyCode)) {
+        if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
             $quote->setBaseTaxAmount($this->helper->convertPrice($taxAmount, false));
         }
 
         $quote->setDiscountAmount($discountAmount);
         $quote->setBaseDiscountAmount($discountAmount);
 
-        if ($this->isDifferentCurrency($this->orderCurrencyCode)) {
+        if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
             $quote->setBaseDiscountAmount($this->helper->convertPrice($discountAmount, false));
         }
 
@@ -323,7 +317,7 @@ class OrderService
         $quote->setGrandTotal($grandTotal);
         $quote->setBaseGrandTotal($grandTotal);
 
-        if ($this->isDifferentCurrency($this->orderCurrencyCode)) {
+        if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
             $quote->setBaseGrandTotal($this->helper->convertPrice($grandTotal, false));
         }
 
@@ -408,24 +402,5 @@ class OrderService
             'fax'                  => '',
             'save_in_address_book' => false,
         ];
-    }
-
-    /**
-     * Checks if base store currency is differs to order currency
-     *
-     * @param string $orderCurrency
-     *
-     * @return bool
-     */
-    public function isDifferentCurrency($orderCurrency)
-    {
-        if (null === $this->baseCurrencyCode) {
-            $this->baseCurrencyCode = $this->scopeConfig->getValue(
-                \Magento\Directory\Model\Currency::XML_PATH_CURRENCY_BASE,
-                'default'
-            );
-        }
-
-        return strtolower($orderCurrency) !== strtolower($this->baseCurrencyCode);
     }
 }

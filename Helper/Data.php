@@ -1,9 +1,11 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- * @author    Divante Tech Team <tech@divante.pl>
- * @copyright 2018 Divante Sp. z o.o.
- * @license   See LICENSE_DIVANTE.txt for license details.
+ *
+ * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
+ * @copyright 2019 Divante Sp. z o.o.
+ *
+ * @license   See LICENSE.txt for license details.
  */
 
 namespace Divante\Walkthechat\Helper;
@@ -39,6 +41,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Magento\Sales\Api\OrderItemRepositoryInterface
      */
     protected $orderItemRepository;
+
+    /**
+     * @var string
+     */
+    protected $baseCurrencyCode;
 
     /**
      * Constructor
@@ -535,9 +542,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
                 $groupComment = implode("\n", $comments);
 
+                $amount = $creditMemo->getBaseGrandTotal();
+
+                if ($this->isDifferentCurrency($order->getOrderCurrencyCode())) {
+                    $amount = $this->convertPrice($creditMemo->getBaseGrandTotal());
+                }
+
                 $data[$creditMemo->getEntityId()]['data'] = [
                     'orderId' => $order->getWalkthechatId(),
-                    'amount'  => $this->convertPrice($creditMemo->getBaseGrandTotal()),
+                    'amount'  => $amount,
                     'comment' => $groupComment,
                 ];
 
@@ -546,5 +559,24 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return $data;
+    }
+
+    /**
+     * Checks if base store currency is differs to order currency
+     *
+     * @param string $orderCurrency
+     *
+     * @return bool
+     */
+    public function isDifferentCurrency($orderCurrency)
+    {
+        if (null === $this->baseCurrencyCode) {
+            $this->baseCurrencyCode = $this->scopeConfig->getValue(
+                \Magento\Directory\Model\Currency::XML_PATH_CURRENCY_BASE,
+                'default'
+            );
+        }
+
+        return strtolower($orderCurrency) !== strtolower($this->baseCurrencyCode);
     }
 }

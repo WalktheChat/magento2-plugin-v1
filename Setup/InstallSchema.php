@@ -1,9 +1,11 @@
 <?php
 /**
  * @package   Divante\Walkthechat
+ *
  * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
- * @copyright 2018 Divante Sp. z o.o.
- * @license   See LICENSE_DIVANTE.txt for license details.
+ * @copyright 2019 Divante Sp. z o.o.
+ *
+ * @license   See LICENSE.txt for license details.
  */
 
 namespace Divante\Walkthechat\Setup;
@@ -44,10 +46,10 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
      */
     protected function createLogsTable(\Magento\Framework\Setup\SchemaSetupInterface $installer)
     {
-        if (!$installer->tableExists(\Divante\Walkthechat\Model\ResourceModel\ApiLog::MAIN_TABLE)) {
+        if (!$installer->tableExists(\Divante\Walkthechat\Model\ResourceModel\ApiLog::TABLE_NAME)) {
             $table = $installer
                 ->getConnection()
-                ->newTable($installer->getTable(\Divante\Walkthechat\Model\ResourceModel\ApiLog::MAIN_TABLE))
+                ->newTable($installer->getTable(\Divante\Walkthechat\Model\ResourceModel\ApiLog::TABLE_NAME))
                 ->addColumn(
                     \Divante\Walkthechat\Api\Data\ApiLogInterface::ENTITY_ID_FIELD,
                     \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,

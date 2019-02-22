@@ -1,9 +1,11 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- * @author    Divante Tech Team <tech@divante.pl>
- * @copyright 2018 Divante Sp. z o.o.
- * @license   See LICENSE_DIVANTE.txt for license details.
+ *            
+ * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
+ * @copyright 2019 Divante Sp. z o.o.
+ *
+ * @license   See LICENSE.txt for license details.
  */
 
 namespace Divante\Walkthechat\Model\ResourceModel\Queue;
