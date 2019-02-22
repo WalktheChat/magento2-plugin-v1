@@ -80,15 +80,15 @@ class OrderService
     /**
      * OrderService constructor.
      *
-     * @param \Magento\Store\Model\StoreManagerInterface         $storeManager
-     * @param \Magento\Quote\Model\QuoteFactory                  $quoteFactory
-     * @param \Magento\Quote\Model\QuoteManagement               $quoteManagement
-     * @param \Magento\Sales\Model\OrderRepository               $orderRepository
-     * @param \Magento\Catalog\Model\ProductRepository           $productRepository
-     * @param \Magento\Framework\Registry                        $registry
-     * @param \Divante\Walkthechat\Helper\Data                   $helper
-     * @param \Magento\Sales\Api\OrderItemRepositoryInterface    $orderItemRepository
-     * @param \Magento\Quote\Api\CartRepositoryInterface         $cartRepository
+     * @param \Magento\Store\Model\StoreManagerInterface      $storeManager
+     * @param \Magento\Quote\Model\QuoteFactory               $quoteFactory
+     * @param \Magento\Quote\Model\QuoteManagement            $quoteManagement
+     * @param \Magento\Sales\Model\OrderRepository            $orderRepository
+     * @param \Magento\Catalog\Model\ProductRepository        $productRepository
+     * @param \Magento\Framework\Registry                     $registry
+     * @param \Divante\Walkthechat\Helper\Data                $helper
+     * @param \Magento\Sales\Api\OrderItemRepositoryInterface $orderItemRepository
+     * @param \Magento\Quote\Api\CartRepositoryInterface      $cartRepository
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -206,7 +206,6 @@ class OrderService
             $discountAmount = $qty * $item['variant']['discount'];
 
             $quoteItem->setDiscountAmount($discountAmount);
-            $quoteItem->setBaseDiscountAmount($discountAmount);
 
             if ($this->helper->isDifferentCurrency($data['total']['currency'])) {
                 $quoteItem->setBaseDiscountAmount($this->helper->convertPrice($discountAmount, false));
@@ -218,7 +217,6 @@ class OrderService
                 $taxAmount = $qty * ((float)$item['variant']['priceWithDiscount'] * (float)$data['tax']['rate']);
 
                 $quoteItem->setTaxAmount($taxAmount);
-                $quoteItem->setBaseTaxAmount($taxAmount);
 
                 if ($this->helper->isDifferentCurrency($data['total']['currency'])) {
                     $quoteItem->setBaseTaxAmount($this->helper->convertPrice($taxAmount, false));
@@ -276,35 +274,30 @@ class OrderService
         $quote->setShippingDescription('WalkTheChat - '.$data['shippingRate']['name']['en']);
 
         $quote->setShippingAmount($shippingAmount);
-        $quote->setBaseShippingAmount($shippingAmount);
 
         if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
             $quote->setBaseShippingAmount($this->helper->convertPrice($shippingAmount, false));
         }
 
         $quote->setSubtotal($subTotal);
-        $quote->setBaseSubtotal($subTotal);
 
         if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
             $quote->setBaseSubtotal($this->helper->convertPrice($subTotal, false));
         }
 
         $quote->setSubtotalWithDiscount($subTotalWithDiscount);
-        $quote->setBaseSubtotalWithDiscount($subTotalWithDiscount);
 
         if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
             $quote->setBaseSubtotalWithDiscount($this->helper->convertPrice($subTotalWithDiscount, false));
         }
 
         $quote->setTaxAmount($taxAmount);
-        $quote->setBaseTaxAmount($taxAmount);
 
         if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
             $quote->setBaseTaxAmount($this->helper->convertPrice($taxAmount, false));
         }
 
         $quote->setDiscountAmount($discountAmount);
-        $quote->setBaseDiscountAmount($discountAmount);
 
         if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
             $quote->setBaseDiscountAmount($this->helper->convertPrice($discountAmount, false));
@@ -315,7 +308,6 @@ class OrderService
         }
 
         $quote->setGrandTotal($grandTotal);
-        $quote->setBaseGrandTotal($grandTotal);
 
         if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
             $quote->setBaseGrandTotal($this->helper->convertPrice($grandTotal, false));
@@ -364,6 +356,18 @@ class OrderService
 
         foreach ($order->getItems() as $item) {
             $quoteItem = $this->preparedQuoteItems[$item->getSku()];
+
+            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
+                $item->setBaseOriginalPrice($this->helper->convertPrice($quoteItem->getBaseOriginalPrice(), false));
+            }
+
+            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
+                $item->setBasePrice($this->helper->convertPrice($quoteItem->getBasePrice(), false));
+            }
+
+            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
+                $item->setBaseSubtotal($this->helper->convertPrice($quoteItem->getBaseSubtotal(), false));
+            }
 
             $item->setTaxPercent($quoteItem->getTaxPercent());
 
