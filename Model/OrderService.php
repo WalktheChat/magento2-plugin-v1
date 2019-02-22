@@ -286,6 +286,8 @@ class OrderService
         \Magento\Sales\Api\Data\OrderInterface $order,
         \Magento\Quote\Api\Data\CartInterface $quote
     ) {
+        $order->setBaseCurrencyCode($quote->getBaseCurrencyCode());
+
         $order->setShippingAmount($quote->getShippingAmount());
         $order->setBaseShippingAmount($quote->getBaseShippingAmount());
         $order->setShippingDescription($quote->getShippingDescription());
