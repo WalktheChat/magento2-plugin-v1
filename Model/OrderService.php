@@ -325,6 +325,8 @@ class OrderService
     {
         /** @var \Magento\Quote\Model\Quote $quote */
 
+        $this->orderCurrencyCode = $data['total']['currency'];
+
         foreach ($data['items']['products'] as $k => $item) {
             $product = $this->productRepository->get($item['variant']['sku']);
 
@@ -355,7 +357,7 @@ class OrderService
 
             $quoteItem->setDiscountAmount($discountAmount);
 
-            if ($this->helper->isDifferentCurrency($data['total']['currency'])) {
+            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
                 $quoteItem->setBaseDiscountAmount($this->helper->convertPrice($discountAmount, false));
             }
 
@@ -367,7 +369,7 @@ class OrderService
                 $quoteItem->setTaxAmount($taxAmount);
                 $quoteItem->setBaseTaxAmount($taxAmount);
 
-                if ($this->helper->isDifferentCurrency($data['total']['currency'])) {
+                if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
                     $quoteItem->setBaseTaxAmount($this->helper->convertPrice($taxAmount, false));
                 }
             }
@@ -417,8 +419,6 @@ class OrderService
             ->importData(['method' => 'walkthechat']);
 
         $quote->collectTotals();
-
-        $this->orderCurrencyCode = $data['total']['currency'];
 
         $quote->setShippingDescription('WalkTheChat - '.$data['shippingRate']['name']['en']);
 
