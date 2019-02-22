@@ -376,8 +376,10 @@ class OrderService
             $item->setOriginalPrice($quoteItem->getOriginalPrice());
             $item->setBaseOriginalPrice($quoteItem->getBaseOriginalPrice());
 
+            $item->setPrice($quoteItem->getPrice());
             $item->setBasePrice($quoteItem->getBasePrice());
 
+            $item->setRowTotal($quoteItem->getRowTotal());
             $item->setBaseRowTotal($quoteItem->getBaseRowTotal());
 
             $item->setTaxPercent($quoteItem->getTaxPercent());
