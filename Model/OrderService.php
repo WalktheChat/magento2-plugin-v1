@@ -66,6 +66,11 @@ class OrderService
     protected $preparedQuoteItems;
 
     /**
+     * @var string
+     */
+    protected $baseCurrencyCode = 'CNY';
+
+    /**
      * OrderService constructor.
      *
      * @param \Magento\Store\Model\StoreManagerInterface      $storeManager
@@ -244,7 +249,7 @@ class OrderService
 
         $quote->collectTotals();
 
-        $quote->setBaseCurrencyCode($data['total']['currency']);
+        $this->baseCurrencyCode = $data['total']['currency'];
 
         $quote->setShippingAmount($this->helper->convertPrice($data['total']['grandTotal']['shipping'], false));
         $quote->setBaseShippingAmount($data['total']['grandTotal']['shipping']);
@@ -253,11 +258,13 @@ class OrderService
         $quote->setSubtotal(
             $this->helper->convertPrice($data['total']['grandTotal']['totalWithoutDiscountAndTax'], false)
         );
+
         $quote->setBaseSubtotal($data['total']['grandTotal']['totalWithoutDiscountAndTax']);
 
         $quote->setSubtotalWithDiscount(
             $this->helper->convertPrice($data['total']['grandTotal']['totalWithoutTax'], false)
         );
+
         $quote->setBaseSubtotalWithDiscount($data['total']['grandTotal']['totalWithoutTax']);
 
         $quote->setTaxAmount($this->helper->convertPrice($data['total']['grandTotal']['tax'], false));
@@ -286,7 +293,7 @@ class OrderService
         \Magento\Sales\Api\Data\OrderInterface $order,
         \Magento\Quote\Api\Data\CartInterface $quote
     ) {
-        $order->setBaseCurrencyCode($quote->getBaseCurrencyCode());
+        $order->setBaseCurrencyCode($this->baseCurrencyCode);
 
         $order->setShippingAmount($quote->getShippingAmount());
         $order->setBaseShippingAmount($quote->getBaseShippingAmount());
