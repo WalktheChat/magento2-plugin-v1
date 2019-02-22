@@ -144,6 +144,134 @@ class OrderService
     }
 
     /**
+     * Prepare order data for API
+     *
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     *
+     * @return array
+     */
+    public function prepareOrderData(\Magento\Sales\Api\Data\OrderInterface $order)
+    {
+        /** @var \Magento\Sales\Model\Order $order */
+
+        $data = [
+            'is_canceled' => $this->checkCancellation($order),
+            'parcels'     => $this->checkShipments($order),
+            'refunds'     => $this->checkRefund($order),
+        ];
+
+        return $data;
+    }
+
+    /**
+     * Check shipments and return parcel data if exist
+     *
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     *
+     * @return array
+     */
+    protected function checkShipments(\Magento\Sales\Api\Data\OrderInterface $order)
+    {
+        /** @var \Magento\Sales\Model\Order $order */
+
+        $shipmentCollection = $order->getShipmentsCollection();
+
+        $data = [];
+
+        foreach ($shipmentCollection->getItems() as $parcel) {
+            // don't send already sent parcels
+            if (!$parcel->getIsSentToWalkTheChat()) {
+                // set default values in case tracks were not set
+                $data[$parcel->getEntityId()]['data'] = [
+                    'id'             => $order->getWalkthechatId(),
+                    'trackingNumber' => null,
+                    'carrier'        => null,
+                ];
+
+                foreach ($parcel->getTracks() as $track) {
+                    $data[$parcel->getEntityId()]['data'] = [
+                        'id'             => $order->getWalkthechatId(),
+                        'trackingNumber' => $track->getTrackNumber(),
+                        'carrier'        => $track->getTitle(),
+                    ];
+
+                    break; // take only first tracking number
+                }
+
+                // prepare parcel items before send to WalkTheChat
+                foreach ($parcel->getItems() as $item) {
+                    $orderItem                = $this->orderItemRepository->get($item->getOrderItemId());
+                    $walkTheChatOrderItemData = json_decode($orderItem->getData('walkthechat_item_data'), true);
+
+                    $walkTheChatOrderItemData['quantity'] = $item->getQty();
+
+                    $data[$parcel->getEntityId()]['data']['items'][] = $walkTheChatOrderItemData;
+                }
+
+                $data[$parcel->getEntityId()]['entity'] = $parcel;
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Check if order was canceled
+     *
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     *
+     * @return bool
+     */
+    protected function checkCancellation(\Magento\Sales\Api\Data\OrderInterface $order)
+    {
+        return $order->getState() === \Magento\Sales\Model\Order::STATE_CANCELED;
+    }
+
+    /**
+     * Check if order was refunded
+     *
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     *
+     * @return array
+     */
+    protected function checkRefund(\Magento\Sales\Api\Data\OrderInterface $order)
+    {
+        /** @var \Magento\Sales\Model\Order $order */
+
+        $data       = [];
+        $collection = $order->getCreditmemosCollection();
+
+        foreach ($collection->getItems() as $creditMemo) {
+            // don't send already sent parcels
+            if (!$creditMemo->getIsSentToWalkTheChat()) {
+                $comments = [];
+
+                foreach ($creditMemo->getComments() as $comment) {
+                    $comments[] = $comment->getComment();
+                }
+
+                $groupComment = implode("\n", $comments);
+
+                $amount = $creditMemo->getBaseGrandTotal();
+
+                if ($this->helper->isDifferentCurrency($order->getOrderCurrencyCode())) {
+                    $amount = $this->helper->convertPrice($creditMemo->getBaseGrandTotal());
+                }
+
+                $data[$creditMemo->getEntityId()]['data'] = [
+                    'orderId' => $order->getWalkthechatId(),
+                    'amount'  => $amount,
+                    'comment' => $groupComment,
+                ];
+
+                $data[$creditMemo->getEntityId()]['entity'] = $creditMemo;
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * Initialize quote
      *
      * @param array $data

@@ -23,11 +23,6 @@ class Update extends \Divante\Walkthechat\Model\Action\AbstractAction
     const ACTION = 'update';
 
     /**
-     * @var \Divante\Walkthechat\Helper\Data
-     */
-    protected $helper;
-
-    /**
      * @var \Magento\Catalog\Model\ProductRepository
      */
     protected $productRepository;
@@ -53,31 +48,44 @@ class Update extends \Divante\Walkthechat\Model\Action\AbstractAction
     protected $imageService;
 
     /**
+     * @var \Divante\Walkthechat\Model\OrderService
+     */
+    protected $orderService;
+
+    /**
+     * @var \Divante\Walkthechat\Model\ProductService
+     */
+    protected $productService;
+
+    /**
      * {@inheritdoc}
      *
-     * @param \Divante\Walkthechat\Helper\Data                $helper
      * @param \Magento\Catalog\Model\ProductRepository        $productRepository
      * @param \Magento\Sales\Model\OrderRepository            $orderRepository
      * @param \Divante\Walkthechat\Service\ProductsRepository $queueProductRepository
      * @param \Divante\Walkthechat\Service\OrdersRepository   $queueOrderRepository
      * @param \Divante\Walkthechat\Model\ImageService         $imageService
+     * @param \Divante\Walkthechat\Model\OrderService         $orderService
+     * @param \Divante\Walkthechat\Model\ProductService       $productService
      */
     public function __construct(
         \Divante\Walkthechat\Api\Data\ImageSyncInterfaceFactory $imageSyncFactory,
         \Divante\Walkthechat\Api\ImageSyncRepositoryInterface $imageSyncRepository,
-        \Divante\Walkthechat\Helper\Data $helper,
         \Magento\Catalog\Model\ProductRepository $productRepository,
         \Magento\Sales\Model\OrderRepository $orderRepository,
         \Divante\Walkthechat\Service\ProductsRepository $queueProductRepository,
         \Divante\Walkthechat\Service\OrdersRepository $queueOrderRepository,
-        \Divante\Walkthechat\Model\ImageService $imageService
+        \Divante\Walkthechat\Model\ImageService $imageService,
+        \Divante\Walkthechat\Model\OrderService $orderService,
+        \Divante\Walkthechat\Model\ProductService $productService
     ) {
-        $this->helper                 = $helper;
         $this->productRepository      = $productRepository;
         $this->orderRepository        = $orderRepository;
         $this->queueProductRepository = $queueProductRepository;
         $this->queueOrderRepository   = $queueOrderRepository;
         $this->imageService           = $imageService;
+        $this->orderService           = $orderService;
+        $this->productService         = $productService;
 
         parent::__construct(
             $imageSyncFactory,
@@ -99,7 +107,7 @@ class Update extends \Divante\Walkthechat\Model\Action\AbstractAction
         if ($queueItem->getProductId()) {
             $product    = $this->productRepository->getById($queueItem->getProductId());
             $imagesData = $this->imageService->updateImages($product);
-            $data       = $this->helper->prepareProductData($product, false, $imagesData);
+            $data       = $this->productService->prepareProductData($product, false, $imagesData);
 
             $data['id'] = $queueItem->getWalkthechatId();
 
@@ -110,7 +118,7 @@ class Update extends \Divante\Walkthechat\Model\Action\AbstractAction
             }
         } elseif ($queueItem->getOrderId()) {
             $order = $this->orderRepository->get($queueItem->getOrderId());
-            $data  = $this->helper->prepareOrderData($order);
+            $data  = $this->orderService->prepareOrderData($order);
 
             $this->queueOrderRepository->update($data);
         }

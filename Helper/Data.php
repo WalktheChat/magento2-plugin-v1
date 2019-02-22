@@ -33,16 +33,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $urlBackendBuilder;
 
     /**
-     * @var \Magento\CatalogInventory\Model\Stock\StockItemRepository
-     */
-    protected $stockItemRepository;
-
-    /**
-     * @var \Magento\Sales\Api\OrderItemRepositoryInterface
-     */
-    protected $orderItemRepository;
-
-    /**
      * @var string
      */
     protected $baseCurrencyCode;
@@ -50,23 +40,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param \Magento\Framework\App\Helper\Context                     $context
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface        $scopeConfig
-     * @param \Magento\Backend\Model\UrlInterface                       $urlBackendBuilder $urlBackendBuilder
-     * @param \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository
-     * @param \Magento\Sales\Api\OrderItemRepositoryInterface           $orderItemRepository
+     * @param \Magento\Framework\App\Helper\Context              $context
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Backend\Model\UrlInterface                $urlBackendBuilder
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Backend\Model\UrlInterface $urlBackendBuilder,
-        \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
-        \Magento\Sales\Api\OrderItemRepositoryInterface $orderItemRepository
+        \Magento\Backend\Model\UrlInterface $urlBackendBuilder
     ) {
-        $this->scopeConfig         = $scopeConfig;
-        $this->urlBackendBuilder   = $urlBackendBuilder;
-        $this->stockItemRepository = $stockItemRepository;
-        $this->orderItemRepository = $orderItemRepository;
+        $this->scopeConfig       = $scopeConfig;
+        $this->urlBackendBuilder = $urlBackendBuilder;
 
         parent::__construct($context);
     }
@@ -281,145 +265,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Prepare product data for API
-     *
-     * @param \Magento\Catalog\Model\Product $product
-     * @param bool                           $isNew
-     * @param array                          $imagesData
-     *
-     * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function prepareProductData($product, $isNew = true, array $imagesData = [])
-    {
-        $mainPrice        = $this->convertPrice($product->getPrice());
-        $mainSpecialPrice = $this->convertPrice($product->getSpecialPrice());
-
-        $data = [
-            'manageInventory'       => true,
-            'visibility'            => $product->getVisibility() != \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE,
-            'displayPrice'          => $mainPrice,
-            'displayCompareAtPrice' => $mainSpecialPrice,
-            'images'                => $imagesData['main'] ?? [],
-            'variants'              => [
-                [
-                    'id'                => $product->getId(),
-                    'inventoryQuantity' => $this->stockItemRepository->get($product->getId())->getQty(),
-                    'weight'            => $product->getWeight(),
-                    'requiresShipping'  => true,
-                    'sku'               => $product->getSku(),
-                    'price'             => $mainPrice,
-                    'compareAtPrice'    => $mainSpecialPrice,
-                    'visibility'        => $product->getVisibility() != \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE,
-                    'taxable'           => (bool)$product->getTaxClassId(),
-                ],
-            ],
-        ];
-
-        // if is "update" action - don't update the title and description
-        if ($isNew) {
-            $data['title'] = [
-                'en' => $product->getName(),
-            ];
-
-            $data['bodyHtml'] = [
-                'en' => $product->getDescription(),
-            ];
-
-            $data['variants'][0]['title'] = [
-                'en' => $product->getName(),
-            ];
-        }
-
-        if ($product->getTypeId() === \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE) {
-            $configurableOptions = $product->getTypeInstance()->getConfigurableOptions($product);
-
-            $data['variantOptions'] = [];
-
-            // send all available options in configurable product
-            foreach ($configurableOptions as $option) {
-                foreach ($option as $variation) {
-                    $data['variantOptions'][] = $variation['attribute_code'];
-
-                    break;
-                }
-            }
-
-            /** @var \Magento\Catalog\Model\Product[] $children */
-            $children = $product->getTypeInstance()->getUsedProducts($product);
-
-            if ($children) {
-                // if product is configurable - remove main product variant
-                $data['variants'][0] = [];
-
-                foreach ($children as $k => $child) {
-                    $data['variants'][$k] = [
-                        'id'                => $child->getId(),
-                        'inventoryQuantity' => $this->stockItemRepository->get($child->getId())->getQty(),
-                        'weight'            => $child->getWeight(),
-                        'requiresShipping'  => true,
-                        'sku'               => $child->getSku(),
-                        'price'             => $this->convertPrice($child->getPrice()),
-                        'compareAtPrice'    => $this->convertPrice($child->getSpecialPrice()),
-                        'visibility'        => $child->getVisibility() != \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE,
-                        'taxable'           => (bool)$child->getTaxClassId(),
-                    ];
-
-                    $imageData = $imagesData['children'][$child->getId()] ?? [];
-
-                    // add images to each variant
-                    if ($imageData && is_array($imageData)) {
-                        $data['variants'][$k]['images'] = $imageData;
-                    }
-
-                    // if is "update" action - don't update the title
-                    if ($isNew) {
-                        $data['variants'][$k]['title'] = [
-                            'en' => $child->getName(),
-                        ];
-                    }
-
-                    // add available options for current variant
-                    foreach ($data['variantOptions'] as $n => $attributeCode) {
-                        $data['variants'][$k]['options'][] = [
-                            'id'       => $attributeCode,
-                            'name'     => [
-                                'en' => $child->getResource()->getAttribute($attributeCode)->getFrontend()->getLabel($child),
-                            ],
-                            'position' => $n,
-                            'value'    => [
-                                'en' => $child->getAttributeText($attributeCode),
-                            ],
-                        ];
-                    }
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * Prepare order data for API
-     *
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
-     *
-     * @return array
-     */
-    public function prepareOrderData(\Magento\Sales\Api\Data\OrderInterface $order)
-    {
-        /** @var \Magento\Sales\Model\Order $order */
-
-        $data = [
-            'is_canceled' => $this->checkCancellation($order),
-            'parcels'     => $this->checkShipments($order),
-            'refunds'     => $this->checkRefund($order),
-        ];
-
-        return $data;
-    }
-
-    /**
      * Return Walk the chat ID form product
      *
      * @param \Magento\Catalog\Api\Data\ProductInterface $product
@@ -449,116 +294,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return is_string($value) ? $value : null;
-    }
-
-    /**
-     * Check shipments and return parcel data if exist
-     *
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
-     *
-     * @return array
-     */
-    protected function checkShipments(\Magento\Sales\Api\Data\OrderInterface $order)
-    {
-        /** @var \Magento\Sales\Model\Order $order */
-
-        $shipmentCollection = $order->getShipmentsCollection();
-
-        $data = [];
-
-        foreach ($shipmentCollection->getItems() as $parcel) {
-            // don't send already sent parcels
-            if (!$parcel->getIsSentToWalkTheChat()) {
-                // set default values in case tracks were not set
-                $data[$parcel->getEntityId()]['data'] = [
-                    'id'             => $order->getWalkthechatId(),
-                    'trackingNumber' => null,
-                    'carrier'        => null,
-                ];
-
-                foreach ($parcel->getTracks() as $track) {
-                    $data[$parcel->getEntityId()]['data'] = [
-                        'id'             => $order->getWalkthechatId(),
-                        'trackingNumber' => $track->getTrackNumber(),
-                        'carrier'        => $track->getTitle(),
-                    ];
-
-                    break; // take only first tracking number
-                }
-
-                // prepare parcel items before send to WalkTheChat
-                foreach ($parcel->getItems() as $item) {
-                    $orderItem                = $this->orderItemRepository->get($item->getOrderItemId());
-                    $walkTheChatOrderItemData = json_decode($orderItem->getData('walkthechat_item_data'), true);
-
-                    $walkTheChatOrderItemData['quantity'] = $item->getQty();
-
-                    $data[$parcel->getEntityId()]['data']['items'][] = $walkTheChatOrderItemData;
-                }
-
-                $data[$parcel->getEntityId()]['entity'] = $parcel;
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * Check if order was canceled
-     *
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
-     *
-     * @return bool
-     */
-    protected function checkCancellation(
-        \Magento\Sales\Api\Data\OrderInterface $order
-    ) {
-        return $order->getState() === \Magento\Sales\Model\Order::STATE_CANCELED;
-    }
-
-    /**
-     * Check if order was refunded
-     *
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
-     *
-     * @return array
-     */
-    protected function checkRefund(
-        \Magento\Sales\Api\Data\OrderInterface $order
-    ) {
-        /** @var \Magento\Sales\Model\Order $order */
-
-        $data       = [];
-        $collection = $order->getCreditmemosCollection();
-
-        foreach ($collection->getItems() as $creditMemo) {
-            // don't send already sent parcels
-            if (!$creditMemo->getIsSentToWalkTheChat()) {
-                $comments = [];
-
-                foreach ($creditMemo->getComments() as $comment) {
-                    $comments[] = $comment->getComment();
-                }
-
-                $groupComment = implode("\n", $comments);
-
-                $amount = $creditMemo->getBaseGrandTotal();
-
-                if ($this->isDifferentCurrency($order->getOrderCurrencyCode())) {
-                    $amount = $this->convertPrice($creditMemo->getBaseGrandTotal());
-                }
-
-                $data[$creditMemo->getEntityId()]['data'] = [
-                    'orderId' => $order->getWalkthechatId(),
-                    'amount'  => $amount,
-                    'comment' => $groupComment,
-                ];
-
-                $data[$creditMemo->getEntityId()]['entity'] = $creditMemo;
-            }
-        }
-
-        return $data;
     }
 
     /**
