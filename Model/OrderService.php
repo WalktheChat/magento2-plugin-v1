@@ -296,9 +296,9 @@ class OrderService
         $rate = $this->helper->getCurrencyConversionRate();
 
         $order->setBaseCurrencyCode($this->baseCurrencyCode);
-        $order->setOrderCurrencyCode($this->baseCurrencyCode);
+        $order->setGlobalCurrencyCode($this->baseCurrencyCode);
 
-        $order->setBaseToGlobalRate($rate);
+        $order->setBaseToOrderRate($rate);
 
         $order->setShippingAmount($quote->getShippingAmount());
         $order->setBaseShippingAmount($quote->getBaseShippingAmount());
