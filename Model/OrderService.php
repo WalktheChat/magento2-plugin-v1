@@ -200,10 +200,25 @@ class OrderService
         foreach ($data['items']['products'] as $k => $item) {
             $product = $this->productRepository->get($item['variant']['sku']);
 
-            $qty       = $item['quantity'];
+            $qty            = $item['quantity'];
+            $discountAmount = $qty * $item['variant']['discount'];
+            $price          = $item['variant']['price'];
+
             $quoteItem = $quote->addProduct($product, $qty);
 
-            $discountAmount = $qty * $item['variant']['discount'];
+            $quoteItem->setOriginalPrice($price);
+
+            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
+                $quoteItem->setBaseOriginalPrice($this->helper->convertPrice($price, false));
+            }
+
+            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
+                $quoteItem->setBasePrice($this->helper->convertPrice($price, false));
+            }
+
+            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
+                $quoteItem->setBaseRowTotal($this->helper->convertPrice($quoteItem->getBaseRowTotal(), false));
+            }
 
             $quoteItem->setDiscountAmount($discountAmount);
 
@@ -217,6 +232,7 @@ class OrderService
                 $taxAmount = $qty * ((float)$item['variant']['priceWithDiscount'] * (float)$data['tax']['rate']);
 
                 $quoteItem->setTaxAmount($taxAmount);
+                $quoteItem->setBaseTaxAmount($taxAmount);
 
                 if ($this->helper->isDifferentCurrency($data['total']['currency'])) {
                     $quoteItem->setBaseTaxAmount($this->helper->convertPrice($taxAmount, false));
@@ -357,17 +373,12 @@ class OrderService
         foreach ($order->getItems() as $item) {
             $quoteItem = $this->preparedQuoteItems[$item->getSku()];
 
-            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
-                $item->setBaseOriginalPrice($this->helper->convertPrice($quoteItem->getBaseOriginalPrice(), false));
-            }
+            $item->setOriginalPrice($quoteItem->getOriginalPrice());
+            $item->setBaseOriginalPrice($quoteItem->getBaseOriginalPrice());
 
-            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
-                $item->setBasePrice($this->helper->convertPrice($quoteItem->getBasePrice(), false));
-            }
+            $item->setBasePrice($quoteItem->getBasePrice());
 
-            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
-                $item->setBaseSubtotal($this->helper->convertPrice($quoteItem->getBaseSubtotal(), false));
-            }
+            $item->setBaseRowTotal($quoteItem->getBaseRowTotal());
 
             $item->setTaxPercent($quoteItem->getTaxPercent());
 
