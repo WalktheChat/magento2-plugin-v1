@@ -293,8 +293,12 @@ class OrderService
         \Magento\Sales\Api\Data\OrderInterface $order,
         \Magento\Quote\Api\Data\CartInterface $quote
     ) {
+        $rate = $this->helper->getCurrencyConversionRate();
+
         $order->setBaseCurrencyCode($this->baseCurrencyCode);
-        $order->setBaseToGlobalRate($this->helper->getCurrencyConversionRate());
+        $order->setOrderCurrencyCode($this->baseCurrencyCode);
+
+        $order->setBaseToGlobalRate($rate);
 
         $order->setShippingAmount($quote->getShippingAmount());
         $order->setBaseShippingAmount($quote->getBaseShippingAmount());
