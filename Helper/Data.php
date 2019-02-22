@@ -537,7 +537,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
                 $data[$creditMemo->getEntityId()]['data'] = [
                     'orderId' => $order->getWalkthechatId(),
-                    'amount'  => $this->convertPrice($creditMemo->getGrandTotal()),
+                    'amount'  => $this->convertPrice($creditMemo->getBaseGrandTotal()),
                     'comment' => $groupComment,
                 ];
 
