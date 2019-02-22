@@ -203,6 +203,7 @@ class OrderService
             $qty            = $item['quantity'];
             $discountAmount = $qty * $item['variant']['discount'];
             $price          = $item['variant']['price'];
+            $rowTotal       = $qty * $price;
 
             $quoteItem = $quote->addProduct($product, $qty);
 
@@ -212,12 +213,16 @@ class OrderService
                 $quoteItem->setBaseOriginalPrice($this->helper->convertPrice($price, false));
             }
 
+            $quoteItem->setPrice($price);
+
             if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
                 $quoteItem->setBasePrice($this->helper->convertPrice($price, false));
             }
 
+            $quoteItem->setRowTotal($rowTotal);
+
             if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
-                $quoteItem->setBaseRowTotal($this->helper->convertPrice($quoteItem->getBaseRowTotal(), false));
+                $quoteItem->setBaseRowTotal($this->helper->convertPrice($rowTotal, false));
             }
 
             $quoteItem->setDiscountAmount($discountAmount);
