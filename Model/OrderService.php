@@ -457,6 +457,7 @@ class OrderService
         }
 
         $quote->setGrandTotal($grandTotal);
+        $quote->setBaseGrandTotal($grandTotal);
 
         if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
             $quote->setBaseGrandTotal($this->helper->convertPrice($grandTotal, false));
