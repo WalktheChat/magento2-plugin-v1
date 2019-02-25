@@ -48,6 +48,11 @@ class Add extends \Divante\Walkthechat\Model\Action\AbstractAction
     protected $imageService;
 
     /**
+     * @var \Divante\Walkthechat\Model\ProductService
+     */
+    protected $productService;
+
+    /**
      * {@inheritdoc}
      *
      * @param \Divante\Walkthechat\Helper\Data                $helper
@@ -55,21 +60,22 @@ class Add extends \Divante\Walkthechat\Model\Action\AbstractAction
      * @param \Divante\Walkthechat\Service\ProductsRepository $queueProductRepositoryFactory
      * @param \Divante\Walkthechat\Service\ImagesRepository   $requestImagesRepository
      * @param \Divante\Walkthechat\Model\ImageService         $imageService
+     * @param \Divante\Walkthechat\Model\ProductService       $productService
      */
     public function __construct(
         \Divante\Walkthechat\Api\Data\ImageSyncInterfaceFactory $imageSyncFactory,
         \Divante\Walkthechat\Api\ImageSyncRepositoryInterface $imageSyncRepository,
-        \Divante\Walkthechat\Helper\Data $helper,
         \Magento\Catalog\Model\ProductRepository $productRepository,
         \Divante\Walkthechat\Service\ProductsRepository $queueProductRepositoryFactory,
         \Divante\Walkthechat\Service\ImagesRepository $requestImagesRepository,
-        \Divante\Walkthechat\Model\ImageService $imageService
+        \Divante\Walkthechat\Model\ImageService $imageService,
+        \Divante\Walkthechat\Model\ProductService $productService
     ) {
-        $this->helper                  = $helper;
         $this->productRepository       = $productRepository;
         $this->queueProductRepository  = $queueProductRepositoryFactory;
         $this->requestImagesRepository = $requestImagesRepository;
         $this->imageService            = $imageService;
+        $this->productService          = $productService;
 
         parent::__construct(
             $imageSyncFactory,
@@ -92,7 +98,7 @@ class Add extends \Divante\Walkthechat\Model\Action\AbstractAction
         $product    = $this->productRepository->getById($queueItem->getProductId());
         $imagesData = $this->imageService->addImages($product);
 
-        $data          = $this->helper->prepareProductData($product, true, $imagesData);
+        $data          = $this->productService->prepareProductData($product, true, $imagesData);
         $walkTheChatId = $this->queueProductRepository->create($data);
 
         if (!$walkTheChatId) {
