@@ -55,11 +55,13 @@ class ApiLogger
      * @param \Divante\Walkthechat\Service\Resource\AbstractResource $requestResource
      * @param array|string                                           $params
      * @param \Zend_Http_Response                                    $response
+     * @param null|bool                                              $placeholderId
      */
     public function log(
         \Divante\Walkthechat\Service\Resource\AbstractResource $requestResource,
         $params,
-        \Zend_Http_Response $response
+        \Zend_Http_Response $response,
+        $placeholderId
     ) {
         /** @var \Divante\Walkthechat\Api\Data\ApiLogInterface $apiLog */
         $apiLog = $this->apiLogFactory->create();
@@ -67,8 +69,8 @@ class ApiLogger
         $responseText = $response->asString();
         $path         = $requestResource->getPath();
 
-        if (isset($params['id'])) {
-            $path = str_replace(':id', $params['id'], $path);
+        if (null !== $placeholderId) {
+            $path = str_replace(':id', $placeholderId, $path);
         }
 
         $apiLog

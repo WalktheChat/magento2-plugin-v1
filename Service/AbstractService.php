@@ -76,8 +76,14 @@ abstract class AbstractService
 
         $path = $resource->getPath();
 
+        // id to represent for logging
+        $placeholderId = null;
+
         if (isset($params['id'])) {
             $path = str_replace(':id', $params['id'], $path);
+
+            // set valid it to log proper path
+            $placeholderId = $params['id'];
 
             unset($params['id']);
         }
@@ -89,7 +95,7 @@ abstract class AbstractService
         $response = $this->serviceClient->request($resource->getType(), $path, $params, $headers, $isImageUpload);
 
         // log into WalkTheChat log in Admin Panel
-        $this->logger->log($resource, $params, $response);
+        $this->logger->log($resource, $params, $response, $placeholderId);
 
         if ($response->getStatus() == 200) {
             return $this->jsonHelper->jsonDecode($response->getBody());
