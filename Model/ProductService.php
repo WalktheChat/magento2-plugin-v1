@@ -114,9 +114,13 @@ class ProductService
         $mainPrice        = $this->helper->convertPrice($product->getPrice());
         $mainSpecialPrice = $this->helper->convertPrice($product->getSpecialPrice());
 
+        $productVisibility =
+            $product->getVisibility() != \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE
+            && !$product->isDisabled();
+
         $data = [
             'manageInventory'       => true,
-            'visibility'            => $product->getVisibility() != \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE,
+            'visibility'            => $productVisibility,
             'displayPrice'          => $mainPrice,
             'displayCompareAtPrice' => $mainSpecialPrice,
             'images'                => $imagesData['main'] ?? [],
@@ -129,7 +133,7 @@ class ProductService
                     'sku'               => $product->getSku(),
                     'price'             => $mainPrice,
                     'compareAtPrice'    => $mainSpecialPrice,
-                    'visibility'        => $product->getVisibility() != \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE,
+                    'visibility'        => $productVisibility,
                     'taxable'           => (bool)$product->getTaxClassId(),
                 ],
             ],
@@ -172,6 +176,10 @@ class ProductService
                 $data['variants'][0] = [];
 
                 foreach ($children as $k => $child) {
+                    if ($child->isDisabled()) {
+                        continue;
+                    }
+
                     $data['variants'][$k] = [
                         'id'                => $child->getId(),
                         'inventoryQuantity' => $this->stockItemRepository->get($child->getId())->getQty(),
