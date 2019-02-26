@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- *            
+ *
  * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
  * @copyright 2019 Divante Sp. z o.o.
  *
@@ -78,6 +78,8 @@ abstract class AbstractService
 
         if (isset($params['id'])) {
             $path = str_replace(':id', $params['id'], $path);
+
+            unset($params['id']);
         }
 
         if (!$isImageUpload) {
