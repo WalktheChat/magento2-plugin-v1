@@ -173,7 +173,7 @@ class ProductService
 
             if ($children) {
                 // if product is configurable - remove main product variant
-                $data['variants'][0] = [];
+                $data['variants'] = [];
 
                 foreach ($children as $k => $child) {
                     if ($child->isDisabled()) {
