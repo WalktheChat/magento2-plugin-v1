@@ -332,12 +332,7 @@ class OrderService
                 $product = $this->productRepository->get($item['variant']['sku']);
 
                 if ($this->helper->getWalkTheChatAttributeValue($product) !== $item['product']['id']) {
-                    throw new \Divante\Walkthechat\Exception\NotSynchronizedProductException(
-                        __(
-                            'Not synchronized product was sent. Product with WalkTheChat ID: %s, wasn\'t exported from current Magento instance.',
-                            $item['product']['id']
-                        )
-                    );
+                    throw new \Magento\Framework\Exception\NoSuchEntityException();
                 }
 
                 $qty            = $item['quantity'];
@@ -393,12 +388,13 @@ class OrderService
                 );
 
                 $this->preparedQuoteItems[$product->getSku()] = clone $quoteItem;
-            } catch (\Divante\Walkthechat\Exception\NotSynchronizedProductException $exception) {
-                $this->cartRepository->delete($quote);
-
-                throw $exception;
             } catch (\Magento\Framework\Exception\NoSuchEntityException $exception) {
-                $this->cartRepository->delete($quote);
+                throw new \Divante\Walkthechat\Exception\NotSynchronizedProductException(
+                    __(
+                        'Not synchronized product was sent. Product with WalkTheChat ID: %s, wasn\'t exported from current Magento instance.',
+                        $item['product']['id']
+                    )
+                );
             }
         }
     }

@@ -100,7 +100,7 @@ class OrderImport implements \Divante\Walkthechat\Api\OrderImportInterface
         } catch (\Exception $exception) {
             $this->logger->error('Error during the WalkTheChat order import | '.$exception->getMessage());
 
-            $errorMessage = $exception->getMessage();
+            $errorMessage = 'An error has been occurred. Please contact administrator for more information.';
         }
 
         return json_encode(
