@@ -213,6 +213,10 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
     {
         $connection = $installer->getConnection();
 
+        if ($connection->isTableExists(\Divante\Walkthechat\Model\ResourceModel\ApiLog::TABLE_NAME)) {
+            $connection->truncateTable(\Divante\Walkthechat\Model\ResourceModel\ApiLog::TABLE_NAME);
+        }
+
         if (!$connection->tableColumnExists(
             \Divante\Walkthechat\Model\ResourceModel\ApiLog::TABLE_NAME,
             \Divante\Walkthechat\Api\Data\ApiLogInterface::QUEUE_ITEM_ID_FIELD
