@@ -120,7 +120,6 @@ class OrderService
      * @return \Magento\Sales\Api\Data\OrderInterface
      * @throws \Divante\Walkthechat\Exception\NotSynchronizedProductException
      * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function processImport($data)
     {
@@ -321,7 +320,6 @@ class OrderService
      *
      * @throws \Divante\Walkthechat\Exception\NotSynchronizedProductException
      * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     protected function addProductsIntoQuote(\Magento\Quote\Api\Data\CartInterface $quote, array $data)
     {
@@ -330,17 +328,23 @@ class OrderService
         $this->orderCurrencyCode = $data['total']['currency'];
 
         foreach ($data['items']['products'] as $k => $item) {
-            $product = $this->productRepository->get($item['variant']['sku']);
+            try {
+                $product = $this->productRepository->get($item['variant']['sku']);
 
-            if ($this->helper->getWalkTheChatAttributeValue($product) !== $item['product']['id']) {
+                if ($this->helper->getWalkTheChatAttributeValue($product) !== $item['product']['id']) {
+                    throw new \Divante\Walkthechat\Exception\NotSynchronizedProductException(
+                        __(
+                            'Not synchronized product was sent. Product with WalkTheChat ID: %s, wasn\'t exported from current Magento instance.',
+                            $item['product']['id']
+                        )
+                    );
+                }
+            } catch (\Divante\Walkthechat\Exception\NotSynchronizedProductException $exception) {
                 $this->cartRepository->delete($quote);
 
-                throw new \Divante\Walkthechat\Exception\NotSynchronizedProductException(
-                    __(
-                        'Not synchronized product was sent. Product with WalkTheChat ID: %s, wasn\'t exported from current Magento instance.',
-                        $item['product']['id']
-                    )
-                );
+                throw $exception;
+            } catch (\Magento\Framework\Exception\NoSuchEntityException $exception) {
+                $this->cartRepository->delete($quote);
             }
 
             $qty            = $item['quantity'];
