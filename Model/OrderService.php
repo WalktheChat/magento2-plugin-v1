@@ -339,6 +339,60 @@ class OrderService
                         )
                     );
                 }
+
+                $qty            = $item['quantity'];
+                $discountAmount = $qty * $item['variant']['discount'];
+                $price          = $item['variant']['price'];
+                $rowTotal       = $qty * $price;
+
+                $quoteItem = $quote->addProduct($product, $qty);
+
+                $quoteItem->setOriginalPrice($price);
+
+                if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
+                    $quoteItem->setBaseOriginalPrice($this->helper->convertPrice($price, false));
+                }
+
+                $quoteItem->setPrice($price);
+
+                if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
+                    $quoteItem->setBasePrice($this->helper->convertPrice($price, false));
+                }
+
+                $quoteItem->setRowTotal($rowTotal);
+
+                if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
+                    $quoteItem->setBaseRowTotal($this->helper->convertPrice($rowTotal, false));
+                }
+
+                $quoteItem->setDiscountAmount($discountAmount);
+
+                if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
+                    $quoteItem->setBaseDiscountAmount($this->helper->convertPrice($discountAmount, false));
+                }
+
+                if ((float)$data['total']['grandTotal']['tax']) {
+                    $quoteItem->setTaxPercent($data['tax']['rate'] * 100);
+
+                    $taxAmount = $qty * ((float)$item['variant']['priceWithDiscount'] * (float)$data['tax']['rate']);
+
+                    $quoteItem->setTaxAmount($taxAmount);
+                    $quoteItem->setBaseTaxAmount($taxAmount);
+
+                    if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
+                        $quoteItem->setBaseTaxAmount($this->helper->convertPrice($taxAmount, false));
+                    }
+                }
+
+                // set array data to save it into the order entity
+                // so it can be used when order is canceled, refunded or shipped
+                // and Magento -> WalkTheChat request can be filled properly
+                $quoteItem->setData(
+                    'walkthechat_item_data',
+                    json_encode($data['itemsToFulfill'][$k], JSON_UNESCAPED_UNICODE)
+                );
+
+                $this->preparedQuoteItems[$product->getSku()] = clone $quoteItem;
             } catch (\Divante\Walkthechat\Exception\NotSynchronizedProductException $exception) {
                 $this->cartRepository->delete($quote);
 
@@ -346,60 +400,6 @@ class OrderService
             } catch (\Magento\Framework\Exception\NoSuchEntityException $exception) {
                 $this->cartRepository->delete($quote);
             }
-
-            $qty            = $item['quantity'];
-            $discountAmount = $qty * $item['variant']['discount'];
-            $price          = $item['variant']['price'];
-            $rowTotal       = $qty * $price;
-
-            $quoteItem = $quote->addProduct($product, $qty);
-
-            $quoteItem->setOriginalPrice($price);
-
-            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
-                $quoteItem->setBaseOriginalPrice($this->helper->convertPrice($price, false));
-            }
-
-            $quoteItem->setPrice($price);
-
-            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
-                $quoteItem->setBasePrice($this->helper->convertPrice($price, false));
-            }
-
-            $quoteItem->setRowTotal($rowTotal);
-
-            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
-                $quoteItem->setBaseRowTotal($this->helper->convertPrice($rowTotal, false));
-            }
-
-            $quoteItem->setDiscountAmount($discountAmount);
-
-            if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
-                $quoteItem->setBaseDiscountAmount($this->helper->convertPrice($discountAmount, false));
-            }
-
-            if ((float)$data['total']['grandTotal']['tax']) {
-                $quoteItem->setTaxPercent($data['tax']['rate'] * 100);
-
-                $taxAmount = $qty * ((float)$item['variant']['priceWithDiscount'] * (float)$data['tax']['rate']);
-
-                $quoteItem->setTaxAmount($taxAmount);
-                $quoteItem->setBaseTaxAmount($taxAmount);
-
-                if ($this->helper->isDifferentCurrency($this->orderCurrencyCode)) {
-                    $quoteItem->setBaseTaxAmount($this->helper->convertPrice($taxAmount, false));
-                }
-            }
-
-            // set array data to save it into the order entity
-            // so it can be used when order is canceled, refunded or shipped
-            // and Magento -> WalkTheChat request can be filled properly
-            $quoteItem->setData(
-                'walkthechat_item_data',
-                json_encode($data['itemsToFulfill'][$k], JSON_UNESCAPED_UNICODE)
-            );
-
-            $this->preparedQuoteItems[$product->getSku()] = clone $quoteItem;
         }
     }
 
