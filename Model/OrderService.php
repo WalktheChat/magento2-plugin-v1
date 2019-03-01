@@ -333,6 +333,8 @@ class OrderService
             $product = $this->productRepository->get($item['variant']['sku']);
 
             if ($this->helper->getWalkTheChatAttributeValue($product) !== $item['product']['id']) {
+                $this->cartRepository->delete($quote);
+
                 throw new \Divante\Walkthechat\Exception\UnsuitableInstanceException(
                     __(
                         'Invalid Magento instance was hooked. Product with WalkTheChat ID: %s, wasn\'t exported from current Magento instance',
