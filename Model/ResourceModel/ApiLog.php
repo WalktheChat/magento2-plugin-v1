@@ -31,4 +31,19 @@ class ApiLog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $this->_init(self::TABLE_NAME, \Divante\Walkthechat\Api\Data\ApiLogInterface::ENTITY_ID_FIELD);
     }
+
+    /**
+     * {@inheritdoc}
+     *
+     * Add order DESC for all requests
+     */
+    protected function _getLoadSelect($field, $value, $object)
+    {
+        /** @var $select \Magento\Framework\DB\Select */
+        $select = parent::_getLoadSelect($field, $value, $object);
+
+        $select->order('created_at '.\Magento\Framework\DB\Select::SQL_DESC);
+
+        return $select;
+    }
 }

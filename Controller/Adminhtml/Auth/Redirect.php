@@ -30,8 +30,8 @@ class Redirect extends \Magento\Backend\App\Action
     /**
      * {@inheritdoc}
      *
-     * @param \Magento\Framework\Controller\ResultFactory        $resultFactory
-     * @param \Divante\Walkthechat\Helper\Data                   $helper
+     * @param \Magento\Framework\Controller\ResultFactory $resultFactory
+     * @param \Divante\Walkthechat\Helper\Data            $helper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- *            
+ *
  * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
  * @copyright 2019 Divante Sp. z o.o.
  *
@@ -119,5 +119,21 @@ class Queue extends \Magento\Framework\Model\AbstractModel implements \Divante\W
     public function setProcessedAt($gsmDate)
     {
         return $this->setData(self::PROCESSED_AT, $gsmDate);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStatus()
+    {
+        return $this->getData(self::STATUS);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setStatus($status)
+    {
+        return $this->setData(self::STATUS, $status);
     }
 }

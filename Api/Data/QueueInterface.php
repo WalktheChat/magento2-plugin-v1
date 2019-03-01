@@ -27,6 +27,16 @@ interface QueueInterface
     const ACTION         = 'action';
     const CREATED_AT     = 'created_at';
     const PROCESSED_AT   = 'processed_at';
+    const STATUS         = 'status';
+    /**@#- */
+
+    /**@#+
+     * Statuses
+     */
+    const WAITING_IN_QUEUE_STATUS = 0;
+    const COMPLETE_STATUS         = 1;
+    const API_ERROR_STATUS        = 2;
+    const INTERNAL_ERROR_STATUS   = 3;
     /**@#- */
 
     /**
@@ -140,4 +150,20 @@ interface QueueInterface
      * @return \Divante\Walkthechat\Api\Data\QueueInterface
      */
     public function setProcessedAt($gsmDate);
+
+    /**
+     * Return status
+     *
+     * @return int
+     */
+    public function getStatus();
+
+    /**
+     * Set status
+     *
+     * @param int $status
+     *
+     * @return \Divante\Walkthechat\Api\Data\QueueInterface
+     */
+    public function setStatus($status);
 }

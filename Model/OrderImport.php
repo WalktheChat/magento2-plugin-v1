@@ -50,8 +50,17 @@ class OrderImport implements \Divante\Walkthechat\Api\OrderImportInterface
     /**
      * {@inheritdoc}
      */
-    public function import($id, $financialStatus, $itemsToFulfill, $items, $deliveryAddress, $shippingRate, $tax, $total, $coupon = [])
-    {
+    public function import(
+        $id,
+        $financialStatus,
+        $itemsToFulfill,
+        $items,
+        $deliveryAddress,
+        $shippingRate,
+        $tax,
+        $total,
+        $coupon = []
+    ) {
         try {
             // TODO: auth process
 
@@ -82,7 +91,7 @@ class OrderImport implements \Divante\Walkthechat\Api\OrderImportInterface
                 ]
             );
         } catch (\Exception $e) {
-            $this->logger->error('Error during the WalkTheChat order import | ' . $e->getMessage());
+            $this->logger->error('Error during the WalkTheChat order import | '.$e->getMessage());
 
             return json_encode(
                 [

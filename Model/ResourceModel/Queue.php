@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- *            
+ *
  * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
  * @copyright 2019 Divante Sp. z o.o.
  *

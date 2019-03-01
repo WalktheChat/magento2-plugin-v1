@@ -28,112 +28,57 @@ class Export extends \Magento\Backend\App\Action
     protected $collectionFactory;
 
     /**
-     * @var \Divante\Walkthechat\Api\Data\QueueInterfaceFactory
+     * @var \Divante\Walkthechat\Model\ProductService
      */
-    protected $queueFactory;
+    protected $productService;
 
     /**
-     * @var \Divante\Walkthechat\Model\QueueRepository
+     * @var \Psr\Log\LoggerInterface
      */
-    protected $queueRepository;
-
-    /**
-     * @var \Magento\Catalog\Api\ProductRepositoryInterface
-     */
-    protected $productRepository;
-
-    /**
-     * @var \Divante\Walkthechat\Model\QueueService
-     */
-    protected $queueService;
+    protected $logger;
 
     /**
      * {@inheritdoc}
      *
      * @param \Magento\Ui\Component\MassAction\Filter                        $filter
      * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $collectionFactory
-     * @param \Divante\Walkthechat\Api\Data\QueueInterfaceFactory            $queueFactory
-     * @param \Divante\Walkthechat\Model\QueueRepository                     $queueRepository
-     * @param \Magento\Catalog\Api\ProductRepositoryInterface                $productRepository
-     * @param \Divante\Walkthechat\Model\QueueService                        $queueService
+     * @param \Divante\Walkthechat\Model\ProductService                      $productService
+     * @param \Psr\Log\LoggerInterface                                       $logger
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Ui\Component\MassAction\Filter $filter,
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $collectionFactory,
-        \Divante\Walkthechat\Api\Data\QueueInterfaceFactory $queueFactory,
-        \Divante\Walkthechat\Model\QueueRepository $queueRepository,
-        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
-        \Divante\Walkthechat\Model\QueueService $queueService
+        \Divante\Walkthechat\Model\ProductService $productService,
+        \Psr\Log\LoggerInterface $logger
     ) {
         $this->filter            = $filter;
         $this->collectionFactory = $collectionFactory;
-        $this->queueFactory      = $queueFactory;
-        $this->queueRepository   = $queueRepository;
-        $this->productRepository = $productRepository;
-        $this->queueService      = $queueService;
+        $this->productService    = $productService;
+        $this->logger            = $logger;
 
         parent::__construct($context);
     }
 
     /**
-     * Export selected products to Walkthechat
+     * {@inheritdoc}
      *
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * Export selected products to Walkthechat
      */
     public function execute()
     {
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-        $collection = $this->filter->getCollection($this->collectionFactory->create());
+        try {
+            /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
+            $collection = $this->filter->getCollection($this->collectionFactory->create());
+            $bulkData   = $this->productService->processProductsExport($collection->getItems());
 
-        $count           = 0;
-        $productsProceed = 0;
+            $this->messageManager->addSuccessMessage(__('%1 product(s) added to queue.', count($bulkData)));
+        } catch (\Magento\Framework\Exception\LocalizedException $localizedException) {
+            $this->messageManager->addErrorMessage(__($localizedException->getMessage()));
+        } catch (\Exception $exception) {
+            $this->logger->critical($exception);
 
-        foreach ($collection->getAllIds() as $id) {
-            $product = $this->productRepository->getById($id);
-
-            $isSupportedProductType = in_array($product->getTypeId(), [
-                \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE,
-                \Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL,
-                \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE,
-            ]);
-
-            if (!$isSupportedProductType) {
-                ++$productsProceed;
-
-                continue;
-            }
-
-            // don't add to queue twice when exporting
-            if (!$this->queueService->isDuplicate(
-                    $id,
-                    \Divante\Walkthechat\Model\Action\Add::ACTION,
-                    'product_id'
-                )
-            ) {
-                /** @var \Divante\Walkthechat\Api\Data\QueueInterface $model */
-                $model = $this->queueFactory->create();
-
-                $model->setProductId($id);
-                $model->setAction(\Divante\Walkthechat\Model\Action\Add::ACTION);
-
-                $this->queueRepository->save($model);
-
-                $count++;
-            }
-        }
-
-        $this->messageManager->addSuccessMessage(__('%1 product(s) added to queue.', $count));
-
-        if ($productsProceed) {
-            $this->messageManager->addWarningMessage(
-                __(
-                    '%1 product(s) can not be exported. Supported product types: Simple, Virtual and Configurable',
-                    $productsProceed
-                )
-            );
+            $this->messageManager->addErrorMessage(__('Internal error occurred. Please see logs or contact administrator.'));
         }
 
         $this->_redirect('catalog/product/index');

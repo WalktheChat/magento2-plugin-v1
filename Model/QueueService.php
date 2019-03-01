@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- *            
+ *
  * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
  * @copyright 2019 Divante Sp. z o.o.
  *
@@ -38,23 +38,31 @@ class QueueService
     protected $searchCriteriaBuilder;
 
     /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * QueueService constructor.
      *
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime           $date
-     * @param \Divante\Walkthechat\Api\QueueRepositoryInterface     $queueRepository
-     * @param \Divante\Walkthechat\Model\ActionFactory              $actionFactory
-     * @param \Magento\Framework\Api\SearchCriteriaBuilder          $searchCriteriaBuilder
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime       $date
+     * @param \Divante\Walkthechat\Api\QueueRepositoryInterface $queueRepository
+     * @param \Divante\Walkthechat\Model\ActionFactory          $actionFactory
+     * @param \Magento\Framework\Api\SearchCriteriaBuilder      $searchCriteriaBuilder
+     * @param \Psr\Log\LoggerInterface                          $logger
      */
     public function __construct(
         \Magento\Framework\Stdlib\DateTime\DateTime $date,
         \Divante\Walkthechat\Api\QueueRepositoryInterface $queueRepository,
         \Divante\Walkthechat\Model\ActionFactory $actionFactory,
-        \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
+        \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
+        \Psr\Log\LoggerInterface $logger
     ) {
         $this->date                  = $date;
         $this->queueRepository       = $queueRepository;
         $this->actionFactory         = $actionFactory;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->logger                = $logger;
     }
 
     /**
@@ -75,9 +83,11 @@ class QueueService
     }
 
     /**
+     * Check if has duplicated items
+     *
      * @param int|string $id
-     * @param string $action
-     * @param string $idField
+     * @param string     $action
+     * @param string     $idField
      *
      * @return bool
      */
@@ -106,12 +116,28 @@ class QueueService
     {
         $action = $this->actionFactory->create($item->getAction());
 
-        $isSuccess = $action->execute($item);
+        try {
+            $isSuccess = $action->execute($item);
 
-        if ($isSuccess) {
-            $item->setProcessedAt($this->date->gmtDate());
+            if ($isSuccess) {
+                $item->setProcessedAt($this->date->gmtDate());
+                $item->setStatus(\Divante\Walkthechat\Api\Data\QueueInterface::COMPLETE_STATUS);
+            }
+        } catch (\Zend\Http\Client\Exception\RuntimeException $runtimeException) {
+            $item->setStatus(\Divante\Walkthechat\Api\Data\QueueInterface::API_ERROR_STATUS);
 
-            $this->queueRepository->save($item);
+            $this->logger->error(
+                "WalkTheChat | Bad response when trying to proceed the queue item with ID: #{$item->getId()}. Please check logs in admin panel (WalkTheChat -> Logs) for more details."
+            );
+        } catch (\Exception $exception) {
+            $item->setStatus(\Divante\Walkthechat\Api\Data\QueueInterface::INTERNAL_ERROR_STATUS);
+
+            $this->logger->critical(
+                "WalkTheChat | Internal error occurred: {$exception->getMessage()}",
+                $exception->getTrace()
+            );
         }
+
+        $this->queueRepository->save($item);
     }
 }

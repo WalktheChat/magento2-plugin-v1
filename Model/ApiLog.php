@@ -140,4 +140,20 @@ class ApiLog extends \Magento\Framework\Model\AbstractModel implements \Divante\
     {
         return $this->setData(self::CREATED_AT_FIELD, $timestamp);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getQueueItemId()
+    {
+        return $this->getData(self::QUEUE_ITEM_ID_FIELD);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setQueueItemId($queueItemId)
+    {
+        return $this->setData(self::QUEUE_ITEM_ID_FIELD, $queueItemId);
+    }
 }

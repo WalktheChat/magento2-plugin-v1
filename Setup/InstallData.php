@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- *            
+ *
  * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
  * @copyright 2019 Divante Sp. z o.o.
  *
@@ -42,8 +42,10 @@ class InstallData implements \Magento\Framework\Setup\InstallDataInterface
      *
      * @return void
      */
-    public function install(\Magento\Framework\Setup\ModuleDataSetupInterface $setup, \Magento\Framework\Setup\ModuleContextInterface $context)
-    {
+    public function install(
+        \Magento\Framework\Setup\ModuleDataSetupInterface $setup,
+        \Magento\Framework\Setup\ModuleContextInterface $context
+    ) {
         /** @var \Magento\Eav\Setup\EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
 
@@ -52,7 +54,7 @@ class InstallData implements \Magento\Framework\Setup\InstallDataInterface
             \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE,
             [
                 'type'                    => 'varchar',
-                'label'                   => 'Walkthechat ID',
+                'label'                   => 'WalkTheChat ID',
                 'input'                   => 'text',
                 'required'                => false,
                 'global'                  => \Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface::SCOPE_GLOBAL,

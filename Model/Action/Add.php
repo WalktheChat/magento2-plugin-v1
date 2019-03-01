@@ -87,7 +87,6 @@ class Add extends \Divante\Walkthechat\Model\Action\AbstractAction
      * {@inheritdoc}
      *
      * @throws \Magento\Framework\Exception\CouldNotSaveException
-     * @throws \Magento\Framework\Exception\CronException
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\StateException

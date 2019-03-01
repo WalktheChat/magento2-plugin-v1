@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- *            
+ *
  * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
  * @copyright 2019 Divante Sp. z o.o.
  *
@@ -15,6 +15,7 @@ namespace Divante\Walkthechat\Model;
  *
  * @package Divante\Walkthechat\Model
  */
-class QueueSearchResults extends \Magento\Framework\Api\SearchResults implements \Divante\Walkthechat\Api\Data\QueueSearchResultsInterface
+class QueueSearchResults extends \Magento\Framework\Api\SearchResults
+    implements \Divante\Walkthechat\Api\Data\QueueSearchResultsInterface
 {
 }

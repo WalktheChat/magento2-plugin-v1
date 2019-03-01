@@ -4,7 +4,7 @@
     <body>
         <referenceBlock name="page.title">
             <action method="setPageTitle">
-                <argument translate="true" name="title" xsi:type="string">Walkthechat - Queue Dashboard</argument>
+                <argument translate="true" name="title" xsi:type="string">WalkTheChat - Queue Dashboard</argument>
             </action>
         </referenceBlock>
         <referenceContainer name="content">

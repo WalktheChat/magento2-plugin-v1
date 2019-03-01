@@ -52,11 +52,7 @@ class Actions extends \Magento\Ui\Component\Listing\Columns\Column
     }
 
     /**
-     * Prepare Data Source
-     *
-     * @param array $dataSource
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function prepareDataSource(array $dataSource)
     {

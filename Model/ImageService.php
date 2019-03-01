@@ -75,7 +75,6 @@ class ImageService
      * @param \Magento\Catalog\Api\Data\ProductInterface $product
      *
      * @return array
-     * @throws \Magento\Framework\Exception\CronException
      * @throws \Zend_Http_Client_Exception
      */
     public function addImages(\Magento\Catalog\Api\Data\ProductInterface $product)
@@ -134,7 +133,6 @@ class ImageService
      * @param \Magento\Catalog\Api\Data\ProductInterface $mainProduct
      *
      * @return array
-     * @throws \Magento\Framework\Exception\CronException
      * @throws \Zend_Http_Client_Exception
      */
     public function updateImages(\Magento\Catalog\Api\Data\ProductInterface $mainProduct)

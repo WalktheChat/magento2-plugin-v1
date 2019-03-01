@@ -29,6 +29,7 @@ interface ApiLogInterface
     const RESPONSE_DATA_FIELD       = 'response_data';
     const IS_SUCCESS_RESPONSE_FIELD = 'is_success_response';
     const CREATED_AT_FIELD          = 'created_at';
+    const QUEUE_ITEM_ID_FIELD       = 'queue_item_id';
     /**@#- */
 
     /**
@@ -158,4 +159,20 @@ interface ApiLogInterface
      * @return \Divante\Walkthechat\Api\Data\ApiLogInterface
      */
     public function setCreatedAt($timestamp);
+
+    /**
+     * Return queue_item_id
+     *
+     * @return int
+     */
+    public function getQueueItemId();
+
+    /**
+     * Set queue_item_id
+     *
+     * @param int $queueItemId
+     *
+     * @return \Divante\Walkthechat\Api\Data\ApiLogInterface
+     */
+    public function setQueueItemId($queueItemId);
 }

@@ -31,5 +31,15 @@ interface OrderImportInterface
      *
      * @return string
      */
-    public function import($id, $financialStatus, $itemsToFulfill, $items, $deliveryAddress, $shippingRate, $tax, $total, $coupon = []);
+    public function import(
+        $id,
+        $financialStatus,
+        $itemsToFulfill,
+        $items,
+        $deliveryAddress,
+        $shippingRate,
+        $tax,
+        $total,
+        $coupon = []
+    );
 }

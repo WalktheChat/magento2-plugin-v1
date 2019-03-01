@@ -108,7 +108,7 @@ class WTCShipping extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
         $method->setMethod('walkthechat');
         $method->setMethodTitle($this->getConfigData('name'));
 
-        $amount = $this->registry->registry(self::WALKTHECHAT_SHIPPING_PRICE_KEY) ?: 0;
+        $amount = $this->registry->registry(self::WALKTHECHAT_SHIPPING_PRICE_KEY) ? : 0;
 
         $method->setPrice($amount);
         $method->setCost($amount);

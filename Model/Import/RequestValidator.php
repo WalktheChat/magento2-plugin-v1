@@ -32,8 +32,17 @@ class RequestValidator
      * @return array
      * @throws \Magento\Framework\Exception\ValidatorException
      */
-    public function validate($id, $financialStatus, $itemsToFulfill, $items, $deliveryAddress, $shippingRate, $tax, $total, $coupon)
-    {
+    public function validate(
+        $id,
+        $financialStatus,
+        $itemsToFulfill,
+        $items,
+        $deliveryAddress,
+        $shippingRate,
+        $tax,
+        $total,
+        $coupon
+    ) {
         $this->validateId($id);
         $this->validateStatus($financialStatus);
         $this->validateItems($items);

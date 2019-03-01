@@ -37,6 +37,14 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
         if (version_compare($context->getVersion(), '0.4.1', '<')) {
             $this->addIsSynchronizedWithWalkTheChatField($installer);
         }
+
+        if (version_compare($context->getVersion(), '0.5.0', '<')) {
+            $this->addQueueItemIdFieldInApiLogTable($installer);
+        }
+
+        if (version_compare($context->getVersion(), '0.6.0', '<')) {
+            $this->addStatusFieldInQueueTable($installer);
+        }
     }
 
     /**
@@ -135,7 +143,7 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
                     ],
                     ['type' => \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE]
                 )
-                ->setComment('Walkthechat image synchronization table');
+                ->setComment('WalkTheChat image synchronization table');
 
             $installer->getConnection()->createTable($table);
         }
@@ -162,6 +170,78 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
                         'length'  => null,
                         'comment' => 'WalkTheChat item data',
                     ]
+                );
+        }
+    }
+
+    /**
+     * Add status field in queue table
+     *
+     * @param \Magento\Framework\Setup\SchemaSetupInterface $installer
+     */
+    protected function addStatusFieldInQueueTable(
+        \Magento\Framework\Setup\SchemaSetupInterface $installer
+    ) {
+        $connection = $installer->getConnection();
+
+        if (!$connection->tableColumnExists(
+            \Divante\Walkthechat\Model\ResourceModel\Queue::TABLE_NAME,
+            \Divante\Walkthechat\Api\Data\QueueInterface::STATUS
+        )) {
+            $connection
+                ->addColumn(
+                    $installer->getTable(\Divante\Walkthechat\Model\ResourceModel\Queue::TABLE_NAME),
+                    \Divante\Walkthechat\Api\Data\QueueInterface::STATUS,
+                    [
+                        'type'     => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                        'nullable' => false,
+                        'default'  => \Divante\Walkthechat\Api\Data\QueueInterface::WAITING_IN_QUEUE_STATUS,
+                        'unsigned' => true,
+                        'length'   => null,
+                        'comment'  => 'Queue item status',
+                    ]
+                );
+        }
+    }
+
+    /**
+     * Add queue item field for api log table
+     *
+     * @param \Magento\Framework\Setup\SchemaSetupInterface $installer
+     */
+    protected function addQueueItemIdFieldInApiLogTable(\Magento\Framework\Setup\SchemaSetupInterface $installer)
+    {
+        $connection = $installer->getConnection();
+
+        if (!$connection->tableColumnExists(
+            \Divante\Walkthechat\Model\ResourceModel\ApiLog::TABLE_NAME,
+            \Divante\Walkthechat\Api\Data\ApiLogInterface::QUEUE_ITEM_ID_FIELD
+        )) {
+            $connection
+                ->addColumn(
+                    $installer->getTable(\Divante\Walkthechat\Model\ResourceModel\ApiLog::TABLE_NAME),
+                    \Divante\Walkthechat\Api\Data\ApiLogInterface::QUEUE_ITEM_ID_FIELD,
+                    [
+                        'type'     => \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                        'nullable' => false,
+                        'unsigned' => true,
+                        'length'   => null,
+                        'comment'  => 'Queue item ID',
+                    ]
+                );
+
+            $connection
+                ->addForeignKey(
+                    $connection->getForeignKeyName(
+                        \Divante\Walkthechat\Model\ResourceModel\ApiLog::TABLE_NAME,
+                        \Divante\Walkthechat\Api\Data\ApiLogInterface::QUEUE_ITEM_ID_FIELD,
+                        \Divante\Walkthechat\Model\ResourceModel\Queue::TABLE_NAME,
+                        \Divante\Walkthechat\Api\Data\QueueInterface::ID
+                    ),
+                    \Divante\Walkthechat\Model\ResourceModel\ApiLog::TABLE_NAME,
+                    \Divante\Walkthechat\Api\Data\ApiLogInterface::QUEUE_ITEM_ID_FIELD,
+                    \Divante\Walkthechat\Model\ResourceModel\Queue::TABLE_NAME,
+                    \Divante\Walkthechat\Api\Data\QueueInterface::ID
                 );
         }
     }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- *            
+ *
  * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
  * @copyright 2019 Divante Sp. z o.o.
  *
@@ -66,7 +66,6 @@ class ShippingZonesRepository extends AbstractService
      * @param $data
      *
      * @return mixed
-     * @throws \Magento\Framework\Exception\CronException
      * @throws \Zend_Http_Client_Exception
      */
     public function create($data)
@@ -80,7 +79,6 @@ class ShippingZonesRepository extends AbstractService
      * @param $id
      *
      * @return mixed
-     * @throws \Magento\Framework\Exception\CronException
      * @throws \Zend_Http_Client_Exception
      */
     public function delete($id)
@@ -92,7 +90,6 @@ class ShippingZonesRepository extends AbstractService
      * Find shipping zone
      *
      * @return mixed
-     * @throws \Magento\Framework\Exception\CronException
      * @throws \Zend_Http_Client_Exception
      */
     public function find()

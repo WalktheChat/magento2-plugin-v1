@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- *            
+ *
  * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
  * @copyright 2019 Divante Sp. z o.o.
  *
@@ -82,7 +82,6 @@ class OrdersRepository extends AbstractService
      *
      * @param $data
      *
-     * @throws \Magento\Framework\Exception\CronException
      * @throws \Zend_Http_Client_Exception
      */
     public function update($data)

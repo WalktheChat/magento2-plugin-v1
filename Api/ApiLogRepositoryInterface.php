@@ -36,4 +36,13 @@ interface ApiLogRepositoryInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getById($id);
+
+    /**
+     * Return last item by for queue item id
+     *
+     * @param int $id
+     *
+     * @return \Divante\Walkthechat\Api\Data\ApiLogInterface
+     */
+    public function getLastByQuoteItemId($id);
 }

@@ -58,6 +58,11 @@ class Update extends \Divante\Walkthechat\Model\Action\AbstractAction
     protected $productService;
 
     /**
+     * @var \Divante\Walkthechat\Helper\Data
+     */
+    protected $helper;
+
+    /**
      * {@inheritdoc}
      *
      * @param \Magento\Catalog\Model\ProductRepository        $productRepository
@@ -67,6 +72,7 @@ class Update extends \Divante\Walkthechat\Model\Action\AbstractAction
      * @param \Divante\Walkthechat\Model\ImageService         $imageService
      * @param \Divante\Walkthechat\Model\OrderService         $orderService
      * @param \Divante\Walkthechat\Model\ProductService       $productService
+     * @param \Divante\Walkthechat\Helper\Data                $helper
      */
     public function __construct(
         \Divante\Walkthechat\Api\Data\ImageSyncInterfaceFactory $imageSyncFactory,
@@ -77,7 +83,8 @@ class Update extends \Divante\Walkthechat\Model\Action\AbstractAction
         \Divante\Walkthechat\Service\OrdersRepository $queueOrderRepository,
         \Divante\Walkthechat\Model\ImageService $imageService,
         \Divante\Walkthechat\Model\OrderService $orderService,
-        \Divante\Walkthechat\Model\ProductService $productService
+        \Divante\Walkthechat\Model\ProductService $productService,
+        \Divante\Walkthechat\Helper\Data $helper
     ) {
         $this->productRepository      = $productRepository;
         $this->orderRepository        = $orderRepository;
@@ -86,6 +93,7 @@ class Update extends \Divante\Walkthechat\Model\Action\AbstractAction
         $this->imageService           = $imageService;
         $this->orderService           = $orderService;
         $this->productService         = $productService;
+        $this->helper                 = $helper;
 
         parent::__construct(
             $imageSyncFactory,
@@ -98,7 +106,6 @@ class Update extends \Divante\Walkthechat\Model\Action\AbstractAction
      *
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Zend_Http_Client_Exception
-     * @throws \Magento\Framework\Exception\CronException
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Magento\Framework\Exception\CouldNotSaveException
      */
@@ -109,7 +116,7 @@ class Update extends \Divante\Walkthechat\Model\Action\AbstractAction
             $imagesData = $this->imageService->updateImages($product);
             $data       = $this->productService->prepareProductData($product, false, $imagesData);
 
-            $data['id'] = $queueItem->getWalkthechatId();
+            $data['id'] = $queueItem->getWalkthechatId() ?? $this->helper->getWalkTheChatAttributeValue($product);
 
             $this->queueProductRepository->update($data);
 

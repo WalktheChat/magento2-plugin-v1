@@ -28,97 +28,59 @@ class Delete extends \Magento\Backend\App\Action
     protected $collectionFactory;
 
     /**
-     * @var \Divante\Walkthechat\Api\Data\QueueInterfaceFactory
+     * @var \Divante\Walkthechat\Model\ProductService
      */
-    protected $queueFactory;
+    protected $productService;
 
     /**
-     * @var \Divante\Walkthechat\Model\QueueRepository
+     * @var \Psr\Log\LoggerInterface
      */
-    protected $queueRepository;
-
-    /**
-     * @var \Divante\Walkthechat\Helper\Data
-     */
-    protected $helper;
-
-    /**
-     * @var \Divante\Walkthechat\Model\QueueService
-     */
-    protected $queueService;
+    protected $logger;
 
     /**
      * {@inheritdoc}
      *
      * @param \Magento\Ui\Component\MassAction\Filter                        $filter
      * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $collectionFactory
-     * @param \Divante\Walkthechat\Api\Data\QueueInterfaceFactory            $queueFactory
-     * @param \Divante\Walkthechat\Model\QueueRepository                     $queueRepository
-     * @param \Divante\Walkthechat\Helper\Data                               $helper
-     * @param \Divante\Walkthechat\Model\QueueService                        $queueService
+     * @param \Divante\Walkthechat\Model\ProductService                      $productService
+     * @param \Psr\Log\LoggerInterface                                       $logger
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Ui\Component\MassAction\Filter $filter,
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $collectionFactory,
-        \Divante\Walkthechat\Api\Data\QueueInterfaceFactory $queueFactory,
-        \Divante\Walkthechat\Model\QueueRepository $queueRepository,
-        \Divante\Walkthechat\Helper\Data $helper,
-        \Divante\Walkthechat\Model\QueueService $queueService
+        \Divante\Walkthechat\Model\ProductService $productService,
+        \Psr\Log\LoggerInterface $logger
     ) {
         $this->filter            = $filter;
         $this->collectionFactory = $collectionFactory;
-        $this->queueFactory      = $queueFactory;
-        $this->queueRepository   = $queueRepository;
-        $this->helper            = $helper;
-        $this->queueService      = $queueService;
+        $this->productService    = $productService;
+        $this->logger            = $logger;
 
         parent::__construct($context);
     }
 
     /**
-     * Delete selected products from Walkthechat
+     * {@inheritdoc}
      *
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * Delete selected products from Walkthechat
      */
     public function execute()
     {
-        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
-        $collection = $this->filter->getCollection(
-            $this->collectionFactory->create()->addAttributeToSelect(\Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE)
-        );
+        try {
+            /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
+            $collection = $this->filter->getCollection($this->collectionFactory->create());
+            $bulkData   = $this->productService->processProductDelete($collection->getItems(), $this->messageManager);
 
-        $count = 0;
+            $this->messageManager->addSuccessMessage(__('%1 product(s) added to queue.', count($bulkData)));
 
-        /** @var \Magento\Catalog\Api\Data\ProductInterface $product */
-        foreach ($collection->getItems() as $product) {
-            $walkTheChatId = $this->helper->getWalkTheChatAttributeValue($product);
+            $this->_redirect('catalog/product/index');
+        } catch (\Magento\Framework\Exception\LocalizedException $localizedException) {
+            $this->messageManager->addErrorMessage(__($localizedException->getMessage()));
+        } catch (\Exception $exception) {
+            $this->logger->critical($exception);
 
-            if (
-                $walkTheChatId
-                && !$this->queueService->isDuplicate(
-                    $walkTheChatId,
-                    \Divante\Walkthechat\Model\Action\Delete::ACTION,
-                    \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE
-                )
-            ) {
-                /** @var \Divante\Walkthechat\Api\Data\QueueInterface $model */
-                $model = $this->queueFactory->create();
-
-                $model->setProductId($product->getId());
-                $model->setWalkthechatId($walkTheChatId);
-                $model->setAction(\Divante\Walkthechat\Model\Action\Delete::ACTION);
-
-                $this->queueRepository->save($model);
-
-                $count++;
-            }
+            $this->messageManager->addErrorMessage(__('Internal error occurred. Please see logs or contact administrator.'));
         }
-
-        $this->messageManager->addSuccessMessage(__('%1 product(s) added to queue.', $count));
-
-        $this->_redirect('catalog/product/index');
     }
 }

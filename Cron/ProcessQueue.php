@@ -48,12 +48,16 @@ class ProcessQueue
     protected $varDirectory;
 
     /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * Locking file (locked)
      *
      * @var string
      */
     const QUEUE_LOCK_FILE_NAME_LOCKED = 'walkthechat_queue.lock';
-
     /**
      * Locking file (locked)
      *
@@ -68,6 +72,13 @@ class ProcessQueue
     const QUEUE_LOCK_FILE_CONTENT = 'This file was generated automatically by system to atomically prevent doubling of walkthechat entities. If this file extension is ".lock", then no queue items will be proceed';
 
     /**
+     * How many files would be proceed per cron request
+     *
+     * @var int
+     */
+    const QUEUE_ITEMS_PER_PROCESS = 10;
+
+    /**
      * ProcessQueue constructor.
      *
      * @param \Magento\Framework\App\State                    $state
@@ -75,19 +86,22 @@ class ProcessQueue
      * @param \Magento\Framework\Registry                     $registry
      * @param \Magento\Framework\Filesystem                   $filesystem
      * @param \Magento\Framework\App\Filesystem\DirectoryList $directoryList
+     * @param \Psr\Log\LoggerInterface                        $logger
      */
     public function __construct(
         \Magento\Framework\App\State $state,
         \Divante\Walkthechat\Model\QueueService $queueService,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Filesystem $filesystem,
-        \Magento\Framework\App\Filesystem\DirectoryList $directoryList
+        \Magento\Framework\App\Filesystem\DirectoryList $directoryList,
+        \Psr\Log\LoggerInterface $logger
     ) {
         $this->state         = $state;
         $this->queueService  = $queueService;
         $this->registry      = $registry;
         $this->filesystem    = $filesystem;
         $this->directoryList = $directoryList;
+        $this->logger        = $logger;
     }
 
     /**
@@ -118,14 +132,27 @@ class ProcessQueue
 
                 $items = $this->queueService->getAllNotProcessed();
 
+                $count = 0;
+
                 foreach ($items as $item) {
+                    if ($count++ === static::QUEUE_ITEMS_PER_PROCESS) {
+                        break;
+                    }
+
+                    $this->registry->register('walkthechat_current_queue_item_id', $item->getId());
+
                     $this->queueService->sync($item);
+
+                    $this->registry->unregister('walkthechat_current_queue_item_id');
                 }
             }
         } catch (\Magento\Framework\Exception\FileSystemException $fileSystemException) {
             throw new \Magento\Framework\Exception\CronException(
                 __('Unable to lock the cron. Please check your "var" folder permissions.')
             );
+        } catch (\Exception $exception) {
+            $this->logger->error("WalkTheChat | Internal error occurred: {$exception->getMessage()}",
+                $exception->getTrace());
         } finally {
             $this->unlockCron($varDirectory);
         }

@@ -12,13 +12,13 @@
         <item name="spinner" xsi:type="string">divante_walkthechat_queue_grid_columns</item>
         <item name="buttons" xsi:type="array">
             <item name="delete_all" xsi:type="string">Divante\Walkthechat\Block\Adminhtml\Dashboard\DeleteAllButton</item>
-            <item name="sync_shipping" xsi:type="array">
-                <item name="name" xsi:type="string">sync_shipping</item>
-                <item name="label" xsi:type="string" translate="true">Sync Tablerate Shipping</item>
-                <item name="class" xsi:type="string">primary</item>
-                <item name="url" xsi:type="string">*/*/syncShipping</item>
-                <item name="sort_order" xsi:type="string">100</item>
-            </item>
+            <!--<item name="sync_shipping" xsi:type="array">-->
+                <!--<item name="name" xsi:type="string">sync_shipping</item>-->
+                <!--<item name="label" xsi:type="string" translate="true">Sync Tablerate Shipping</item>-->
+                <!--<item name="class" xsi:type="string">primary</item>-->
+                <!--<item name="url" xsi:type="string">*/*/syncShipping</item>-->
+                <!--<item name="sort_order" xsi:type="string">100</item>-->
+            <!--</item>-->
             <item name="export_all" xsi:type="array">
                 <item name="name" xsi:type="string">export_all</item>
                 <item name="label" xsi:type="string" translate="true">Export All Products</item>
@@ -123,7 +123,7 @@
                         <item name="url" xsi:type="url" path="walkthechat/dashboard/massDelete" />
                         <item name="confirm" xsi:type="array">
                             <item name="title" xsi:type="string" translate="true">Delete items</item>
-                            <item name="message" xsi:type="string" translate="true">Are you sure you wan't to delete selected items?</item>
+                            <item name="message" xsi:type="string" translate="true">Are you sure you wan't to delete selected items from the queue?</item>
                         </item>
                     </item>
                 </argument>
@@ -149,30 +149,12 @@
                 </item>
             </argument>
         </selectionsColumn>
-        <column name="product_id">
+        <column name="product_id" class="Divante\Walkthechat\Ui\Component\Listing\Column\Item">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">desc</item>
-                    <item name="label" xsi:type="string" translate="true">Product ID</item>
-                </item>
-            </argument>
-        </column>
-        <column name="order_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">desc</item>
-                    <item name="label" xsi:type="string" translate="true">Order ID</item>
-                </item>
-            </argument>
-        </column>
-        <column name="walkthechat_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">desc</item>
-                    <item name="label" xsi:type="string" translate="true">Walkthechat ID</item>
+                    <item name="filter" xsi:type="string">false</item>
+                    <item name="label" xsi:type="string" translate="true">Item</item>
+                    <item name="sortable" xsi:type="boolean">false</item>
                 </item>
             </argument>
         </column>
@@ -180,7 +162,6 @@
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">desc</item>
                     <item name="label" xsi:type="string" translate="true">Action</item>
                 </item>
             </argument>
@@ -191,17 +172,22 @@
                     <item name="filter" xsi:type="string">dateRange</item>
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
                     <item name="dataType" xsi:type="string">date</item>
+                    <item name="sorting" xsi:type="string">desc</item>
                     <item name="label" xsi:type="string" translate="true">Created At</item>
                 </item>
             </argument>
         </column>
-        <column name="processed_at" class="Magento\Ui\Component\Listing\Columns\Date">
+        <column name="status">
             <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">Divante\Walkthechat\Model\Config\Source\QueueItemStatus</item>
                 <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">dateRange</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
-                    <item name="dataType" xsi:type="string">date</item>
-                    <item name="label" xsi:type="string" translate="true">Processed At</item>
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="dataType" xsi:type="string">select</item>
+                    <item name="editor" xsi:type="array">
+                        <item name="editorType" xsi:type="string">select</item>
+                    </item>
+                    <item name="label" xsi:type="string" translate="true">Status</item>
                 </item>
             </argument>
         </column>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- *            
+ *
  * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
  * @copyright 2019 Divante Sp. z o.o.
  *
@@ -117,7 +117,8 @@ class QueueRepository implements \Divante\Walkthechat\Api\QueueRepositoryInterfa
         try {
             $this->resource->delete($queue);
         } catch (\Exception $exception) {
-            throw new \Magento\Framework\Exception\CouldNotDeleteException(__('Could not delete the queue: %1', $exception->getMessage()));
+            throw new \Magento\Framework\Exception\CouldNotDeleteException(__('Could not delete the queue: %1',
+                $exception->getMessage()));
         }
 
         return true;
@@ -143,5 +144,23 @@ class QueueRepository implements \Divante\Walkthechat\Api\QueueRepositoryInterfa
         $searchResults->setTotalCount($collection->getSize());
 
         return $searchResults;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function bulkSave(array $data)
+    {
+        try {
+            if (!$data) {
+                return [];
+            }
+
+            $tableName = $this->resource->getTable(\Divante\Walkthechat\Model\ResourceModel\Queue::TABLE_NAME);
+
+            return $this->resource->getConnection()->insertMultiple($tableName, $data);
+        } catch (\Exception $exception) {
+            throw new \Magento\Framework\Exception\CouldNotSaveException(__('Unable to save some items of queue'));
+        }
     }
 }

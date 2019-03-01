@@ -65,7 +65,6 @@ abstract class AbstractService
      * @param bool                                                   $isImageUpload
      *
      * @return mixed
-     * @throws \Magento\Framework\Exception\CronException
      * @throws \Zend_Http_Client_Exception
      */
     public function request($resource, $params = [], $isImageUpload = false)
@@ -97,12 +96,10 @@ abstract class AbstractService
         // log into WalkTheChat log in Admin Panel
         $this->logger->log($resource, $params, $response, $placeholderId);
 
-        if ($response->getStatus() == 200) {
-            return $this->jsonHelper->jsonDecode($response->getBody());
-        } else {
-            throw new \Magento\Framework\Exception\CronException(
-                __('API error. Check logs for more details.')
-            );
+        if ($response->isError()) {
+            throw new \Zend\Http\Client\Exception\RuntimeException('Invalid response.');
         }
+
+        return $this->jsonHelper->jsonDecode($response->getBody());
     }
 }

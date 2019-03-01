@@ -73,4 +73,18 @@ class ApiLogRepository implements \Divante\Walkthechat\Api\ApiLogRepositoryInter
 
         return $log;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLastByQuoteItemId($id)
+    {
+        /** @var \Divante\Walkthechat\Api\Data\ApiLogInterface $log */
+        $log = $this->logFactory->create();
+
+        // request was rewrite in resource module to set DESC order by processed_at field
+        $this->logResource->load($log, $id, \Divante\Walkthechat\Api\Data\ApiLogInterface::QUEUE_ITEM_ID_FIELD);
+
+        return $log;
+    }
 }

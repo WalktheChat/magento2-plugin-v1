@@ -53,4 +53,14 @@ interface QueueRepositoryInterface
      * @return \Divante\Walkthechat\Api\Data\QueueSearchResultsInterface
      */
     public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria);
+
+    /**
+     * Bulk save many entities
+     *
+     * @param array $data
+     *
+     * @return \Divante\Walkthechat\Api\Data\QueueSearchResultsInterface
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     */
+    public function bulkSave(array $data);
 }

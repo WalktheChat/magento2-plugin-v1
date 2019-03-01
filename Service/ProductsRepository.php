@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- *            
+ *
  * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
  * @copyright 2019 Divante Sp. z o.o.
  *
@@ -75,7 +75,6 @@ class ProductsRepository extends AbstractService
      *
      * @return string|null
      * @throws \Zend_Http_Client_Exception
-     * @throws \Magento\Framework\Exception\CronException
      */
     public function create($data)
     {
@@ -91,7 +90,6 @@ class ProductsRepository extends AbstractService
      *
      * @return mixed
      * @throws \Zend_Http_Client_Exception
-     * @throws \Magento\Framework\Exception\CronException
      */
     public function delete($id)
     {
@@ -103,7 +101,6 @@ class ProductsRepository extends AbstractService
      *
      * @return mixed
      * @throws \Zend_Http_Client_Exception
-     * @throws \Magento\Framework\Exception\CronException
      */
     public function find()
     {
@@ -117,7 +114,6 @@ class ProductsRepository extends AbstractService
      *
      * @return mixed
      * @throws \Zend_Http_Client_Exception
-     * @throws \Magento\Framework\Exception\CronException
      */
     public function update($data)
     {

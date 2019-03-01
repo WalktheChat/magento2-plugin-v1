@@ -36,6 +36,14 @@ class ProductService
      * @var \Divante\Walkthechat\Helper\Data
      */
     protected $helper;
+    /**
+     * @var \Divante\Walkthechat\Model\QueueService
+     */
+    private $queueService;
+    /**
+     * @var \Divante\Walkthechat\Api\QueueRepositoryInterface
+     */
+    private $queueRepository;
 
     /**
      * ProductService constructor.
@@ -44,17 +52,23 @@ class ProductService
      * @param \Magento\Framework\Api\SearchCriteriaBuilder              $searchCriteriaBuilder
      * @param \Divante\Walkthechat\Helper\Data                          $helper
      * @param \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository
+     * @param \Divante\Walkthechat\Model\QueueService                   $queueService
+     * @param \Divante\Walkthechat\Api\QueueRepositoryInterface         $queueRepository
      */
     public function __construct(
         \Magento\Catalog\Model\ProductRepository $productRepository,
         \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
         \Divante\Walkthechat\Helper\Data $helper,
-        \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository
+        \Magento\CatalogInventory\Model\Stock\StockItemRepository $stockItemRepository,
+        \Divante\Walkthechat\Model\QueueService $queueService,
+        \Divante\Walkthechat\Api\QueueRepositoryInterface $queueRepository
     ) {
         $this->productRepository     = $productRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->stockItemRepository   = $stockItemRepository;
         $this->helper                = $helper;
+        $this->queueService          = $queueService;
+        $this->queueRepository       = $queueRepository;
     }
 
     /**
@@ -97,6 +111,133 @@ class ProductService
         $simpleProducts = $this->productRepository->getList($simpleProductsSearchCriteria);
 
         return array_merge($simpleProducts->getItems(), $configurableProducts->getItems());
+    }
+
+    /**
+     * Process passed products
+     *
+     * @param \Magento\Catalog\Api\Data\ProductInterface[]     $products
+     * @param \Magento\Framework\Message\ManagerInterface|null $messageManager
+     *
+     * @return array
+     */
+    public function processProductsExport(
+        array $products,
+        \Magento\Framework\Message\ManagerInterface $messageManager = null
+    ) {
+        $productsProceed = 0;
+        $bulkData        = [];
+
+        foreach ($products as $product) {
+            $walkTheChatAttributeValue = $this->helper->getWalkTheChatAttributeValue($product);
+
+            // temporary solution (null filter doesn't work for custom attributes)
+            if (!$walkTheChatAttributeValue) {
+                $isSupportedProductType = in_array($product->getTypeId(), [
+                    \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE,
+                    \Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL,
+                    \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE,
+                ]);
+
+                if (!$isSupportedProductType) {
+                    ++$productsProceed;
+
+                    continue;
+                }
+
+                // don't add to queue twice when exporting
+                if (!$this->queueService->isDuplicate(
+                    $product->getId(),
+                    \Divante\Walkthechat\Model\Action\Add::ACTION,
+                    'product_id'
+                )) {
+                    $bulkData[] = [
+                        'product_id' => $product->getId(),
+                        'action'     => \Divante\Walkthechat\Model\Action\Add::ACTION,
+                    ];
+                }
+            }
+        }
+
+        try {
+            $this->queueRepository->bulkSave($bulkData);
+        } catch (\Magento\Framework\Exception\CouldNotSaveException $exception) {
+            if (null !== $messageManager) {
+                $messageManager->addWarningMessage(
+                    __('Error occurred when tried to added products to the queue. Please retry again or contact the administrator.')
+                );
+            }
+        }
+
+        if ($productsProceed && null !== $messageManager) {
+            $messageManager->addWarningMessage(
+                __(
+                    '%1 product(s) can not be exported. Supported product types: Simple, Virtual and Configurable',
+                    $productsProceed
+                )
+            );
+        }
+
+        return $bulkData;
+    }
+
+    /**
+     * Process product delete action
+     *
+     * @param \Magento\Catalog\Api\Data\ProductInterface[]     $products
+     * @param \Magento\Framework\Message\ManagerInterface|null $messageManager
+     *
+     * @return array
+     */
+    public function processProductDelete(
+        array $products,
+        \Magento\Framework\Message\ManagerInterface $messageManager = null
+    ) {
+        $bulkData = [];
+
+        foreach ($products as $product) {
+            $walkTheChatAttributeValue = $this->helper->getWalkTheChatAttributeValue($product);
+
+            if ($walkTheChatAttributeValue
+                && !$this->queueService->isDuplicate(
+                    $product->getId(),
+                    \Divante\Walkthechat\Model\Action\Delete::ACTION,
+                    'product_id'
+                )) {
+                $bulkData[] = [
+                    'product_id'     => $product->getId(),
+                    'walkthechat_id' => $walkTheChatAttributeValue,
+                    'action'         => \Divante\Walkthechat\Model\Action\Delete::ACTION,
+                ];
+            }
+        }
+
+        try {
+            $this->queueRepository->bulkSave($bulkData);
+        } catch (\Magento\Framework\Exception\CouldNotSaveException $exception) {
+            if (null !== $messageManager) {
+                $messageManager->addWarningMessage(
+                    __('Error occurred when tried to added products to the queue. Please retry again or contact the administrator.')
+                );
+            }
+        }
+
+        return $bulkData;
+    }
+
+    /**
+     * Get all products available for delete
+     *
+     * @return \Magento\Catalog\Api\Data\ProductInterface[]
+     */
+    public function getAllForDelete()
+    {
+        $allSynchronizedProductsSearchCriteria = $this
+            ->searchCriteriaBuilder
+            ->addFilter('walkthechat_id', true, 'notnull')
+            ->create();
+
+        return $this->productRepository->getList($allSynchronizedProductsSearchCriteria)->getItems();
     }
 
     /**
