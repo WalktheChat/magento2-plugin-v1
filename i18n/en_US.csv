@@ -26,7 +26,7 @@ Complete,Complete
 "Unable to proceed order import. Total has invalid structure.","Unable to proceed order import. Total has invalid structure."
 "Unable to proceed order import. Id was not passed.","Unable to proceed order import. Id was not passed."
 "Unable to proceed order import. Order is not paid.","Unable to proceed order import. Order is not paid."
-"Not synchronized product was sent. Product with WalkTheChat ID: %s, wasn't exported from current Magento instance.","Not synchronized product was sent. Product with WalkTheChat ID: %s, wasn't exported from current Magento instance."
+"Not synchronized product was sent. Product with WalkTheChat ID: %1, wasn't exported from current Magento instance.","Not synchronized product was sent. Product with WalkTheChat ID: %1, wasn't exported from current Magento instance."
 "Error occurred when tried to added products to the queue. Please retry again or contact the administrator.","Error occurred when tried to added products to the queue. Please retry again or contact the administrator."
 "%1 product(s) can not be exported. Supported product types: Simple, Virtual and Configurable","%1 product(s) can not be exported. Supported product types: Simple, Virtual and Configurable"
 "Queue with id ""%1"" does not exist.","Queue with id ""%1"" does not exist."

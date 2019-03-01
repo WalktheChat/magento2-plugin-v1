@@ -391,7 +391,7 @@ class OrderService
             } catch (\Magento\Framework\Exception\NoSuchEntityException $exception) {
                 throw new \Divante\Walkthechat\Exception\NotSynchronizedProductException(
                     __(
-                        'Not synchronized product was sent. Product with WalkTheChat ID: %s, wasn\'t exported from current Magento instance.',
+                        'Not synchronized product was sent. Product with WalkTheChat ID: %1, wasn\'t exported from current Magento instance.',
                         $item['product']['id']
                     )
                 );
