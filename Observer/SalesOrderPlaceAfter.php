@@ -88,7 +88,7 @@ class SalesOrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
             ) {
                 foreach ($order->getAllItems() as $item) {
                     $product       = $item->getProduct();
-                    $walkTheChatId = $product->getWalkthechatId();
+                    $walkTheChatId = $this->helper->getWalkTheChatAttributeValue($product);
 
                     if (
                         $walkTheChatId
