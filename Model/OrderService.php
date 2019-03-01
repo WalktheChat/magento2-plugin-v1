@@ -118,7 +118,7 @@ class OrderService
      * @param $data
      *
      * @return \Magento\Sales\Api\Data\OrderInterface
-     * @throws \Divante\Walkthechat\Exception\UnsuitableInstanceException
+     * @throws \Divante\Walkthechat\Exception\NotSynchronizedProductException
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -319,7 +319,7 @@ class OrderService
      * @param \Magento\Quote\Api\Data\CartInterface $quote
      * @param array                                 $data
      *
-     * @throws \Divante\Walkthechat\Exception\UnsuitableInstanceException
+     * @throws \Divante\Walkthechat\Exception\NotSynchronizedProductException
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -335,9 +335,9 @@ class OrderService
             if ($this->helper->getWalkTheChatAttributeValue($product) !== $item['product']['id']) {
                 $this->cartRepository->delete($quote);
 
-                throw new \Divante\Walkthechat\Exception\UnsuitableInstanceException(
+                throw new \Divante\Walkthechat\Exception\NotSynchronizedProductException(
                     __(
-                        'Invalid Magento instance was hooked. Product with WalkTheChat ID: %s, wasn\'t exported from current Magento instance',
+                        'Not synchronized product was sent. Product with WalkTheChat ID: %s, wasn\'t exported from current Magento instance.',
                         $item['product']['id']
                     )
                 );

@@ -9,10 +9,10 @@
 namespace Divante\Walkthechat\Exception;
 
 /**
- * Class UnsuitableInstanceException
+ * Class InvalidMagentoInstanceException
  *
  * @package Divante\Walkthechat\Exception
  */
-class UnsuitableInstanceException extends \Magento\Framework\Exception\LocalizedException
+class InvalidMagentoInstanceException extends \Magento\Framework\Exception\LocalizedException
 {
 }

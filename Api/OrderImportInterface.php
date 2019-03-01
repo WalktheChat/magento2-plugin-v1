@@ -20,6 +20,7 @@ interface OrderImportInterface
      * Import order from WalkTheChat CMS
      *
      * @param string $id
+     * @param string $projectId
      * @param string $financialStatus
      * @param mixed  $itemsToFulfill
      * @param mixed  $items
@@ -33,6 +34,7 @@ interface OrderImportInterface
      */
     public function import(
         $id,
+        $projectId,
         $financialStatus,
         $itemsToFulfill,
         $items,

@@ -76,6 +76,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Validates Project ID with instance configuration Project ID
+     *
+     * @param string $projectId
+     *
+     * @throws \Divante\Walkthechat\Exception\InvalidMagentoInstanceException
+     */
+    public function validateProjectId($projectId)
+    {
+        if ($projectId !== $this->getProjectId()) {
+            throw new \Divante\Walkthechat\Exception\InvalidMagentoInstanceException(
+                __('Invalid instance request. Project ID is not supported for current Magento instance.')
+            );
+        }
+    }
+
+    /**
      * Return shop name from configuration
      *
      * @return string

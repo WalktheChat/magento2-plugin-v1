@@ -31,20 +31,28 @@ class OrderImport implements \Divante\Walkthechat\Api\OrderImportInterface
     protected $logger;
 
     /**
+     * @var \Divante\Walkthechat\Helper\Data
+     */
+    protected $helper;
+
+    /**
      * OrderImport constructor.
      *
      * @param \Divante\Walkthechat\Model\Import\RequestValidator $requestValidator
      * @param \Divante\Walkthechat\Model\OrderService            $orderService
      * @param \Psr\Log\LoggerInterface                           $logger
+     * @param \Divante\Walkthechat\Helper\Data                   $helper
      */
     public function __construct(
         \Divante\Walkthechat\Model\Import\RequestValidator $requestValidator,
         \Divante\Walkthechat\Model\OrderService $orderService,
-        \Psr\Log\LoggerInterface $logger
+        \Psr\Log\LoggerInterface $logger,
+        \Divante\Walkthechat\Helper\Data $helper
     ) {
         $this->requestValidator = $requestValidator;
         $this->orderService     = $orderService;
         $this->logger           = $logger;
+        $this->helper           = $helper;
     }
 
     /**
@@ -52,6 +60,7 @@ class OrderImport implements \Divante\Walkthechat\Api\OrderImportInterface
      */
     public function import(
         $id,
+        $projectId,
         $financialStatus,
         $itemsToFulfill,
         $items,
@@ -62,7 +71,7 @@ class OrderImport implements \Divante\Walkthechat\Api\OrderImportInterface
         $coupon = []
     ) {
         try {
-            // TODO: auth process
+            $this->helper->validateProjectId($projectId);
 
             $data = $this->requestValidator->validate(
                 $id,
@@ -83,31 +92,23 @@ class OrderImport implements \Divante\Walkthechat\Api\OrderImportInterface
                 'order_id' => $order->getEntityId(),
             ]);
         } catch (\Magento\Framework\Exception\ValidatorException $exception) {
-            return json_encode(
-                [
-                    'error'    => false,
-                    'message'  => $exception->getMessage(),
-                    'order_id' => null,
-                ]
-            );
-        } catch (\Divante\Walkthechat\Exception\UnsuitableInstanceException $exception) {
-            return json_encode(
-                [
-                    'error'    => true,
-                    'message'  => $exception->getMessage(),
-                    'order_id' => null,
-                ]
-            );
-        } catch (\Exception $e) {
-            $this->logger->error('Error during the WalkTheChat order import | '.$e->getMessage());
+            $errorMessage = $exception->getMessage();
+        } catch (\Divante\Walkthechat\Exception\NotSynchronizedProductException $exception) {
+            $errorMessage = $exception->getMessage();
+        } catch (\Divante\Walkthechat\Exception\InvalidMagentoInstanceException $exception) {
+            $errorMessage = $exception->getMessage();
+        } catch (\Exception $exception) {
+            $this->logger->error('Error during the WalkTheChat order import | '.$exception->getMessage());
 
-            return json_encode(
-                [
-                    'error'    => true,
-                    'message'  => 'An error has been occurred. Please contact administrator for more information.',
-                    'order_id' => null,
-                ]
-            );
+            $errorMessage = $exception->getMessage();
         }
+
+        return json_encode(
+            [
+                'error'    => false,
+                'message'  => $errorMessage,
+                'order_id' => null,
+            ]
+        );
     }
 }
