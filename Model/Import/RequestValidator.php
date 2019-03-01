@@ -76,6 +76,7 @@ class RequestValidator
         if (
             is_array($items['products'])
             && isset($items['products'][0])
+            && isset($items['products'][0]['product']['id'])
             && isset($items['products'][0]['variant']['sku'])
             && isset($items['products'][0]['quantity'])
             && isset($items['products'][0]['variant']['discount'])

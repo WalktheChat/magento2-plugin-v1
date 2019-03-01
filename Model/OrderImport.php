@@ -90,6 +90,14 @@ class OrderImport implements \Divante\Walkthechat\Api\OrderImportInterface
                     'order_id' => null,
                 ]
             );
+        } catch (\Divante\Walkthechat\Exception\UnsuitableInstanceException $exception) {
+            return json_encode(
+                [
+                    'error'    => true,
+                    'message'  => $exception->getMessage(),
+                    'order_id' => null,
+                ]
+            );
         } catch (\Exception $e) {
             $this->logger->error('Error during the WalkTheChat order import | '.$e->getMessage());
 

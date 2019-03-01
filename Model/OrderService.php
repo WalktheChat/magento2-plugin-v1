@@ -118,6 +118,7 @@ class OrderService
      * @param $data
      *
      * @return \Magento\Sales\Api\Data\OrderInterface
+     * @throws \Divante\Walkthechat\Exception\UnsuitableInstanceException
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -318,6 +319,7 @@ class OrderService
      * @param \Magento\Quote\Api\Data\CartInterface $quote
      * @param array                                 $data
      *
+     * @throws \Divante\Walkthechat\Exception\UnsuitableInstanceException
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -329,6 +331,15 @@ class OrderService
 
         foreach ($data['items']['products'] as $k => $item) {
             $product = $this->productRepository->get($item['variant']['sku']);
+
+            if ($this->helper->getWalkTheChatAttributeValue($product) !== $item['product']['id']) {
+                throw new \Divante\Walkthechat\Exception\UnsuitableInstanceException(
+                    __(
+                        'Invalid Magento instance was hooked. Product with WalkTheChat ID: %s, wasn\'t exported from current Magento instance',
+                        $item['product']['id']
+                    )
+                );
+            }
 
             $qty            = $item['quantity'];
             $discountAmount = $qty * $item['variant']['discount'];
