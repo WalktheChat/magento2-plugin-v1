@@ -2,8 +2,8 @@
 /**
  * @package   Divante\Walkthechat
  *
- * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
- * @copyright 2019 Divante Sp. z o.o.
+ * @author    Alex Yeremenko <madonzy13@gmail.com>
+ * @copyright 2019 WalktheChat
  *
  * @license   See LICENSE.txt for license details.
  */
@@ -15,7 +15,7 @@ namespace Divante\Walkthechat\Service\Resource;
  *
  * @package Divante\Walkthechat\Service\Resource
  */
-class AbstractResource
+abstract class AbstractResource
 {
     /**
      * HTTP Method

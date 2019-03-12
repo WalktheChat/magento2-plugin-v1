@@ -1,8 +1,8 @@
 <?php
 /**
  * @package   Divante\Walkthechat
- * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
- * @copyright 2019 Divante Sp. z o.o.
+ * @author    Alex Yeremenko <madonzy13@gmail.com>
+ * @copyright 2019 WalktheChat
  * @license   See LICENSE.txt for license details.
  */
 
@@ -41,11 +41,6 @@ class ImageService
     protected $filterBuilder;
 
     /**
-     * @var \Divante\Walkthechat\Api\Data\ImageSyncInterfaceFactory
-     */
-    protected $imageSyncFactory;
-
-    /**
      * ImageService constructor.
      *
      * @param \Divante\Walkthechat\Service\ImagesRepository           $requestImagesRepository
@@ -53,22 +48,19 @@ class ImageService
      * @param \Magento\Framework\Api\SearchCriteriaInterface          $searchCriteria
      * @param \Magento\Framework\Api\Search\FilterGroup               $filterGroup
      * @param \Magento\Framework\Api\FilterBuilder                    $filterBuilder
-     * @param \Divante\Walkthechat\Api\Data\ImageSyncInterfaceFactory $imageSyncFactory
      */
     public function __construct(
         \Divante\Walkthechat\Service\ImagesRepository $requestImagesRepository,
         \Divante\Walkthechat\Api\ImageSyncRepositoryInterface $imageSyncRepository,
         \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria,
         \Magento\Framework\Api\Search\FilterGroup $filterGroup,
-        \Magento\Framework\Api\FilterBuilder $filterBuilder,
-        \Divante\Walkthechat\Api\Data\ImageSyncInterfaceFactory $imageSyncFactory
+        \Magento\Framework\Api\FilterBuilder $filterBuilder
     ) {
         $this->requestImagesRepository = $requestImagesRepository;
         $this->imageSyncRepository     = $imageSyncRepository;
         $this->searchCriteria          = $searchCriteria;
         $this->filterGroup             = $filterGroup;
         $this->filterBuilder           = $filterBuilder;
-        $this->imageSyncFactory        = $imageSyncFactory;
     }
 
     /**

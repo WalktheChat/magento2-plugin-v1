@@ -2,8 +2,8 @@
 /**
  * @package   Divante\Walkthechat
  *
- * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
- * @copyright 2019 Divante Sp. z o.o.
+ * @author    Alex Yeremenko <madonzy13@gmail.com>
+ * @copyright 2019 WalktheChat
  *
  * @license   See LICENSE.txt for license details.
  */
@@ -67,8 +67,11 @@ abstract class AbstractService
      * @return mixed
      * @throws \Zend_Http_Client_Exception
      */
-    public function request($resource, $params = [], $isImageUpload = false)
-    {
+    public function request(
+        \Divante\Walkthechat\Service\Resource\AbstractResource $resource, 
+        $params = [], 
+        $isImageUpload = false
+    ) {
         $headers = $resource->getHeaders();
 
         $headers['x-access-token'] = $this->helper->getToken();

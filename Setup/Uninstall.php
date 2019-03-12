@@ -2,8 +2,8 @@
 /**
  * @package   Divante\Walkthechat
  *
- * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
- * @copyright 2018 Divante Sp. z o.o.
+ * @author    Alex Yeremenko <madonzy13@gmail.com>
+ * @copyright 2018 WalktheChat
  *
  * @license   See LICENSE.txt for license details.
  */

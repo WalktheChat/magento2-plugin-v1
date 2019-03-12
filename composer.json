@@ -2,7 +2,7 @@
   "name": "divante/module-walkthechat",
   "description": "A Magento 2 module that provides bi-directional products, orders and shipping table rates synchronization with WalkTheChat CMS.",
   "type": "magento2-module",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "license": [
     "OSL-3.0",
     "AFL-3.0"

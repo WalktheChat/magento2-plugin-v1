@@ -2,8 +2,8 @@
 /**
  * @package   Divante\Walkthechat
  *
- * @author    Oleksandr Yeremenko <oyeremenko@divante.pl>
- * @copyright 2019 Divante Sp. z o.o.
+ * @author    Alex Yeremenko <madonzy13@gmail.com>
+ * @copyright 2019 WalktheChat
  *
  * @license   See LICENSE.txt for license details.
  */
@@ -151,8 +151,10 @@ class ProcessQueue
                 __('Unable to lock the cron. Please check your "var" folder permissions.')
             );
         } catch (\Exception $exception) {
-            $this->logger->error("WalkTheChat | Internal error occurred: {$exception->getMessage()}",
-                $exception->getTrace());
+            $this->logger->error(
+                "WalkTheChat | Internal error occurred: {$exception->getMessage()}",
+                $exception->getTrace()
+            );
         } finally {
             $this->unlockCron($varDirectory);
         }
