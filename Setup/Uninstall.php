@@ -25,13 +25,24 @@ class Uninstall implements \Magento\Framework\Setup\UninstallInterface
     protected $eavSetupFactory;
 
     /**
+     * Removing eav attributes
+     *
+     * @var \Magento\Framework\Setup\ModuleDataSetupInterface
+     */
+    protected $dataSetup;
+
+    /**
      * Init
      *
-     * @param \Magento\Eav\Setup\EavSetupFactory $eavSetupFactory
+     * @param \Magento\Eav\Setup\EavSetupFactory                $eavSetupFactory
+     * @param \Magento\Framework\Setup\ModuleDataSetupInterface $dataSetup
      */
-    public function __construct(\Magento\Eav\Setup\EavSetupFactory $eavSetupFactory)
-    {
+    public function __construct(
+        \Magento\Eav\Setup\EavSetupFactory $eavSetupFactory,
+        \Magento\Framework\Setup\ModuleDataSetupInterface $dataSetup
+    ) {
         $this->eavSetupFactory = $eavSetupFactory;
+        $this->dataSetup       = $dataSetup;
     }
 
     /**
@@ -43,25 +54,27 @@ class Uninstall implements \Magento\Framework\Setup\UninstallInterface
     ) {
         $setup->startSetup();
 
+        $connection = $setup->getConnection();
+
+        // drop module tables
+        $connection->dropTable(\Divante\Walkthechat\Model\ResourceModel\ApiLog::TABLE_NAME);
+        $connection->dropTable(\Divante\Walkthechat\Model\ResourceModel\Queue::TABLE_NAME);
+        $connection->dropTable(\Divante\Walkthechat\Model\ResourceModel\ImageSync::TABLE_NAME);
+
+        // drop module integrated columns
+        $connection->dropColumn('sales_order', \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE);
+        $connection->dropColumn('sales_order_item', 'walkthechat_item_data');
+        $connection->dropColumn('sales_shipment', 'is_sent_to_walk_the_chat');
+        $connection->dropColumn('sales_creditmemo', 'is_sent_to_walk_the_chat');
+
         /** @var \Magento\Eav\Setup\EavSetup $eavSetup */
-        $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
+        $eavSetup = $this->eavSetupFactory->create(['setup' => $this->dataSetup]);
 
         // remove walkthechat_id attribute from product eav entity
         $eavSetup->removeAttribute(
             \Magento\Catalog\Model\Product::ENTITY,
             \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE
         );
-
-        // drop module tables
-        $setup->getConnection()->dropTable(\Divante\Walkthechat\Model\ResourceModel\ApiLog::TABLE_NAME);
-        $setup->getConnection()->dropTable(\Divante\Walkthechat\Model\ResourceModel\Queue::TABLE_NAME);
-        $setup->getConnection()->dropTable(\Divante\Walkthechat\Model\ResourceModel\ImageSync::TABLE_NAME);
-
-        // drop module integrated columns
-        $setup->getConnection()->dropColumn('sales_order', \Divante\Walkthechat\Helper\Data::ATTRIBUTE_CODE);
-        $setup->getConnection()->dropColumn('sales_order_item', 'walkthechat_item_data');
-        $setup->getConnection()->dropColumn('sales_shipment', 'is_sent_to_walk_the_chat');
-        $setup->getConnection()->dropColumn('sales_creditmemo', 'is_sent_to_walk_the_chat');
 
         $setup->endSetup();
     }
